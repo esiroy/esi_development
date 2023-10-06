@@ -351,6 +351,7 @@ function restart() {
             'videoStream': myVideoStream
         }
 
+        console.log("changemedia", data)
 
 
         socket.emit("changeMedia", data);
@@ -637,6 +638,8 @@ peer.on('open', (id) => {
         'user': user,
         'roomID': roomID
     }
+
+    console.log("newuser", data)
 
     socket.emit("newUser", data);
 
@@ -1143,11 +1146,13 @@ socket.on('mediaChanged', (data) => {
 });
 
 
-socket.on('userDisconnect', id => {
-    //console.log("userDisconnected", id);
-    removeElementByID(id);
+socket.on('WEBRTC_USER_LEAVE_SESSION', user => {
+
+    console.log("userDisconnected", user);
+
+    removeElementByID(user.peerid);
     try {
-        peerConnections[id].close();
+        peerConnections[user.peerid].close();
     } catch (err) {
         //console.log("error disconnect : ", err)
     }

@@ -35,6 +35,25 @@ class TutorWebRTCVideoController extends Controller
 
             $userInfo =  Auth::user();
 
+            /****************[START] WEBRTC USER INFO***************************** */
+            $webRTC = [
+                'channelid' =>  $roomID,
+                'userid'    =>  $userInfo->id ,
+                'nickname'  =>  $userInfo->firstname,            
+                'username'  =>  $userInfo->username,     
+                'firstname' =>  $userInfo->firstname,    
+                'lastname'  =>  $userInfo->lastname,      
+                'status'    => "ONLINE",
+                'type'      =>  $userInfo->user_type, 
+                'image'     =>  $userInfo->image(),
+            ];
+
+            $webrtcUserInfo = (object) $webRTC;
+
+        
+            /****************[END] WEBRTC USER INFO***************************** */
+
+
             $reservationData = [
                 'schedule_id'       => $scheduleID,
                 'tutor_id'          => $reserve->tutor_id,
@@ -304,7 +323,7 @@ class TutorWebRTCVideoController extends Controller
                                     ];
 
 
-            return Response::view('modules.webRTC.index', compact('roomID', 'lessonCompleted', 'isLessonStarted', 'isLessonCompleted', 
+            return Response::view('modules.webRTC.index', compact('roomID', 'webrtcUserInfo', 'lessonCompleted', 'isLessonStarted', 'isLessonCompleted', 
                                                             'consecutiveSchedules', 'feedbackCompleted', 'isFolderSelected', 'lessonHistory', 
                                                             'folderID', 'folderURLArray',
                                                             'userInfo', 'recipientInfo', 'reservationData', 'isBroadcaster')

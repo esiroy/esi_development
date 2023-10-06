@@ -204,7 +204,7 @@
 
 
             //register as currently active users can see ONLINE  status
-            this.user = {
+            let user = {
                 channelid: this.channelid,
                 userid: this.member_info.user_id ,
                 nickname: this.user_info.firstname,            
@@ -215,6 +215,8 @@
                 type: this.user_info.user_type, 
                 image:   this.$props.user_image  
             }
+
+            this.user = user;
 
             this.socket.emit('REGISTER', this.user);
 
@@ -426,7 +428,11 @@
                 
             });
 
+            //this.socket.on('LEAVE_SESSION', (userData) => {
             this.socket.on('LEAVE_SESSION', (userData) => {
+
+                console.log("LEAVE_SESSION", userData);
+            
                 let currrentTutor = this.getRecipient();
 
                 if (userData.userid == currrentTutor.userid) {

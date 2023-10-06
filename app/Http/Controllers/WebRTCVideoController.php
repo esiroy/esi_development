@@ -40,9 +40,25 @@ class WebRTCVideoController extends Controller
         if ($reserve) 
         {
 
-             $userInfo =  Auth::user();
+            $userInfo =  Auth::user();
 
+            /****************[START] WEBRTC USER INFO***************************** */
+            $webRTC = [
+                'channelid' =>  $roomID,
+                'userid'    =>  $userInfo->id ,
+                'nickname'  =>  $userInfo->firstname,            
+                'username'  =>  $userInfo->username,     
+                'firstname' =>  $userInfo->firstname,    
+                'lastname'  =>  $userInfo->lastname,      
+                'status'    => "ONLINE",
+                'type'      =>  $userInfo->user_type, 
+                'image'     =>  $userInfo->image(),
+            ];
 
+            $webrtcUserInfo = (object) $webRTC;
+
+            /****************[END] WEBRTC USER INFO***************************** */
+      
             $reservationData = [
                 'schedule_id'       => $reserve->id,
                 'tutor_id'          => $reserve->tutor_id,
@@ -235,7 +251,7 @@ class WebRTCVideoController extends Controller
                                         'duration'  => $consecutiveDuration
                                     ];
 
-            return Response::view('modules.webRTC.index', compact('lessonCompleted', 'isLessonStarted', 'isLessonCompleted', 'consecutiveSchedules', 'feedbackCompleted', 'isFolderSelected', 'lessonHistory', 'roomID', 
+            return Response::view('modules.webRTC.index', compact('webrtcUserInfo', 'lessonCompleted', 'isLessonStarted', 'isLessonCompleted', 'consecutiveSchedules', 'feedbackCompleted', 'isFolderSelected', 'lessonHistory', 'roomID', 
                                                         'folderID', 'folderURLArray', 'userInfo', 'recipientInfo', 'reservationData', 'isBroadcaster'))->header('Accept-Ranges', 'bytes');
 
         } else {

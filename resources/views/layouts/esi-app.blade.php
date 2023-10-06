@@ -283,7 +283,9 @@
 
 
                 @php
-                    $canvas_url = env('APP_CANVAS_SERVER_URL', "https://stagingchatserver.esuccess-inc.com:40001");  
+                    $canvas_url = env('APP_CHATSERVER_URL', "https://stagingchatserver.esuccess-inc.com:40001");  
+
+                    echo $canvas_url;
                 @endphp
        
                 <member-caller-component            

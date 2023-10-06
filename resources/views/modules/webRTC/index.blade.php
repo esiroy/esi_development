@@ -235,9 +235,19 @@
         <script src="{{ url('js/webRTC.js') }}" charset="utf-8" defer></script>
         <script type="text/javascript" defer>
             var roomID = "{{ $roomID }}";
-            var user = "{{ Auth::user()->id }}";
-            var user = { userid: "{{ Auth::user()->id }}", userimage: "testimage" }
             var APP_WEBRTC_SERVER_URL = "{{ env('APP_WEBRTC_SERVER_URL', 'https://rtcserver.esuccess-inc.com:40002') }}";            
+            
+            var user = {
+                'channelid'   : "{{ $webrtcUserInfo->channelid }}",
+                'userid'      : "{{ $webrtcUserInfo->userid }}",
+                'nickname'    : "{{ $webrtcUserInfo->firstname }}",            
+                'username'    : "{{ $webrtcUserInfo->username }}",     
+                'firstname'   : "{{ $webrtcUserInfo->firstname }}",    
+                'lastname'    : "{{ $webrtcUserInfo->lastname }}",      
+                'status'      : "ONLINE",
+                'type'        : "{{ $webrtcUserInfo->type }}", 
+                'image'       : "{{ $webrtcUserInfo->image }}"
+            }            
         </script>
 
         <script type="text/javascript" defer>
