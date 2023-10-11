@@ -245,9 +245,11 @@
 
             this.socket.on('START_SESSION', (response) => {
 
-                //console.log("start session");
+                console.log("start session");
 
                 if (this.$props.is_broadcaster == false) {
+
+                    this.$refs['TutorSessionInvite'].startSupportCountdownTimer();
 
                     if (response.channelid == this.channelid) {
                     
@@ -310,7 +312,7 @@
 
             this.socket.on('CALL_USER', (userData) => {
 
-                //console.log(" [START] =====  CALL_USER ===== ", userData, userData.caller.type);
+                console.log(" [START] =====  CALL_USER ===== ", userData, userData.caller.type);
                 
                 //When you are already on the the lesson and tutor calls during a session, 
                 //the auto acccept and create a pingback
@@ -329,7 +331,8 @@
                         this.socket.emit('ACCEPT_CALL', callData);
                         this.$refs['TutorSessionInvite'].hideCallUserModal();                                            
                         this.$refs['TutorSessionInvite'].hideWaitingListModal(); 
-                        //console.log("CALL_USER", userData.caller.type,  "EMMITTING ACCEPT CALL")
+
+                        console.log("CALL_USER", userData.caller.type,  "EMMITTING ACCEPT CALL")
                     }
                 }            
 
@@ -348,7 +351,7 @@
                         this.$refs['TutorSessionInvite'].hideCallUserModal();                                            
                         this.$refs['TutorSessionInvite'].hideWaitingListModal(); 
 
-                        //console.log("CALL_USER", userData.caller.type, "EMMITTING ACCEPT CALL")
+                        console.log("CALL_USER", userData.caller.type, "EMMITTING ACCEPT CALL")
 
                     }
                 } 
@@ -359,7 +362,7 @@
 
                 if (this.$props.is_broadcaster == true  && userData.type == "MEMBER") {
                  
-                    //console.log("CALL_USER_PINGBACK, RECIEVED FROM :" + userData.type , userData);
+                    console.log("CALL_USER_PINGBACK, RECIEVED FROM :" + userData.type , userData);
 
                     this.socket.emit('JOIN_SESSION_PINGBACK', userData); 
                     this.$refs['TutorSessionInvite'].hideCallUserModal();
@@ -367,7 +370,8 @@
                 }
 
                 if (this.$props.is_broadcaster == false && userData.type == "TUTOR") {
-                    //console.log("CALL_USER_PINGBACK, RECIEVED FROM :" + userData.type , userData);
+
+                    console.log("CALL_USER_PINGBACK, RECIEVED FROM :" + userData.type , userData);
                     this.socket.emit('JOIN_SESSION_PINGBACK', userData);         
                     this.$refs['TutorSessionInvite'].hideCallUserModal(); 
                     this.$refs['TutorSessionInvite'].showWaitingListModal(); 
@@ -406,7 +410,7 @@
             this.socket.on('JOIN_SESSION_PINGBACK', (userData) => {
 
                 if (this.$props.is_broadcaster == true && userData.type == "MEMBER") {
-                    //console.log("JOIN_SESSION_PINGBACK  FROM [" + userData.type + "]", userData);                
+                    console.log("JOIN_SESSION_PINGBACK  FROM [" + userData.type + "]", userData);                
                     this.$refs['TutorSessionInvite'].hideCallUserModal();
                     this.$refs['TutorSessionInvite'].addParticipants(userData);  
                     if (this.isLessonStarted == true) {
@@ -417,7 +421,7 @@
 
               if (this.$props.is_broadcaster == false && userData.type == "TUTOR") {
                     //TUTOR JOINED THE SESSION
-                    //console.log("JOIN_SESSION_PINGBACK FROM [" + userData.type + "]", userData);                
+                    console.log("JOIN_SESSION_PINGBACK FROM [" + userData.type + "]", userData);                
                     this.$refs['TutorSessionInvite'].hideCallUserModal(); 
                     this.$refs['TutorSessionInvite'].addParticipants(userData);
                     this.$refs['TutorSessionInvite'].hideWaitingListModal()
@@ -427,6 +431,7 @@
 
             this.socket.on('LEAVE_CANVAS_SESSION', (userData) => 
             {
+                /*
 
                 console.log(" LEAVE_CANVAS_SESSION ", userData)
                 this.$refs['TutorSessionInvite'].removeParticipants(userData); 
@@ -434,9 +439,14 @@
            
                 this.$refs['TutorSessionInvite'].resetWaitingTimer();
                 this.$refs['TutorSessionInvite'].startWaitingTimer()    
-                
-                this.$refs['TutorSessionInvite'].showWaitingListModal();                    
 
+                this.$refs['TutorSessionInvite'].showWaitingListModal();     
+                */               
+
+                this.$refs['TutorSessionInvite'].resetWaitingTimer();
+                this.$refs['TutorSessionInvite'].startWaitingTimer()    
+                this.$refs['TutorSessionInvite'].showWaitingListModal();     
+                
             });
             
             //this.socket.on('LEAVE_SESSION', (userData) => {
@@ -1013,7 +1023,8 @@
                     if (response.data.success == true) {
                         
                         this.$refs['NavigationMenu'].startTimer();
-                        //console.log("emit start session")
+
+                        console.log("emit start session")
                         this.socket.emit('START_SESSION', this.getSessionData());   
 
                         if (this.isMainTimerStarted == false) {
