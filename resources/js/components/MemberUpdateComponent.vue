@@ -199,6 +199,7 @@
                             <div class="col-8 pr-0 mr-0">
                                 <div class="form-group my-0 pt-2">
                                 
+                                    <!--
                                     <div class="form-group">                                           
                                         <input type="radio" v-model="user.gender" name="gender" :checked="user.gender === 'MALE'" value="MALE" class="" :class="{ 'is-invalid': submitted && $v.user.gender.$error }" />
                                         <label for="gender" class="small col-2 col-xs-2 col-md-1 px-0">Male</label>
@@ -209,6 +210,14 @@
                                         <div v-if="submitted && !$v.user.gender.required" class="invalid-feedback">
                                             Gender is required
                                         </div>
+                                    </div>
+                                    -->
+
+                                    <div class="form-group">                                           
+                                        <input type="radio" v-model="user.gender" name="gender" :checked="user.gender === 'MALE'" value="MALE" class="" />
+                                        <label for="gender" class="small col-2 col-xs-2 col-md-1 px-0">Male</label>
+                                        <input type="radio" v-model="user.gender" name="gender" :checked="user.gender === 'FEMALE'" value="FEMALE" class=""  />
+                                        <label for="gender" class="small col-2 col-xs-2 col-md-1 px-0">Female</label>
                                     </div>
 
                                 </div>
