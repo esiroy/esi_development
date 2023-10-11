@@ -395,11 +395,15 @@
                             </div>
                             <div class="col-8">
                                 <!-- MEMBERSHIP-->
-                                <select name="membership" v-model="user.membership" class="form-control form-control-sm">
+                                <select name="membership" v-model="user.membership" 
+                                    :class="[ 'form-control form-control-sm ', { 'is-invalid': submitted && $v.user.membership.$error }]" >
                                     <option value="">-- Select --</option>
                                     <option v-for="membership in this.memberships" :value="membership.name" :key="membership.id">{{ membership.name }}</option>                                     
                                 </select>
 
+                                <div v-if="submitted && !$v.user.membership.required" class="invalid-feedback" style="display: block">
+                                    membership is required
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -2336,6 +2340,9 @@ export default {
     {
         user: 
         {   
+            membership: {
+                required
+            },
             first_name: { 
                 required                
             },
