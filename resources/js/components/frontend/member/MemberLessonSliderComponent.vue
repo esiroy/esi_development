@@ -406,17 +406,13 @@
             this.socket.on('JOIN_SESSION_PINGBACK', (userData) => {
 
                 if (this.$props.is_broadcaster == true && userData.type == "MEMBER") {
-
-                    //console.log("JOIN_SESSION_PINGBACK  FROM [" + userData.type + "]", userData);
-                
+                    //console.log("JOIN_SESSION_PINGBACK  FROM [" + userData.type + "]", userData);                
                     this.$refs['TutorSessionInvite'].hideCallUserModal();
                     this.$refs['TutorSessionInvite'].addParticipants(userData);  
-
                     if (this.isLessonStarted == true) {
                         //console.log("lesson not started, hide waiting list modal")
                         //this.$refs['TutorSessionInvite'].hideWaitingListModal(); //[this will auto join]
-                    }                   
-                   
+                    }
                 }
 
               if (this.$props.is_broadcaster == false && userData.type == "TUTOR") {
@@ -433,6 +429,13 @@
             {
 
                 console.log(" LEAVE_CANVAS_SESSION ", userData)
+                this.$refs['TutorSessionInvite'].removeParticipants(userData); 
+                this.$refs['TutorSessionInvite'].stopLessonTimer()
+           
+                this.$refs['TutorSessionInvite'].resetWaitingTimer();
+                this.$refs['TutorSessionInvite'].startWaitingTimer()    
+                
+                this.$refs['TutorSessionInvite'].showWaitingListModal();                    
 
             });
             
