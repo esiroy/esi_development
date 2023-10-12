@@ -476,6 +476,22 @@
                     this.$refs['TutorSessionInvite'].startSupportCountdownTimer();
                 }
                 
+
+                if (this.$props.is_broadcaster == true) 
+                {
+
+                    console.log("member left")
+
+                    if (this.isLessonCompleted == false) {
+                        this.$refs['TutorSessionInvite'].removeParticipants(userData); 
+                        this.$refs['TutorSessionInvite'].stopLessonTimer()
+                        this.$refs['TutorSessionInvite'].showWaitingListModal();
+
+                        //waiting timer for tutor to make an "emit" a "redialUser"
+                        this.$refs['TutorSessionInvite'].resetWaitingTimer();
+                        this.$refs['TutorSessionInvite'].startWaitingTimer()   
+                    }
+                }
             });
             
             //this.socket.on('LEAVE_SESSION', (userData) => {
