@@ -208,6 +208,9 @@ function hideByElementId(elementID) {
 }
 
 function removeElementByID(id) {
+
+    console.log("removing element id", id);
+
     let element = document.getElementById(id);
     if (element) {
         element.remove();
@@ -877,6 +880,8 @@ socket.on('userJoined', (data) => {
 
                     if (userStream.getAudioTracks().length == 1 && userStream.getVideoTracks().length == 1) {
 
+                      
+
                         removeElementByID(data.id);
 
                         callerElement = document.createElement('video');
@@ -960,7 +965,9 @@ socket.on('userJoined', (data) => {
 
                         if (userStream.getAudioTracks().length == 1 && userStream.getVideoTracks().length == 1) {
 
-                            //removeElementByID(data.id);
+                            //@new
+                            removeElementByID(data.id);
+                            
                             callerElement = document.createElement('video');
                             callerElement.setAttribute("id", data.id);
                             callerElement.setAttribute("class", "user_joined_peer_call_back");
@@ -1148,7 +1155,7 @@ socket.on('mediaChanged', (data) => {
 
 socket.on('WEBRTC_USER_LEAVE_SESSION', user => {
 
-    console.log("userDisconnected", user);
+    console.log("webRTC userDisconnected", user);
 
     removeElementByID(user.peerid);
     try {

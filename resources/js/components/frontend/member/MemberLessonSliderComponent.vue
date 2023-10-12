@@ -217,6 +217,9 @@
                 chat_type: 'canvas'
             }
 
+
+            console.log(user);
+
             this.user = user;
 
             this.socket.emit('REGISTER', this.user);
@@ -246,6 +249,19 @@
             this.socket.on('START_SESSION', (response) => {
 
                 console.log("start session");
+
+                
+                /* ADDED TO RESET AND STOP TIMERS 
+                this.$refs['TutorSessionInvite'].resetWaitingTimer();
+                this.$refs['TutorSessionInvite'].stopWaitingTimer();
+                this.$refs['TutorSessionInvite'].resetRedialTimer();
+                this.$refs['TutorSessionInvite'].stopRedialTimer();
+                this.$refs['TutorSessionInvite'].resetSupportCountdownTimer();
+                this.$refs['TutorSessionInvite'].stopSupportCountdownTimer();
+                */
+                
+
+
 
                 if (this.$props.is_broadcaster == false) {
 
@@ -429,11 +445,21 @@
                 
             });
 
+
             this.socket.on('LEAVE_CANVAS_SESSION', (userData) => 
             {
-                /*
+                
+                /* ADDED TO RESET AND STOP TIMERS */
+                this.$refs['TutorSessionInvite'].resetWaitingTimer();
+                this.$refs['TutorSessionInvite'].stopWaitingTimer();
+                this.$refs['TutorSessionInvite'].resetRedialTimer();
+                this.$refs['TutorSessionInvite'].stopRedialTimer();
+                this.$refs['TutorSessionInvite'].resetSupportCountdownTimer();
+                this.$refs['TutorSessionInvite'].stopSupportCountdownTimer();
 
-                console.log(" LEAVE_CANVAS_SESSION ", userData)
+                console.log("LEAVE_CANVAS_SESSION ", userData)
+
+                /*
                 this.$refs['TutorSessionInvite'].removeParticipants(userData); 
                 this.$refs['TutorSessionInvite'].stopLessonTimer()
            
@@ -442,10 +468,13 @@
 
                 this.$refs['TutorSessionInvite'].showWaitingListModal();     
                 */               
-
-                this.$refs['TutorSessionInvite'].resetWaitingTimer();
-                this.$refs['TutorSessionInvite'].startWaitingTimer()    
-                this.$refs['TutorSessionInvite'].showWaitingListModal();     
+      
+                if (this.$props.is_broadcaster == false) 
+                {
+                   
+                    this.$refs['TutorSessionInvite'].showDisconnectedTutorModal();     
+                    this.$refs['TutorSessionInvite'].startSupportCountdownTimer();
+                }
                 
             });
             
@@ -455,6 +484,8 @@
             {
 
                 console.log("LEAVE_SESSION", userData);
+
+                /*
             
                 let currrentTutor = this.getRecipient();
 
@@ -501,16 +532,28 @@
                         console.log("member left")
                     }
                 }
+                */
             });
 
 
             this.socket.on("ACCEPT_CALL", (userData) =>  
             {
 
+                this.$refs['TutorSessionInvite'].resetWaitingTimer();
+                this.$refs['TutorSessionInvite'].stopWaitingTimer();
+                this.$refs['TutorSessionInvite'].resetRedialTimer();
+                this.$refs['TutorSessionInvite'].stopRedialTimer();
+                this.$refs['TutorSessionInvite'].resetSupportCountdownTimer();
+                this.$refs['TutorSessionInvite'].stopSupportCountdownTimer();
+
                 if (this.$props.is_broadcaster == false) {
                     console.log("ACCEPT_CALL, (call accepted by member)", userData);
                     this.$refs['TutorSessionInvite'].hideCallUserModal(); 
                     this.$refs['TutorSessionInvite'].hideWaitingListModal(); 
+
+                    //Hide Disconnected Tutor
+                    this.$refs['TutorSessionInvite'].hideDisconnectedTutorModal(); 
+                    
                 } 
 
                 if (this.$props.is_broadcaster == true) { 

@@ -257,7 +257,6 @@
                                              <div class="py-2">Opening Chat Support, please wait... </div>
                                             <b-spinner v-for="variant in variants" :variant="variant" :key="variant"></b-spinner>    
                                         </div>
-
                                     </div>
 
                                     <div class="mt-3" v-else-if="showTechnicalSupportLink == true">
@@ -320,6 +319,32 @@
 
 
    
+        <b-modal id="modal-disconnected" :title="'Teacher Disconnected'" content-class="esi-modal" :header-bg-variant="headerBgVariant" no-close-on-esc no-close-on-backdrop hide-header-close>
+            <div v-if="showTechnicalSupportLink == false"  class="text-primary small text-center">
+                <div v-if="this.supportCountdownTimer >= 1">
+                    <div class="py-2">Technical support will assist you in {{ this.supportCountdownTimer }} when you are not connected</div>
+                    <b-spinner v-for="variant in variants" :variant="variant" :key="variant"></b-spinner>    
+                </div>
+                <div v-else>
+                    <div class="py-2">Opening Chat Support, please wait... </div>
+                    <b-spinner v-for="variant in variants" :variant="variant" :key="variant"></b-spinner>    
+                </div>
+            </div>
+            <div class="mt-3 text-center" v-else-if="showTechnicalSupportLink == true">
+                <b-button pill variant="primary" @click="contactCustomerSupport">
+                    <span class="small">Click here to contact constumer support</span>
+                </b-button>
+            </div>            
+
+            <template #modal-footer>
+
+                <div class="container text-center">
+                    Please wait for your teacher to connect. 
+                </div>
+
+            </template>
+        </b-modal>
+
 
     </div>
    
@@ -430,6 +455,15 @@ export default {
         /***************************************************** 
                 SHOW WAITING MODAL  FOR PARTICIPANTS
         *****************************************************/
+        showDisconnectedTutorModal() {
+            this.showTechnicalSupportLink = false;
+             this.$bvModal.show('modal-disconnected');
+        },
+        hideDisconnectedTutorModal() {
+            this.$bvModal.hide('modal-disconnected');
+        },
+
+
         showWaitingListModal() {         
             this.isLessonTimeStarted = false;  
             this.$bvModal.show('show-modal-participants');
@@ -482,6 +516,7 @@ export default {
             if (this.$props.is_broadcaster == true) {
                 this.waitingInterval = setInterval(() => {
                     this.waitingTimer--;
+                    
                     if (this.waitingTimer < 0) {
                         this.$root.$emit('redialUser', this.participants);   
                         this.resetWaitingTimer();
@@ -512,6 +547,8 @@ export default {
             this.callRedialInterval = setInterval(() => 
             {
                 this.redialTimer--;
+
+                console.log("redial timer ", this.redialTimer)
 
                 if (this.redialTimer < 0) {
 
@@ -545,6 +582,9 @@ export default {
             this.startRedialTimer();
         },
         hideCallUserModal() {
+
+            console.log("hiding call user modal");
+
             this.$bvModal.hide('modal-call-user');  
             this.resetRedialTimer();   
             this.stopRedialTimer();        
@@ -647,23 +687,25 @@ export default {
         *****************************************************/
         startSupportCountdownTimer() {
         
-            this.stopSupportCountdownTimer();
-            this.resetSupportCountdownTimer();
-
-            this.showTechnicalSupportLink = false;
+            //this.stopSupportCountdownTimer();
+            //this.resetSupportCountdownTimer();
 
             if (this.isSupportTimerStarted == false) {
                 this.isSupportTimerStarted = true;
             } else {
-            
+                 this.isSupportTimerStarted = false;
             }
 
             if (this.isSupportTimerStarted == true) {
                 this.supportTimerInterval = setInterval(()=> {
                     this.supportCountdownTimer --;  
+
+                    console.log(this.supportCountdownTimer);
+
                     if (this.supportCountdownTimer < 0) {  
                         //@todo: trigger customer support module
-                        this.stopSupportCountdownTimer();
+                        //this.stopSupportCountdownTimer();                        
+                        clearInterval(this.supportTimerInterval); 
                         this.showTechnicalSupportLink = true;
                     }
                 }, this.timerSpeed);  
