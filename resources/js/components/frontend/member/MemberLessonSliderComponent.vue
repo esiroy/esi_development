@@ -688,7 +688,7 @@
             });
             
 
-            this.$root.$on('triggerFloatinChatBox', (params) => {
+            this.$root.$on('triggerFloatingChatBox', (params) => {
                 this.openFloatingChatBox();
             });
 
@@ -1357,6 +1357,9 @@
                 this.postLessonStartHistory(this.reservation, params);
             },            
             openFloatingChatBox() {
+
+                this.$refs['TutorSessionInvite'].hideWaitingListModal()
+
                 this.$refs['memberFloatingChat'].openFloatingChatIcon()
                 this.$refs['memberFloatingChat'].openChatBox();
             },

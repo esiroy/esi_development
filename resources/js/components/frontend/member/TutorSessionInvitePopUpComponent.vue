@@ -471,7 +471,7 @@ export default {
         hideWaitingListModal() {   
           this.isLessonTimeStarted = false;
           this.startLessonStartTimer();    
-            //this.$bvModal.hide('show-modal-participants');            
+            this.$bvModal.hide('show-modal-participants');            
             
         },
 
@@ -680,6 +680,8 @@ export default {
         
         contactCustomerSupport() {
             this.$root.$emit('openCustomerSupport');
+
+            this.$root.$emit('triggerFloatingChatBox');
         },
         
         /***************************************************** 

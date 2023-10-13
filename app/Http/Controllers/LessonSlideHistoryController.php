@@ -171,7 +171,16 @@ class LessonSlideHistoryController extends Controller
                                 ->where('lesson_chat_history.lesson_id', $lessonHistoryID )                              
                                 ->leftJoin('users', 'users.id', '=', 'lesson_chat_history.sender_id')
                                 ->leftJoin('members', 'members.user_id', '=', 'lesson_chat_history.sender_id')
-                                ->orderby('lesson_chat_history.id', "DESC")->get();
+                                //->orderby('lesson_chat_history.id', "ASC")
+                                ->orderby('lesson_chat_history.created_at', "ASC")
+                                ->get();
+
+
+
+  
+
+
+
 
             $latestReportCard = $reportcards->getLatest($reserve->member_id);
 
