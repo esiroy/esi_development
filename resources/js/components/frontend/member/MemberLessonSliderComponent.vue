@@ -279,7 +279,7 @@
                             }
                         
                         } else {                    
-                            //end a session for all 
+                            
                             //console.log("TEACHER STARTED A SESSION FOR ALL USERS", response);
                         } 
                     } else {
@@ -287,8 +287,11 @@
                     }
 
                 } else if (this.$props.is_broadcaster == true) {
-                
-                    //console.log("TEACHER ENDED OWN SESSION", response);
+
+                    console.log("TEACHER START SESSION", response);
+                    
+                    this.$refs['TutorSessionInvite'].hideWaitingListModal()
+                    
                 }
             }); 
 
@@ -472,8 +475,10 @@
                 if (this.$props.is_broadcaster == false) 
                 {
                    
-                    this.$refs['TutorSessionInvite'].showDisconnectedTutorModal();     
-                    this.$refs['TutorSessionInvite'].startSupportCountdownTimer();
+                    if (this.isLessonCompleted == false) {
+                        this.$refs['TutorSessionInvite'].showDisconnectedTutorModal();     
+                        this.$refs['TutorSessionInvite'].startSupportCountdownTimer();
+                    } 
                 }
                 
 

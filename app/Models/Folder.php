@@ -760,12 +760,14 @@ class Folder extends Model
             $currentFolder = $this->getFirstRootFolder(); 
         }
 
+       
+
+    
+
         //check if currentFolder is found, if the previous was deleted the folder so we can reference it
-        if (!$currentFolder) {
-            
+        if (!$currentFolder) {            
             //we will go back to first folder
-            $currentFolder = $this->getFirstRootFolder();
-            
+            $currentFolder = $this->getFirstRootFolder();            
         }
 
         //check all the subfolders first for the current folder for the first lesson
@@ -784,6 +786,8 @@ class Folder extends Model
             return $folderID;
         }
 
+        return null;
+        
         //We need to flatten the array since we can't find it using conventional search
         $flattenedArray  = $this->flattenFolderStructureWithFiles();
         $next =  $this->findNextIDWithFiles($flattenedArray, $currentFolder->id);
@@ -966,6 +970,11 @@ class Folder extends Model
 
     function findNextFolderWithFiles($currentFolder, $autoNextFolder = true) {
 
+        if (!isset($currentFolder->parent_id)) {
+            return null;
+        }
+        
+        
         // Search for the next folder with files at this level
         $query = Folder::where('parent_id', $currentFolder->parent_id)
                     ->where('privacy', 'public')
@@ -1002,6 +1011,12 @@ class Folder extends Model
 
     // Define a recursive function to find the next folder with files
     public function findNextSubFolderWithFiles($currentFolder) {
+
+        if (!isset($currentFolder->id)) {
+            return null;
+        }
+
+
         // Search for the next folder with files in subfolders
         $subfolders = Folder::where('parent_id', $currentFolder->id)
             ->orderBy('order_id', 'ASC')

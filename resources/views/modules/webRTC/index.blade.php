@@ -9,8 +9,6 @@
             $memberProfileImage = Storage::url("$userImage->original");
         }
     @endphp 
-    
-    
 
     <div id="slide-component">
 
@@ -231,11 +229,11 @@
     @if ($lessonCompleted == false)
  
         <script src="https://unpkg.com/peerjs@1.3.1/dist/peerjs.min.js" defer></script>
-        <script src="https://rtcserver.esuccess-inc.com:40002/socket.io/socket.io.js" defer></script>
+        <script src="{{ env('APP_WEBRTC_SERVER_URL', 'https://rtcserver.esuccess-inc.com:40002') }}/socket.io/socket.io.js" defer></script>
         <script src="{{ url('js/webRTC.js') }}" charset="utf-8" defer></script>
         <script type="text/javascript" defer>
             var roomID = "{{ $roomID }}";
-            var APP_WEBRTC_SERVER_URL = "{{ env('APP_WEBRTC_SERVER_URL', 'https://rtcserver.esuccess-inc.com:40002') }}";            
+            var APP_WEBRTC_SERVER_URL = "{{ env('APP_WEBRTC_SERVER_URL') }}";            
             
             var user = {
                 'channelid'   : "{{ $webrtcUserInfo->channelid }}",

@@ -1,4 +1,4 @@
-@extends('layouts.admin')
+@extends('layouts.adminsimple')
 
 @section('content')
 <div class="container bg-light px-0">
