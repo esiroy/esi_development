@@ -720,6 +720,7 @@ export default {
                     ** @todo: Start Support Countdown For members only 
                     **/
                     this.resetSupportCountdownTimer();
+                    this.stopSupportCountdownTimer();
                     this.startSupportCountdownTimer();
 
                     this.$forceUpdate();

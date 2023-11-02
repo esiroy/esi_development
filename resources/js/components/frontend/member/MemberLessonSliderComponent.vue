@@ -460,6 +460,8 @@
                         //{
 
                         if (this.isLessonCompleted == false) {
+
+                            /*
                             this.$refs['TutorSessionInvite'].removeParticipants(userData); 
                             this.$refs['TutorSessionInvite'].stopLessonTimer()
                             this.$refs['TutorSessionInvite'].showWaitingListModal();
@@ -467,6 +469,12 @@
                             //waiting timer for tutor to make an "emit" a "redialUser"
                             this.$refs['TutorSessionInvite'].resetWaitingTimer();
                             this.$refs['TutorSessionInvite'].startWaitingTimer()   
+                            */
+
+                            this.$refs['TutorSessionInvite'].removeParticipants(userData);  
+                            this.$refs['TutorSessionInvite'].startWaitingTimer();
+                            
+                            this.$refs['TutorSessionInvite'].showWaitingListModal();
                         }
 
                         console.log("member left")
