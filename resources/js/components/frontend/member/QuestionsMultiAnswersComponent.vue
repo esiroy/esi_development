@@ -54,15 +54,17 @@
                 <!-- BUTTON TO START -->
                 <div v-show="this.started == false" class="my-4">
 
-                    <div v-if="is_member_credit_expired == true" class="font-weight-bold">
-                        <span class="text-danger">
-                            Note: Member Credit has expired, please add credits to proceed.
-                        </span>
-                    </div> 
-                    <div v-if="memberinfo['attribute'] == 'TRIAL'" class="font-weight-bold">
-                        <span class="text-danger">
-                            Note: You are on a trial membership, Please upgrade to paid Membership to access minitest
-                        </span>                        
+                    <div v-if="is_member_credit_expired == true || memberinfo['attribute'] == 'TRIAL'">
+                        <div v-if="is_member_credit_expired == true" class="font-weight-bold">
+                            <span class="text-danger">
+                                Note: Member Credit has expired, please add credits to proceed.
+                            </span>
+                        </div> 
+                        <div v-if="memberinfo['attribute'] == 'TRIAL'" class="font-weight-bold">
+                            <span class="text-danger">
+                                Note: You are on a trial membership, Please upgrade to paid Membership to access minitest
+                            </span>                        
+                        </div>
                     </div>
                     <div v-else>                    
                         <button v-on:click="start()" class="btn btn-success" >
