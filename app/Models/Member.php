@@ -6,12 +6,25 @@ use Illuminate\Database\Eloquent\Model;
 use App\Models\MemberAttribute;
 use App\Models\ScheduleItem;
 use Auth;
+use Illuminate\Support\Facades\Storage;
 
 class Member extends Model
 {
     public $table = 'members';
 
     protected $guarded = array('created_at', 'updated_at');
+
+    public function getActiveMembers() {
+    
+       $members = $this->join('users', 'users.id', '=', 'members.user_id')
+       ->orderBy('lastname', 'ASC')
+       ->select('members.*', 'users.firstname', 'users.lastname', 'users.valid')
+       ->where('users.is_activated', true)
+       ->where('users.valid', 1)
+       ->get();
+
+       return $members;    
+    }
 
     public function user() 
     {
@@ -194,5 +207,18 @@ class Member extends Model
             return false;
         }
     }
+
+
+    public function image() 
+    {        
+        $userImage = UserImage::where('user_id', $this->user_id)->where('valid', 1)->first();
+
+        if ($userImage) {
+            return  Storage::url($userImage['original']);
+        } else {
+            return null;
+        }       
+     
+    }      
 
 }

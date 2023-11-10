@@ -216,24 +216,56 @@
 
            
 
+                        <div class="form-group row mt-0 mb-0">
+
+                            <label class="col-md-4 col-form-label text-md-right mt-0 pt-0 py-4 offset-md-1 border-top border-left">                               
+                                <div class="font-weight-bold">
+                                    利用通信ソフト
+                                </div>
+                                <div class="font-weight-bold">
+                                    (Mytutorオリジナル通信アプリ)
+                                </div>
+                            </label>
+
+                            <div class="col-md-6 border-left border-top border-right py-4">
+                                <table width="100%">
+                                    <tbody>
+                                    <tr>             
+                                        <td style="width:100px;text-align:center">
+                                            <img style="width:120px;text-align:center" title="My-Room" src="images/myroom_logo.png">
+                                            <!--<h5>My-Room</h5>-->
+                                        </td>                                        
+                                    </tr>                                    
+                                    </tbody>
+                                </table>                                 
+                            </div>
+                        </div>           
+
                         <div class="form-group row mt-0 mb-0">                        
                             <label for="communication_app" class="col-md-4 col-form-label text-md-right mt-0 pt-5 py-4 offset-md-1 border-top border-left">
-                                <span class="font-weight-bold">
-                                    Skype または　ZOOM どちらか一つを選び、登録してください<br>
-                                    <a target="_blank" style="color:#0000EE;text-decoration: underline;" href="https://www.mytutor-jpn.com/info/2019/0327165712.html">＊登録したIDはマイページからご確認いただけます。</a>                                  
-                                </span>
+                                <div class="font-weight-bold mb-2">バックアップ通信ソフトを選択してください</div>
+                                <div class="font-weight-bold">
+                                    Skype または　ZOOM どちらか一つを選び、登録してください
+                                </div>
+                                <div class="font-weight-bold">
+                                    <a target="_blank" style="color:#0000EE;text-decoration: underline;" href="https://www.mytutor-jpn.com/info/2019/0327165712.html">
+                                        (バックアップ通信ソフトとは)
+                                    </a>
+                                </div>
                             </label>
 
                             <div class="col-md-6 border-left border-top border-right py-4">
                                 <table width="100%">
                                     <tbody>
                                     <tr>
+                                                                  
                                         <td style="width:100px;text-align:center"><img style="width:100px;text-align:center" title="skype" src="images/skype.jpg"><h5>Skype</h5></td>
                                         <td style="width:100px;text-align:center"><img style="width:100px;text-align:center" title="zoom" src="images/zoom_logo.jpg"><h5>Zoom</h5></td>
                                     </tr>
                                     <tr>
+                             
                                         <td style="width:100px;text-align:center">
-                                            <input checked="checked" type="radio" name="commApp" value="skype" id="skypeBtn" onclick="chooseApp('skype_image.jpg','skype','Skype','名');">
+                                            <input   checked="checked" type="radio" name="commApp" value="skype" id="skypeBtn" onclick="chooseApp('skype_image.jpg','skype','Skype','名');">
                                         </td>
                                         <td style="width:100px;text-align:center">
                                             <input type="radio" name="commApp" id="zoomBtn" value="zoom" onclick="chooseApp('zoom.jpg','zoom','Zoom','メールアドレス');">
@@ -318,11 +350,12 @@
 <script type="text/javascript">    
     window.addEventListener('load', function () {
          chooseApp('skype_image.jpg','skype','Skype','名');
+         //chooseApp('mytutor-logo-skype.jpg','mytutor','myTutor','私の家庭教師')
     });        
 
    
 
-    function chooseApp(fileName,nameValue,commAppName,additionalText){
+    function chooseApp(fileName, nameValue, commAppName, additionalText){
 
         //$("#communication_app_username").attr('name', '' + nameValue);
 

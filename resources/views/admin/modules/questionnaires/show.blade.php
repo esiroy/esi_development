@@ -1,6 +1,7 @@
 @extends('layouts.admin')
 
 @section('content')
+
 <div class="container bg-light px-0">
 
     <div class="bg-lightblue2">
@@ -26,71 +27,108 @@
 
 
         <div class="container">
-            <!--[start card] -->
-            <div class="card esi-card">
-                <div class="card-header esi-card-header">
-                    Questionnaire
-                </div>
-                <div class="card-body">
 
-                    <div class="row">
-                        <div class="col-md-3">
 
-                            <table>
-                                <tbody>
-                                    <tr>
-                                        <td colspan="7">
-                                            @if ($userImage == null)
-                                            <img src="{{ Storage::url('user_images/noimage.jpg') }}" class="img-fluid border" alt="no photo uploaded">
-                                            @else
-                                            <img src="{{ Storage::url("$userImage->original") }}" class="img-fluid border" alt="profile photo">
-                                            @endif
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td>Tutor</td>
-                                        <td>:</td>
-                                        <td colspan="5">
-                                            {{ $tutor->user->firstname ?? '' }} {{ $tutor->user->lastname ?? '' }}
-                                        </td>
-                                    </tr>
+            <div class="row">
 
-                                    <tr>
-                                        <td>Gender</td>
-                                        <td>:</td>
-                                        <td>
-                                            @if (strtolower($member->gender) == 'male')
-                                                {{ '男' }}
-                                            @elseif (strtolower($member->gender) == 'female')
-                                                {{ '女' }}
-                                            @else 
-                                                {{ '-'}}
-                                            @endif                                            
-                                        </td>
-                                        <td colspan="4"></td>
-                                    </tr>
-                                    <tr>
-                                        <td>Lesson Date</td>
-                                        <td>:</td>
-                                        <td colspan="5">
-                                           {{  $scheduleItem->lesson_time ?? '' }}
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td>Member</td>
-                                        <td>:</td>
-                                        <td colspan="5">
-                                            {{ $member->user->firstname ?? '' }}
-                                            {{ $member->user->lastname ?? '' }}
-                                        </td>
+                <!--[left column cards] -->
+                <div class="col-md-4">
+                    <div class="card esi-card">
+                        <div class="card-header esi-card-header small">
+                            Member Profile
+                        </div>                            
+                        <div class="text-center">
+                            @if ($userImage == null)
+                            <img src="{{ Storage::url('user_images/noimage.jpg') }}" class="img-fluid border" alt="no photo uploaded">
+                            @else
+                            <img src="{{ Storage::url("$userImage->original") }}" class="img-fluid border" alt="profile photo">
+                            @endif
+                        </div>
+                    </div>
 
-                                    </tr>
-                                </tbody>
-                            </table>
+                    <div class="card esi-card mt-2">
+                        <div class="card-header esi-card-header small">
+                            Lesson Information
+                        </div>
+                        <div class="card-body">
+
+                            <div class="row">
+
+                                <div class="col-md-12 small">  
+                                    Member Name: 
+                                    <span class="font-weight-bold">
+                                        {{ $member->user->firstname ?? '' }}
+                                        {{ $member->user->lastname ?? '' }}
+                                    </span>
+                                </div>
+
+                                <div class="col-md-12 small">  
+                                    Tutor: 
+                                    <span class="font-weight-bold">
+                                    {{ $tutor->user->firstname ?? '' }} {{ $tutor->user->lastname ?? '' }}
+                                    </span>
+                                </div>
+
+                                <div class="col-md-12 small">  
+                                    Gender: 
+                                    <span class="font-weight-bold">
+                                    @if (strtolower($member->gender) == 'male')
+                                        {{ '男' }}
+                                    @elseif (strtolower($member->gender) == 'female')
+                                        {{ '女' }}
+                                    @else 
+                                        {{ '-'}}
+                                    @endif
+                                    </span>                                           
+                                </div>
+
+                                <div class="col-md-12 small">  
+                                    Lesson Duration: 
+                                    <!-- {{  $scheduleItem->lesson_time ?? '' }} -->
+
+                                    <span class="font-weight-bold">
+                                        {{ ESIDateTimeFormat($lessonTimeDuration->startTime) }}
+                                    </span>
+                                        - 
+                                    <span class="font-weight-bold">
+                                    {{ date('H:i:s',strtotime($lessonTimeDuration->endTime)) }}                                                                                 
+                                    </span>
+                                </div>
+
+                            </div>
+
 
                         </div>
+                    </div>
+                </div>
+                <!--[[end] left column cards] -->
 
-                        <div id="questionnaire-content" class="col-md-4">
+                <!--[start Questionnaire card] -->
+                <div class="col-md-8">
+
+                    <div class="card esi-card">
+                        <div class="card-header esi-card-header">
+                            Questionnaire
+                        </div>
+                        <div class="card-body">
+
+                    
+
+                            @if ($isMerged == true)
+                            
+                                <div class="border border-danger rounded p-3">    
+
+                                    <span class="text-danger">
+                                        Note: Lesson is a consecutive lesson linked to questionnaire #{{$parentHistoryID}}
+                                    </span>
+
+                                    <div>
+                                    <a href="{{ url('admin/questionnaires/'.$parentHistoryID) }}">Click this link to view first lesson #{{$parentHistoryID}}</a>
+                                    </div>
+                                </div>
+                                            
+                            @endif
+
                             
                             <p>Questionnaire:</p>
 
@@ -181,13 +219,18 @@
                                 </tbody>
                             </table>
 
+                               
+
                         </div>
-
                     </div>
-
                 </div>
+                <!--[end Questionnaire card] -->
+
             </div>
-            <!--[end] card-->
+            
+
+
+
 
 
         </div>

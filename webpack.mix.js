@@ -45,22 +45,29 @@ mix.js(
         ],
         "public/js/admin.js"
     )
+    .js(
+        [
+            "resources/js/webRTC.js"
+        ],
+        "public/js/webRTC.js"
+    )
     .copy("resources/js/jquery/*.*", "public/js/jquery/")
     .copy("resources/images/*.*", "public/images/")
     .copy("resources/mp3/*.*", "public/mp3/")
     .copyDirectory("resources/js/ckeditor", "public/js/ckeditor")
+    .copyDirectory("resources/js/ckeditor_4", "public/js/ckeditor_4/")
     .copy("resources/js/dropzone/*.*", "public/js/dropzone/")
     .copy("resources/js/steps/*.*", "public/js/steps/")
     .copy("resources/js/validation/*.*", "public/js/validation/")
-
     .copy("resources/sass/jquery/*.*", "public/css/jquery/")
-    .copy("resources/sass/jquery/images/*.*", "public/css/jquery/images/")    
+    .copy("resources/sass/jquery/images/*.*", "public/css/jquery/images/")
     .copy("resources/sass/croppie/croppie.css", "public/css/croppie.css")
     .copy('node_modules/@fortawesome/fontawesome-free/webfonts', 'public/webfonts')
     .copy("resources/sass/dropzone/dropzone.min.css", "public/css/dropzone/dropzone.min.css")
     .sass("resources/sass/app.scss", "public/css/app.css")
     .sass("resources/sass/admin.scss", "public/css/admin.css")
     .sass("resources/sass/steps/steps.scss", "public/css/steps/steps.css")
+    .sass("resources/sass/lessonslider.scss", "public/css/lessonslider.css")
     .version()
     .options({
         processCssUrls: false

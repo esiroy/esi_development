@@ -219,9 +219,10 @@ class SignUpController extends Controller
                 'communication_app' => ucfirst($request['commApp']),
                 'skype_account' => $skype_account,
                 'zoom_account' => $zoom_account,
+                'is_myroom_enabled' => true,
                 'membership' => "Point Balance",
                 'member_since' => date('Y-m-d'),
-                "gender" => "null",
+                "gender" => null,
                 'credits_expiration' =>  $expiry_date,
 
                 //"birthday" => "null",

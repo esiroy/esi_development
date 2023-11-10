@@ -102,7 +102,10 @@
                                         <td>:</td>
                                         
                                         <td>
-                                            @if (strtolower($memberInfo->communication_app) == "skype") 
+                                            @if (strtolower($memberInfo->communication_app) == "mytutor") 
+                                                <span style="font-size:20px; color: {{ $color }}"><strong> MyTutor (Web Chat) </strong></span>
+
+                                            @elseif (strtolower($memberInfo->communication_app) == "skype") 
                                                 <span style="font-size:20px; color: {{ $color }}"><strong>{{ $memberInfo->skype_account ?? "-" }}</strong></span>
                                             @else
                                                 <span style="font-size:20px; color: {{ $color }}"><strong>{{ $memberInfo->zoom_account ?? "-" }}</strong></span>
@@ -362,7 +365,7 @@
                                                         </div>
 
                                                             <div class="small">
-                                                            Instruction : {{ $homework->instruction ?? '' }}
+                                                            Instruction : <span id="home-instruction">{!! $homework->instruction ?? '' !!}</span>
                                                         </div>
                                                         @else
                                                             <div class="text-center">

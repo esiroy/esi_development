@@ -42,8 +42,11 @@ Route::middleware('auth:api')->post('/share_file', 'API\FolderController@shareFi
 Route::middleware('auth:api')->post('/move_into_parent', 'API\FolderController@moveIntoParent')->name('APIMoveIntoParentFolder');
 Route::middleware('auth:api')->post('/reorder_items', 'API\FolderController@reorderSiblingFolders')->name('APIReorderSiblingFolders');
 Route::middleware('auth:api')->post('/delete_folder', 'API\FolderController@deleteFolder')->name('APIDeleteFolders');
-Route::post('/get_child_folders', 'API\FolderController@getChildFolders')->name('APIGetPublicFolders');
-Route::post('/get_public_folder_files', 'API\FolderController@getPublicFiles')->name('APIGetPublicFolderFiles');
+Route::middleware('auth:api')->post('/get_child_folders', 'API\FolderController@getChildFolders')->name('APIGetPublicFolders');
+Route::middleware('auth:api')->post('/get_public_folder_files', 'API\FolderController@getPublicFiles')->name('APIGetPublicFolderFiles');
+Route::middleware('auth:api')->post('/updateFolderThumbDetails', 'API\FolderController@updateFolderThumbDetails')->name('APIUpdateFolderThumbDetails');
+
+
 
 //[start] My Page Scheduler
 Route::middleware('auth:api')->post('/get_tutors', 'API\TutorController@getTutors')->name('APIGetTutors');
@@ -247,3 +250,90 @@ Route::middleware('auth:api')->post('/createAdminMergedAccount', 'API\MergeAccou
 //miniTest Results
 Route::middleware('auth:api')->post('/getMemberMiniTestResult', 'API\MemberMiniTestResultController@get')->name('APIGetMemberMiniTestResults');
 Route::middleware('auth:api')->post('/deleteMemberMiniTestResult/{id}', 'API\MemberMiniTestResultController@destroy')->name('APIDeleteMemberMiniTestResults');
+
+//Lesson Slide Pre-selected
+Route::middleware('auth:api')->post('/getMemberLessonSelected', 'API\LessonSlideMaterials@getMemberLessonSelected')->name('APIGetLessonMaterialSelected');
+Route::middleware('auth:api')->post('/updateSelectedLesson', 'API\LessonSlideMaterials@updateSelectedLesson')->name('APIUpdateSelectedSlidesFolder');
+
+//Lesson Selected 
+Route::middleware('auth:api')->post('/saveSelectedLessonSlideMaterial', 'API\LessonSlideMaterials@saveSelectedLessonSlideMaterial')->name('APISaveSelectedLessonSlideMaterial');
+
+//lesson slide materials
+Route::middleware('auth:api')->post('/getLessonMaterialSlides', 'API\LessonSlideMaterials@getLessonMaterialSlidesAutoNextFolder')->name('APIGetLessonMaterialSlides');
+Route::middleware('auth:api')->post('/getLessonSlideMaterialList', 'API\LessonSlideMaterials@getLessonSlideMaterialList')->name('APIGetLessonSlideMaterialList'); //Folder Listings
+
+
+Route::middleware('auth:api')->post('/getLessonSlideMaterialList', 'API\LessonSlideMaterials@getLessonSlideMaterialList')->name('APIGetLessonSlideMaterialList'); //Folder Listings
+
+//Save Lesson Materials Custom Slides
+Route::middleware('auth:api')->post('/saveEmptyCustomSlide', 'API\LessonSlideMaterials@saveEmptyCustomSlide')->name('APIsaveEmptyCustomSlide');
+
+//lesson slide preview (NEW)
+Route::middleware('auth:api')->post('/getLessonSelectedPreview', 'API\LessonSlideMaterials@getLessonSelectedPreview')->name('APIGetLessonSelectedPreview');
+
+
+//Save Lesson Slides
+Route::middleware('auth:api')->post('/saveLessonSlideHistory', 'API\LessonHistoryController@saveLessonSlideHistory')->name('APISaveLessonSlideHistory');
+
+
+//Lesson History Controller
+Route::middleware('auth:api')->post('/checkSessionValidity', 'API\LessonHistoryController@postLessonStartHistory')->name('APICheckSessionValidity');
+Route::middleware('auth:api')->post('/postLessonStartHistory', 'API\LessonHistoryController@postLessonStartHistory')->name('APIPostLessonStartHistory');
+Route::middleware('auth:api')->post('/startLesson', 'API\LessonHistoryController@startLesson')->name('APIStartLesson');
+Route::middleware('auth:api')->post('/postLessonEndHistory', 'API\LessonHistoryController@postLessonEndHistory')->name('APIpostLessonEndHistory');
+Route::middleware('auth:api')->post('/postLessonAbsentHistory', 'API\LessonHistoryController@postLessonAbsentHistory')->name('APIpostLessonAbsentHistory');
+Route::middleware('auth:api')->post('/getUnratedLessons', 'API\LessonHistoryController@getUnratedLessons')->name('APIGetUnratedLessons');
+Route::middleware('auth:api')->post('/setLessonRating', 'API\LessonHistoryController@setLessonRating')->name('APIsetLessonRating');
+
+//[NEW Sept 6, 2023] Add the batch numbering system
+Route::middleware('auth:api')->post('/getLessonBatchNumber', 'API\LessonHistoryController@getLessonBatchNumber')->name('APIGetLessonBatchNumber');
+Route::middleware('auth:api')->post('/updateLessonBatchNumber', 'API\LessonHistoryController@updateLessonBatchNumber')->name('APIUpdateLessonBatchNumber');
+
+
+//[new] Limit Override (we will call start lesson directly)
+Route::middleware('auth:api')->post('/LessonLimitOverride', 'API\LessonHistoryController@startLesson')->name('APILessonLimitOverride');
+
+//File Manager
+Route::middleware('auth:api')->post('saveFileNotes', 'API\FileManagerController@saveFileNotes');
+
+//File Upload
+Route::middleware('auth:api')->delete('deleteAudio', 'FileUploadController@deleteAudio');
+
+//File Ordering
+Route::middleware('auth:api')->post('/saveFileOrder', 'API\FileController@saveFileOrder')->name('saveFileOrder');
+
+
+//Member Satisfaction Survey
+Route::middleware('auth:api')->post('/postSatisfactionSurvey', 'API\MemberSatisfactionSurveyController@postSatisfactionSurvey')->name('APIPostSatisfactionSurvey');
+
+//Tutor Feeback to Member
+Route::middleware('auth:api')->post('/postMemberFeedback', 'API\MemberFeedbackController@postMemberFeedback')->name('APIMemberFeedback');
+Route::middleware('auth:api')->post('/testConsecutiveLesson', 'API\MemberFeedbackController@testConsecutiveLesson')->name('APITestConsecutiveLesson');
+
+
+//Lesson Slider Chatroom
+Route::middleware('auth:api')->post('/getLessonChathistory', 'API\lessonChatController@getLessonChatHistory')->name('APIGetLessonChathistory');
+Route::middleware('auth:api')->post('/saveLessonChat', 'API\lessonChatController@saveLessonChat')->name('APIsaveLessonChat');
+Route::middleware('auth:api')->post('/markLessonChatMessagesRead', 'API\lessonChatController@markLessonChatMessagesRead')->name('APIMarkLessonChatMessagesRead');
+
+
+//(2023) New Lesson Folder parent thumbnail viewer
+Route::middleware('auth:api')->post('/getLessonFolders', 'API\LessonFolderController@getLessonFolders')->name('APIGetLessonFolders');
+Route::middleware('auth:api')->post('/getLessonList', 'API\LessonFolderController@getLessonList')->name('APIGetLessonList');
+Route::middleware('auth:api')->post('/searchFolders', 'API\LessonFolderController@searchFolders')->name('APISearchFolders');
+
+//Get lesson Images
+Route::middleware('auth:api')->post('/getLessonImages', 'API\LessonFolderController@getLessonImages')->name('APIGetLessonImages');
+
+//Homeworks
+Route::middleware('auth:api')->post('/uploader/uploadHomework', 'API\HomeworkController@uploadHomework')->name('APIuploadHomework');
+Route::middleware('auth:api')->post('/uploader/updateHomeworkInstruction', 'API\HomeworkController@updateHomeworkInstruction')->name('APIUpdateHomeworkInstruction');
+
+
+//Folder Thumbnial
+Route::middleware('auth:api')->post('/uploader/uploadFolderThumbnail', 'API\FolderController@uploadFolderThumbnail')->name('APIuploadFolderThumbnail');
+
+//Update Main Communicaton
+Route::middleware('auth:api')->post('/isMemberValidToUpdate', 'API\MemberController@isMemberValidToUpdate')->name('APIMemberValidToUpdate');
+Route::middleware('auth:api')->post('/updateMainComm', 'API\MemberController@updateMainComm')->name('APIupdateMainComm');
+Route::middleware('auth:api')->post('/updateBackupComm', 'API\MemberController@updateBackupComm')->name('APIupdateBackupComm');

@@ -12,12 +12,16 @@ use Illuminate\Support\Facades\Route;
 | contains the "web" middleware group. Now create something great!
 |
 */
+Route::resource('lesson_slides', 'LessonSlidesController');
 
-
-
+Route::get('/test-form', 'dummyController@testform');
+Route::post('/process-form', 'dummyController@processForm')->name('process-form');
 
 Route::get('test_writing_tutor_reply', 'dummyController@test_writing_tutor_reply');
+
+Route::get('latestReportCard', 'dummyController@latestReportCard');
 Route::get('test', 'dummyController@index');
+Route::get('phpinfo', 'dummyController@phpinfo');
 Route::get('component_test', 'dummyController@component_test');
 
 Route::resource('minitest', 'MemberMiniTestController');
@@ -215,11 +219,13 @@ Route::get('/userreportcarddate/{id}', 'LessonRecordController@userreportcarddat
 Route::resource('/questionnaire', 'Members\QuestionnaireController');
 
 
+Route::resource('/lessonslidehistory', 'LessonSlideHistoryController');
+
 /* Public Folder View */
 //Route::get("folder/{path}", "PublicFolderController@show")->where('path', '.+');
 
 /*File Controller*/
-//Route::resource('file', 'FileController');
+Route::resource('file', 'FileController');
 
 
 /* Folder Manager Controllers */
@@ -227,8 +233,14 @@ Route::resource('/questionnaire', 'Members\QuestionnaireController');
 
 /*Upload Controller, Customer Support Upload Controller   */
 Route::post('uploader/fileUploader', 'FileUploadController@upload');
-
 Route::post('upload/tutor/file', 'FileUploadController@tutorUpload');
+Route::post('uploader/uploadLessonSlideMaterials', 'FileUploadController@uploadLessonSlideMaterials');
+Route::post('uploader/uploadAudio', 'FileUploadController@uploadAudio');
+
+//Tutor Upload Custom Slides
+Route::post('uploader/uploadTutorLessonSlides', 'FileUploadController@uploadTutorLessonSlides');
+
+
 
 
 /* Download Controller*/
@@ -266,6 +278,11 @@ Route::get('writing/success', 'Writing\WritingController@success')->name('writin
 
 
 
+Route::middleware('auth')->resource('webRTC', 'WebRTCVideoController');
+
+
+
+
 
 /* Admin Panel */
 Route::group(['prefix' => 'admin', 'namespace' => 'Admin', 'as' => 'admin.'], function() {
@@ -285,6 +302,7 @@ Route::group(['prefix' => 'admin', 'namespace' => 'Admin', 'as' => 'admin.'], fu
     Route::group(['middleware' => 'admin.auth'], function()
     {
 
+        Route::resource('webRTC', 'Modules\TutorWebRTCVideoController');
 
         Route::resource('/minitest/category/type', 'Modules\MiniTestCategoryTypeController',  ['names' => 'minitest.category.type' ]);
 
@@ -331,6 +349,8 @@ Route::group(['prefix' => 'admin', 'namespace' => 'Admin', 'as' => 'admin.'], fu
         Route::resource('/', 'Modules\FileManagerController');
         Route::resource('/dashboard', 'Modules\FileManagerController');
         */
+
+        Route::resource('/filemanager', 'Modules\FileManagerController');
 
         Route::resource('/reportcard', 'Modules\ReportCardController');
         Route::get('/reportcardlist/{id}', 'Modules\ReportCardController@reportcardlist');
@@ -407,9 +427,9 @@ Route::group(['prefix' => 'admin', 'namespace' => 'Admin', 'as' => 'admin.'], fu
 
 
         //Route::resource('/minitest', 'Modules\MiniTestController');
-      //  Route::resource('/minitest/categories', 'Modules\MiniTestCategoriesController');
-      
+        //Route::resource('/minitest/categories', 'Modules\MiniTestCategoriesController');
 
+        Route::resource('lesson_slides', 'Modules\LessonSlidesController');     
 
 
         /* Administrator Module Lists */
@@ -427,6 +447,7 @@ Route::group(['prefix' => 'admin', 'namespace' => 'Admin', 'as' => 'admin.'], fu
         });
 
  
+        
         
         
            
