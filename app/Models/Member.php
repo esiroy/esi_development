@@ -117,8 +117,8 @@ class Member extends Model
         $consumed = $this->getLessonConsumed();
         
         $remainingMonthlyCredits = $credits - $consumed;
-
-        return ($remainingMonthlyCredits >= 0) ? $remainingMonthlyCredits : 0;
+                
+        return $remainingMonthlyCredits;
     }
 
 
@@ -129,7 +129,7 @@ class Member extends Model
         $consumed = $this->getLessonMemberConsumed($memberID);
         $remainingMonthlyCredits = $credits - $consumed;
 
-        return ($remainingMonthlyCredits >= 0) ? $remainingMonthlyCredits : 0;
+        return $remainingMonthlyCredits;
     
     }
 
