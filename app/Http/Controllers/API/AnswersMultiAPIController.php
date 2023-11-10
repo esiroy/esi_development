@@ -34,7 +34,15 @@ class AnswersMultiAPIController extends Controller
         $user = Auth::user();
         $memberInfo = Auth::user()->memberInfo;
 
-        $type = "Free";
+        if ($memberInfo->attribute == "TRIAL") {
+
+            return Response()->json([
+                "success"               => false,            
+                "message"               => " You are on a trial membership, Please upgrade to paid Membership to access minitest",
+            ]); 
+        } else {
+            $type = "Free";
+        }
 
 
         $categoryID = $request->get('category_id');

@@ -36,6 +36,8 @@ class MemberMiniTestController extends Controller
         $user = Auth::user();
         $memberInfo = Auth::user()->memberInfo;
 
+      
+
         $isMemberCreditExpired = $memberInfo->isMemberCreditExpired($user->id);
 
         if ($category) 
