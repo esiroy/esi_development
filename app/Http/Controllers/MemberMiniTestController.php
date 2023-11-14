@@ -33,20 +33,19 @@ class MemberMiniTestController extends Controller
 
         $category = MiniTestCategory::where('slug', $slug)->where('valid', true)->first();
 
+        $user = Auth::user();
+        $memberInfo = Auth::user()->memberInfo;
 
-        if ($category) {
+      
 
+        $isMemberCreditExpired = $memberInfo->isMemberCreditExpired($user->id);
 
+        if ($category) 
+        {
             $breadcrumbs = $miniTestCategoryType->getParentLinks($category->question_category_type_id, true);
-
-           
-        
-            return view("modules/minitest/show", compact('category', 'breadcrumbs') );   
-
-        } else {
-        
-            return abort('404');
-        
+            return view("modules/minitest/show", compact('category', 'breadcrumbs', 'isMemberCreditExpired') );   
+        } else {        
+            return abort('404');        
         }       
     
     }

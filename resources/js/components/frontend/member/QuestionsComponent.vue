@@ -26,9 +26,8 @@
                 </div>
                
 
-
+                <!-- POINT DEDUCTION INFO
                 <div id="point-information" class="border rounded p-4 mb-4" v-show="this.started == false">
-
                     <span class="font-weight-bold">                    
                         <span v-if="this.freeMiniTest >= 1">  Note:  You have  {{ this.freeMiniTest }}  Free Mini Test Left</span>
                         <span class="text-danger" v-else>  
@@ -40,7 +39,8 @@
                                 Note:  You have {{ "No" }}  Free Mini Test Left, You will be deducted 1 point if you proceed 
                             </div>
                         </span>
-                    </span>                
+                    </span>         
+                      
                     
                     <div class="mt-2 text-secondary">
                         You have {{ this.miniTestSubmittedCount }} submitted Minitest in last {{ this.duration }} days: 
@@ -48,13 +48,28 @@
                         <span class="float-right text-danger" v-if="this.freeMiniTest <= 0">{{ "有料（1 ポイント)" }}</span>
                     </div>                
                 </div>
+                -->    
 
                 <!-- BUTTON TO START -->
                 <div v-show="this.started == false" class="my-4">
-                    <button v-on:click="start()" class="btn btn-success" >
-                        <i class="fa fa-list-alt" aria-hidden="true"></i>
-                        Start Test 
-                    </button>
+                    <div v-if="is_member_credit_expired == true || memberinfo['attribute'] == 'TRIAL'">
+                        <div v-if="is_member_credit_expired == true" class="font-weight-bold">
+                            <span class="text-danger">
+                                Note: Member Credit has expired, please add credits to proceed.
+                            </span>
+                        </div> 
+                        <div v-if="memberinfo['attribute'] == 'TRIAL'" class="font-weight-bold">
+                            <span class="text-danger">
+                                Note: You are on a trial membership, Please upgrade to paid Membership to access minitest
+                            </span>                        
+                        </div>
+                    </div>                   
+                    <div v-else>                           
+                        <button v-on:click="start()" class="btn btn-success" >
+                            <i class="fa fa-list-alt" aria-hidden="true"></i>
+                            Start Test 
+                        </button>
+                    </div>
                 </div>
                             
             </div>
@@ -231,6 +246,7 @@
           
         }, 
         props: {
+            is_member_credit_expired: Boolean,
             category: Object,
             memberinfo: Object,
             csrf_token: String,		

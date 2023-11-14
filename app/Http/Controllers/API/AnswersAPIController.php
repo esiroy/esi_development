@@ -23,8 +23,123 @@ use Auth, DB;
 class AnswersAPIController extends Controller
 {
 
+    /* 
+        [NEW UPDATE] Monthly / Point member = will base on Credit Expiration
+    */
 
-    public function addAnswerStartTime(Request $request, MiniTestResult $miniTestResult, 
+    public function addAnswerStartTime(Request $request, MiniTestResult $miniTestResult, AgentTransaction $agentTransaction, MiniTestAnswerKey $miniTestAnswerKey,
+    MiniTestSetting $miniTestSetting, MemberMiniTestSetting $memberMiniTestSetting)  
+    {
+        $user = Auth::user();
+        $memberInfo = Auth::user()->memberInfo;
+
+        if ($memberInfo->attribute == "TRIAL") {
+
+            return Response()->json([
+                "success"               => false,            
+                "message"               => " You are on a trial membership, Please upgrade to paid Membership to access minitest",
+            ]); 
+        } else {
+            $type = "Free";
+        }
+        
+
+        $categoryID = $request->get('category_id');
+        $answers    = $request->get('answers');
+
+        //get answer keys and count questions
+        $answerKeys             = $miniTestAnswerKey->getAnswerKey($categoryID, $answers);        
+        $totalQuestionCount     = count($answerKeys);
+
+        //Member Settings has overrides minitest duration settings and minitest limit
+        if ($memberMiniTestSetting->hasOverride($user->id) == true) {
+
+            //Member Settings overrides General Settings
+            $duration      = $memberMiniTestSetting->getMiniTestDuration($user->id);
+
+            //count results for minitest
+            $miniTestCount = $miniTestResult->countPreviousResults($user->id, $duration);
+
+        } else {        
+
+            //General Mini Test Settings 
+            $duration      = $miniTestSetting->getMiniTestDuration(); 
+            $miniTestlimit = $miniTestSetting->getMiniTestLimit(); 
+
+            //count results for minitest
+            $miniTestCount = $miniTestResult->countPreviousResults($user->id, $duration);  
+        }
+        
+      
+
+        if ($memberInfo->isMemberCreditExpired($user->id) == true) {
+
+            return $miniTestResult->responseMemberExpiredCredit($type);
+            exit();
+
+        } else {
+        
+            DB::beginTransaction();
+
+            $freeCreated = $miniTestResult->initializeMiniTest($type, $categoryID, $answerKeys);
+            $scheduleAdded = $miniTestResult->addMemberMiniTestSchedule( $miniTestCount, $type );
+
+            if ($memberInfo->membership  == "Point Balance") 
+            {
+                $agentCredit = [
+                    'valid' => 1,
+                    'transaction_type'  => 'AGENT_SUBTRACT',
+                    'agent_id'          => $memberInfo->agent_id,
+                    'member_id'         => $memberInfo->user_id,
+                    'lesson_shift_id'   => $memberInfo->lesson_shift_id,
+                    'created_by_id'     => $memberInfo->user_id,
+                    'amount'            => 0,
+                    'price'             => 0,
+                    'remarks'           => "FREE MINITEST - ANSWERS QUESTION | $type | minitest count - $miniTestCount", 
+                ];
+                AgentTransaction::create($agentCredit); 
+            }
+
+            DB::commit();
+        
+            if ($freeCreated) 
+            {
+
+                $getUpdatedMonthlyCredits = $memberInfo->getMonthlyLessonsLeft();            
+                $totalCredits = $agentTransaction->getCredits(Auth::user()->id);
+                
+                if ($memberInfo->isMemberCreditExpired($user->id) == true) {            
+                     $totalCredits = 0;
+                } else {                
+                    $totalCredits = $agentTransaction->getCredits(Auth::user()->id);
+                }
+
+                return Response()->json([
+                    "success"                           => true,  
+                    "membershipType"                    => $memberInfo->membership,       
+                    "message"                           => "answers has initialized",
+                    'id'                                => $freeCreated->id,
+                    'miniTestSubmittedCount'            => $miniTestResult->countPreviousResults($user->id, 7),
+                    'deduction'                         => 1,
+                    'totalMonthlyCredits'               => $getUpdatedMonthlyCredits,
+                    'totalMonthlyCreditsFormatted'      => "(". number_format($getUpdatedMonthlyCredits, 2) .")",
+                    'totalCredits'                      => $totalCredits,
+                    'totalCreditsFormatted'             => "(". number_format($totalCredits, 2) .")"                    
+                ]);
+
+            } else {
+
+                return Response()->json([
+                    "success"               => false,            
+                    "message"               => "Error: Answers has failed to initialized",
+                ]);                
+
+            }
+        }
+    }
+
+    
+    public function addAnswerStartTimeWithDeduction(Request $request, MiniTestResult $miniTestResult, 
             AgentTransaction $agentTransaction, MiniTestAnswerKey $miniTestAnswerKey,
             MiniTestSetting $miniTestSetting, MemberMiniTestSetting $memberMiniTestSetting)  
     {
