@@ -199,16 +199,26 @@
                             <div class="col-8 pr-0 mr-0">
                                 <div class="form-group my-0 pt-2">
                                 
-                                    <div class="form-group">                                           
+                                    <div class="form-group">   
+                                         <!--                                        
                                         <input type="radio" v-model="user.gender" name="gender" :checked="user.gender === 'MALE'" value="MALE" class="" :class="{ 'is-invalid': submitted && $v.user.gender.$error }" />
                                         <label for="gender" class="small col-2 col-xs-2 col-md-1 px-0">Male</label>
 
                                         <input type="radio" v-model="user.gender" name="gender" :checked="user.gender === 'FEMALE'" value="FEMALE" class="" :class="{ 'is-invalid': submitted && $v.user.gender.$error }" />
                                         <label for="gender" class="small col-2 col-xs-2 col-md-1 px-0">Female</label>
 
+                                       
                                         <div v-if="submitted && !$v.user.gender.required" class="invalid-feedback">
                                             Gender is required
                                         </div>
+                                        -->
+
+                                        <input type="radio" v-model="user.gender" name="gender" :checked="user.gender === 'MALE'" value="MALE" class="">
+                                        <label for="gender" class="small col-2 col-xs-2 col-md-1 px-0">Male</label>
+
+                                        <input type="radio" v-model="user.gender" name="gender" :checked="user.gender === 'FEMALE'" value="FEMALE" class="">
+                                        <label for="gender" class="small col-2 col-xs-2 col-md-1 px-0">Female</label>                                        
+                                        
                                     </div>
 
                                 </div>
@@ -218,21 +228,24 @@
                 </div>
 
                 <div id="myroom-communication-app-row" class="row pt-2">
+
                     <div class="col-6">
                         <div class="row">
                             <div class="col-4 small pr-0">
                                 <label for="is_myroom_enabled" class="px-0 col-md-12 col-form-label"><span class="text-danger">*</span> 
                                 Primary Communication App <div class="float-right">:</div></label>
                             </div>
-                                                            <div class="col-8">
+                            
+                            <div class="col-8">
                                 <div class="row my-0">
                                     <div class="col-5">
 
-                                    <select id="is_myroom_enabled" name="is_myroom_enabled"                                                
+
+                                        <select id="is_myroom_enabled" name="is_myroom_enabled"                                                
                                                 class="form-control form-control-sm" 
                                                 v-model="user.is_myroom_enabled">
-                                            <option value="true" :selected="user.is_myroom_enabled === true">MyRoom</option>
-                                            <option value="false" :selected="user.is_myroom_enabled === false">Backup</option>
+                                            <option :value="true" :selected="user.is_myroom_enabled === true">MyRoom</option>
+                                            <option :value="false" :selected="user.is_myroom_enabled === false">Backup</option>
                                         </select>
                                                                                    
                                     </div>
@@ -243,7 +256,7 @@
                     </div>
                 </div>
 
-                <div id="communication-app-row" class="row pt-2">
+                <div id="communication-app-row" class="row pt-2" v-show="user.is_myroom_enabled === true">
                     <div class="col-6">
                         <div class="row">
                             <div class="col-4 small pr-0">
@@ -2129,11 +2142,8 @@ export default {
         }
 
       
-        let is_myroom_enabled = false;
+        //let is_myroom_enabled = false;
         
-        if (this.memberinfo.is_myroom_enabled == true) {
-            is_myroom_enabled = true;
-        }
 
         //get user
         this.user.user_id                       = this.userinfo.id;
@@ -2148,7 +2158,13 @@ export default {
 		this.user.nickname						= this.memberinfo.nickname;
 		this.user.gender						= this.memberinfo.gender;		
 		this.user.communication_app             = this.memberinfo.communication_app;
-        this.user.is_myroom_enabled             = is_myroom_enabled;
+
+        if (this.memberinfo.is_myroom_enabled == true) {
+           // is_myroom_enabled = true;
+           this.user.is_myroom_enabled             = true;
+        } else {
+            this.user.is_myroom_enabled            = false;
+        }
 
         if ( this.user.communication_app === 'Skype' || this.user.communication_app === 'skype') 
         {
@@ -2397,7 +2413,7 @@ export default {
             this.user.preference.purposeExtraDetails.OTHERS = $('#extraDetails').val()
             
             //console.log(this.user.preference.purposeExtraDetails.OTHERS, $('#extraDetails').val());    
-            
+
        
             axios.post("/api/update_member?api_token=" + this.api_token, 
             {
