@@ -150,15 +150,32 @@ class LessonSlideHistoryController extends Controller
 
 
             //@todo: get all batch from lesson 
+            
+          
             $lessons = $lessonHistory->select('lesson_history.id', 'lesson_history.batch', 'folders.folder_name', 'folders.folder_description')
-                                    ->join('folders', 'folders.id', '=', 'lesson_history.folder_id')
-                                    ->where('schedule_id', $lessonHistory->schedule_id)
+                                    ->leftJoin('folders', 'folders.id', '=', 'lesson_history.folder_id')
+                                    ->where('schedule_id', $lessonHistory->schedule_id)                                    
                                     ->orderBy('batch', 'DESC')->get();
 
-            foreach ($lessons as $lesson) {
-                $lessonBatch[$lesson->batch] = $lesson;
-                $slideImages[$lesson->batch] = $lessonSlideHistory->where('lesson_history_id',  $lesson->id )->orderBy('slide_index', 'ASC')->get();                
+            /*
+            $lessons = $lessonHistory->select('lesson_history.id', 'lesson_history.batch')                                    
+            ->where('schedule_id', $lessonHistory->schedule_id)                                    
+            ->orderBy('batch', 'DESC')->get();
+            */
+
+            if (count($lessons) >= 1) {
+
+                foreach ($lessons as $lesson) {
+                    $lessonBatch[$lesson->batch] = $lesson;
+                    $slideImages[$lesson->batch] = $lessonSlideHistory->where('lesson_history_id',  $lesson->id )->orderBy('slide_index', 'ASC')->get();                
+                }
+    
+
+            } else {
+
+                return response()->view('errors.500', ['message'=> "Error: Lesson Not Found"], 500);
             }
+
 
            
 

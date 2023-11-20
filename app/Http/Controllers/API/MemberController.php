@@ -1775,7 +1775,7 @@ class MemberController extends Controller
 
 
             //check if more than limit ($defaultLimit is 3)
-            $isLimitReached = $memberNotifier->isCommAppLimitUpdateReached($memberID);
+            $isLimitReached = $memberNotifier->isCommAppLimitUpdateReached($memberID, 1000);
 
             if (!$isLimitReached) {
                 return Response()->json([
@@ -1832,22 +1832,48 @@ class MemberController extends Controller
         } else if (strtolower($main_comm_account) == 'backup') {
 
             if (strtolower($communication_app) == 'skype') {
-                $memberInfo->update([
-                    'is_myroom_enabled' => false,
-                    'communication_app' => $communication_app,
-                    'skype_account' => $skype_account_handle,
-                ]);
 
-                $memberNotifier->commAppHasUpdated($user_id);
+                if (trim($skype_account_handle) == "") 
+                {
+
+                    return Response()->json([
+                        "success" => false,
+                        "message" => "Account username is needed",
+                    ]);                                  
+                } 
+                else 
+                {
+
+                    $memberInfo->update([
+                        'is_myroom_enabled' => false,
+                        'communication_app' => $communication_app,
+                        'skype_account' => $skype_account_handle,
+                    ]);    
+                    $memberNotifier->commAppHasUpdated($user_id);
+                }
+
 
             } else {
-                $memberInfo->update([
-                    'is_myroom_enabled' => false,
-                    'communication_app' => $communication_app,
-                    'zoom_account' => $zoom_account_handle,
-                ]);
 
-                $memberNotifier->commAppHasUpdated($user_id);
+
+                if (trim($zoom_account_handle) == "") {
+
+                    return Response()->json([
+                        "success" => false,
+                        "message" => "Account username is needed",
+                    ]);           
+
+                } else {
+
+                    $memberInfo->update([
+                        'is_myroom_enabled' => false,
+                        'communication_app' => $communication_app,
+                        'zoom_account' => $zoom_account_handle,
+                    ]);
+    
+                    $memberNotifier->commAppHasUpdated($user_id);
+                }
+
             }
             return Response()->json([
                 "success" => true,
@@ -1876,23 +1902,43 @@ class MemberController extends Controller
 
         if (strtolower($communication_app) == 'skype') {
 
-            $memberInfo->update([
-                'is_myroom_enabled' => true,
-                'communication_app' => $communication_app,
-                'skype_account' => $skype_account_handle,
-            ]);
+            if (trim($skype_account_handle) == "") {
 
-            $memberNotifier->commAppHasUpdated($user_id);
+                return Response()->json([
+                    "success" => false,
+                    "message" => "Account username is needed",
+                ]);                
+
+            } else {
+                $memberInfo->update([
+                    'is_myroom_enabled' => true,
+                    'communication_app' => $communication_app,
+                    'skype_account' => $skype_account_handle,
+                ]);    
+                $memberNotifier->commAppHasUpdated($user_id);
+            }
+
+
 
         } else {
 
-            $memberInfo->update([
-                'is_myroom_enabled' => true,
-                'communication_app' => $communication_app,
-                'zoom_account' => $zoom_account_handle,
-            ]);
+            if (trim($zoom_account_handle) == "") {
 
-            $memberNotifier->commAppHasUpdated($user_id);
+                return Response()->json([
+                    "success" => false,
+                    "message" => "Account username is needed",
+                ]);                
+
+            } else {
+
+                $memberInfo->update([
+                    'is_myroom_enabled' => true,
+                    'communication_app' => $communication_app,
+                    'zoom_account' => $zoom_account_handle,
+                ]);
+
+                $memberNotifier->commAppHasUpdated($user_id);
+            }
         }
 
         return Response()->json([

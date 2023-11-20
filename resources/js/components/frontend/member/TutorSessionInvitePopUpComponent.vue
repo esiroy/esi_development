@@ -279,14 +279,16 @@
                 <div class="container text-center"  v-if="is_broadcaster == true">
                     <div v-if="participants.length <= 0">                        
                         <div v-if="waitingTimer <= 0"> Redialing, Please wait </div>                        
-                        <div v-else> Redialing in {{ waitingTimer }} </div>
+                        <div v-else> Redialing in {{ waitingTimer }} seconds </div>
                     </div>
                     <div v-else>
                         <div v-if="isLessonTimeStarted == true">
                             Lesson will start {{ lessonStartTimer }}
                         </div>
                         <div v-if="isLessonTimeStarted == false">
-                            Please wait for your student to connect.                        
+                            Please wait for your student to connect. 
+
+                            <div class="small">Redialing in {{ waitingTimer }} seconds</div>
                         </div>
                     </div>
                 </div>
@@ -479,9 +481,16 @@ export default {
             clearInterval(this.waitingInterval);
         },         
         startWaitingTimer() {
+
             if (this.$props.is_broadcaster == true) {
+
+                console.log("start waiting timer", this.waitingTimer, this.$props.is_broadcaster )
+
                 this.waitingInterval = setInterval(() => {
                     this.waitingTimer--;
+
+                    console.log("waiting timer", this.waitingTimer);
+
                     if (this.waitingTimer < 0) {
                         this.$root.$emit('redialUser', this.participants);   
                         this.resetWaitingTimer();

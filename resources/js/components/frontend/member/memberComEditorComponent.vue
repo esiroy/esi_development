@@ -47,6 +47,7 @@
 			
 		</div>
 
+
 		<b-modal ref="editPrimaryComm" title="Primary Communication Setting (通信ソフト設定)" size="lg"  @show="isMemberValidToUpdate">
 
 			<div class="alert alert-success text-center" role="alert" v-if="success_message">
@@ -59,10 +60,14 @@
 
 		
 
-			<div class="container mt-3 text-center" v-if="isLoading == true">
-				<span class="spinner-border spinner-border-sm"></span>
-				Loading...
+			<div class="text-center" v-if="isLoading == true">
+				<div>
+					<span class="spinner-border spinner-border-sm"></span>
+					<div>Loading...</div>
+				</div>
 			</div>
+
+			
 			<div class="container mt-3" v-if="isLoading == false">
 				<b-form-group>
 					<div class="row">
@@ -112,10 +117,14 @@
 		
             <template #modal-footer>
 				<div class="footer">
+
+					<!--
 					<b-button variant="primary" size="sm" class="float-right mr" v-if="isLoading == true">
 						<span class="spinner-border spinner-border-sm"></span>
 						Loading...
 					</b-button>
+					-->
+
 					<div class="buttons-container w-100" v-if="isLoading == false">
 						<b-button variant="primary" size="sm" class="float-right mr" :disabled="!isUpdatable"  @click="updateMainComm">Save</b-button>
 						<b-button variant="danger" size="sm" class="float-right mr-2" @click="hideEditPrimaryComm">Cancel</b-button>                            
@@ -137,10 +146,13 @@
 				{{ error_message }}
 			</div>	
 
-			<div class="container mt-3 text-center" v-if="isLoading == true">
-				<span class="spinner-border spinner-border-sm"></span>
-				Loading...
+			<div class="text-center" v-if="isLoading == true">
+				<div>
+					<span class="spinner-border spinner-border-sm"></span>
+					<div>Loading...</div>
+				</div>
 			</div>
+
 			<div class="container mt-3 text-center" v-if="isLoading == false">
 				<b-form-group>
 					<div class="row">					
@@ -166,7 +178,7 @@
 				</b-form-group>	
 			</div>
 
-			<div class="container px-4">
+			<div class="container px-4" v-if="isLoading == false">
 				<div class="row">
 					<div class="col-3">
 						&nbsp;
@@ -187,12 +199,15 @@
 			</div>
 
             <template #modal-footer>
+				
 				<div class="footer">
 
+					<!--
 					<b-button variant="primary" size="sm" class="float-right mr" v-if="isLoading == true">
 						<span class="spinner-border spinner-border-sm"></span>
 						Loading...
 					</b-button>
+					-->
 
 					<div class="buttons-container"  v-if="isLoading == false">
 						<b-button variant="primary" size="sm" class="float-right mr" :disabled="!isUpdatable" @click="updateBackupComm">Save</b-button>
@@ -411,11 +426,6 @@ export default {
                 } else {
                    this.isLoading = false;
 				   this.error_message  = response.data.message ;
-
-					setTimeout(() => {
-						this.hideEditPrimaryComm();
-						this.error_message = '';
-					}, 3000);				   
                 }
             });
 		},
@@ -451,11 +461,6 @@ export default {
 
                    	this.isLoading = false;
 					this.error_message  = response.data.message;
-
-					setTimeout(() => {
-						this.hideEditBackupComm();
-						this.error_message = '';
-					}, 3000);				   
                 }
             });
 

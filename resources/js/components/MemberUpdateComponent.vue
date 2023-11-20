@@ -256,7 +256,9 @@
                     </div>
                 </div>
 
-                <div id="communication-app-row" class="row pt-2" v-show="user.is_myroom_enabled === true">
+                <!--<div id="communication-app-row" class="row pt-2" v-show="user.is_myroom_enabled === true">-->
+
+                <div id="communication-app-row" class="row pt-2">
                     <div class="col-6">
                         <div class="row">
                             <div class="col-4 small pr-0">

@@ -212,11 +212,16 @@
                 firstname: this.user_info.firstname,    
                 lastname: this.user_info.lastname,      
                 status: "ONLINE",
+                chat_type: "canvas",
                 type: this.user_info.user_type, 
                 image:   this.$props.user_image  
             }
 
             this.socket.emit('REGISTER', this.user);
+
+            //this.socket.emit('newUser', this.user);
+
+            
 
             //send the current folder URL so it feedback url lesson will update
             this.$refs['memberFeedback'].updateLessonDetails(this.currentFolderURLArray);
@@ -426,6 +431,12 @@
                 
             });
 
+            this.socket.on('LEAVE_CANVAS_SESSION', (userData) => {
+
+                console.log("LEAVE_CANVAS_SESSION triggered");
+
+            });
+
             this.socket.on('LEAVE_SESSION', (userData) => {
                 let currrentTutor = this.getRecipient();
 
@@ -449,6 +460,7 @@
                             this.$refs['TutorSessionInvite'].startWaitingTimer()   
 
                         } else {
+
                             console.log(" BROADCASTER LEFT A SESSION !!! LESSON COMPLETED !!!");    
                         } 
 
@@ -459,9 +471,14 @@
                         //if (this.isLessonCompleted == false  && this.isLessonStartTimeInvalid == false &&  this.isUserAbsent  == false && this.isLessonExpired == false) 
                         //{
 
-                        if (this.isLessonCompleted == false) {
+                    
 
-                            /*
+                        if (this.isLessonCompleted == false && this.isLessonStartTimeInvalid == false) {
+
+
+                            console.log("member left")
+
+                           
                             this.$refs['TutorSessionInvite'].removeParticipants(userData); 
                             this.$refs['TutorSessionInvite'].stopLessonTimer()
                             this.$refs['TutorSessionInvite'].showWaitingListModal();
@@ -469,15 +486,24 @@
                             //waiting timer for tutor to make an "emit" a "redialUser"
                             this.$refs['TutorSessionInvite'].resetWaitingTimer();
                             this.$refs['TutorSessionInvite'].startWaitingTimer()   
-                            */
+                    
+                        } else if (this.isLessonCompleted == false && this.isLessonExpired == false) {
 
-                            this.$refs['TutorSessionInvite'].removeParticipants(userData);  
-                            this.$refs['TutorSessionInvite'].startWaitingTimer();
-                            
+                            console.log("member left on an expired session")
+
+                            this.$refs['TutorSessionInvite'].removeParticipants(userData); 
+                            this.$refs['TutorSessionInvite'].stopLessonTimer()
                             this.$refs['TutorSessionInvite'].showWaitingListModal();
+
+                            //this.$refs['TutorSessionInvite'].resetLessonTimer()
+                            //this.$refs['TutorSessionInvite'].startLessonStartTimer();
+
+                            this.$refs['TutorSessionInvite'].resetWaitingTimer();
+                            this.$refs['TutorSessionInvite'].startWaitingTimer()  
+
                         }
 
-                        console.log("member left")
+                       
                     }
                         
 
