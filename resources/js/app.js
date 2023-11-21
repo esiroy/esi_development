@@ -110,6 +110,8 @@ Vue.component('lesson-chat-viewer-component', require('./components/frontend/mem
 Vue.component('member-com-editor-component', require('./components/frontend/member/memberComEditorComponent.vue').default);
 
 Vue.component('TutorDisconnectedComponent', require('./components/frontend/member/TutorDisconnectedComponent.vue').default);
+Vue.component('MemberDisconnectedComponent', require('./components/frontend/member/MemberDisconnectedComponent.vue').default);
+
 /**
  * The following block of code may be used to automatically register your
  * Vue components. It will recursively scan this directory for the Vue

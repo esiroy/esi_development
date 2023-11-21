@@ -38,7 +38,7 @@
             hide-footer no-close-on-esc no-close-on-backdrop hide-header-close>
 
             <div class="text-primary text-center small p-5">
-                Tutor have been reconnected 
+                Tutor has connected, we will commence with your lesson
             </div>
             
 

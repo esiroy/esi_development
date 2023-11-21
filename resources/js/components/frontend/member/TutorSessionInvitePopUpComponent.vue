@@ -55,7 +55,9 @@
 
             <template #modal-footer>
                 <div class="container text-center" v-if="is_broadcaster == true">
-                    <b-button variant="primary" @click="markStudentAbsent()">Yes, I Confirm to mark my student as absent</b-button>
+                    <b-button variant="primary" @click="markStudentAbsent()">
+                        Yes, I Confirm to mark my student as absent
+                    </b-button>
                      <b-button variant="danger" @click="triggerLimitOverrideAndCallUser()">Call Student</b-button>
                 </div>
                 <div class="container text-center" v-else>
@@ -132,10 +134,6 @@
             Modal completed
         </b-modal>
 
-
-
-
-
         <b-modal id="modal-call-user"  :title="'Calling Student Please wait'" 
             content-class="esi-modal" 
             :header-bg-variant="headerBgVariant" 
@@ -163,8 +161,11 @@
             <template #modal-footer>
                 <div class="container text-center">
                     <div v-if="callAttemptFailed == true || timeLimitExpired == true">                
-                       <b-button variant="primary">Yes, I Confirm</b-button>
+                       <b-button variant="primary"  @click="markStudentAbsent()">
+                            Yes, I Confirm to mark my student as absent
+                        </b-button>
                     </div>                    
+                    
                     <div v-else-if="callAttemptFailed == false">
                         <span v-if="redialTimer > 5 ">Connecting....</span>
                         <span v-if="redialTimer >= 1 && redialTimer <= 5">Redialing in {{ redialTimer }} seconds </span>
@@ -288,8 +289,6 @@
                         </div>
                         <div v-if="isLessonTimeStarted == false">
                             Please wait for your student to connect. 
-
-                            <div class="small">Redialing in {{ waitingTimer }} seconds</div>
                         </div>
                     </div>
                 </div>
@@ -383,10 +382,9 @@ export default {
             lessonStartTimer: 3,
 
             /******** WAITING TIMER  */
-
             waitingInterval: null,
             waitingTimer: 15,
-            waitingRedialCounter: 10,
+            waitingRedialCounter: 10, //
 
             specificDate: null,
             expiredLessonDate: null,
