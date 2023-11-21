@@ -184,7 +184,8 @@
                             CALL WAITING FOR PARTICIPANTS
             ***************************************************/
         -->
-        <b-modal id="show-modal-participants" :title="modalTitle" content-class="esi-modal" :header-bg-variant="headerBgVariant" no-close-on-esc no-close-on-backdrop hide-header-close>
+        <b-modal id="show-modal-participants" :title="modalTitle" content-class="esi-modal" size="lg"  
+            :header-bg-variant="headerBgVariant" no-close-on-esc no-close-on-backdrop hide-header-close >
 
             <div v-if="participants.length >= 1">
                 <div  class="text-center" v-for="(participant, index) in participants" :key="index">             
@@ -209,7 +210,7 @@
                     </div>
                     <div v-else>
 
-                        <div class="pb-3 alert alert-primar" role="alert">
+                        <div class="pb-3 alert" role="alert">
                         
                             <div class="text-primary small" v-if="is_broadcaster == true">  
                                 <div v-if="isDisconnected == false">                           
@@ -228,7 +229,7 @@
                                     <div class="py-2">Please wait for your tutor to connect... </div>
 
                                     <div v-if="this.supportCountdownTimer >= 1">
-                                        <div class="py-2">Technical support will assist you in {{ this.supportCountdownTimer }} when you are not connected</div>
+                                        <div class="py-2">Technical support will assist you in {{ this.supportCountdownTimer }} seconds when you are not connected</div>
                                         <b-spinner v-for="variant in variants" :variant="variant" :key="variant"></b-spinner>    
                                     </div>
                                     <div v-else-if="this.supportCountdownTimer == 0">
@@ -437,12 +438,13 @@ export default {
             this.$bvModal.show('show-modal-participants');
         },
         hideWaitingListModal() {   
-          this.isLessonTimeStarted = false;
-          this.startLessonStartTimer();    
-            //this.$bvModal.hide('show-modal-participants');            
-            
+            this.isLessonTimeStarted = false;
+            this.startLessonStartTimer();    
+            //this.$bvModal.hide('show-modal-participants');                        
         },
-
+        quickHideWaitingListModal() {
+            this.$bvModal.hide('show-modal-participants');    
+        },
         startLessonStartTimer() {
             this.isLessonTimeStarted = true;
             this.lessonStartInterval = setInterval(this.updateLessonTimer, this.timerSpeed);

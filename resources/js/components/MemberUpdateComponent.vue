@@ -262,7 +262,8 @@
                     <div class="col-6">
                         <div class="row">
                             <div class="col-4 small pr-0">
-                                <label for="communication_app" class="px-0 col-md-12 col-form-label"><span class="text-danger">*</span> Communication App <div class="float-right">:</div></label>
+                                <label for="communication_app" class="px-0 col-md-12 col-form-label">
+                                <span class="text-danger">*</span> Backup Communication App <div class="float-right">:</div></label>
                             </div>
                             <div class="col-8">
                                 <div class="row my-0">

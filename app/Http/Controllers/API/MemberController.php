@@ -1775,7 +1775,7 @@ class MemberController extends Controller
 
 
             //check if more than limit ($defaultLimit is 3)
-            $isLimitReached = $memberNotifier->isCommAppLimitUpdateReached($memberID, 1000);
+            $isLimitReached = $memberNotifier->isCommAppLimitUpdateReached($memberID, 3);
 
             if (!$isLimitReached) {
                 return Response()->json([

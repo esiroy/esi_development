@@ -31,6 +31,8 @@
             :api_token="this.api_token" 
             :csrf_token="this.csrf_token"/>   
     
+ 
+
         <TutorSessionInvitePopUpComponent 
             ref="TutorSessionInvite" 
             :reservation="this.$props.reservation" 
@@ -88,7 +90,17 @@
             :show_sidebar="false"
         />
         
-          
+       <!-- [New] Tutor Disconnected Component-->
+       <TutorDisconnectedComponent 
+            ref="TutorDisconnected" 
+            :channelid="this.$props.channelid"
+            :user_info="this.$props.user_info"
+            :member_info="this.$props.member_info" 
+            :is_broadcaster="this.$props.is_broadcaster"
+            :recipient_info="this.$props.recipient_info"
+            :is_lesson_started="this.isLessonStarted"            
+            :api_token="this.api_token" 
+            :csrf_token="this.csrf_token"/>          
 
     </div>
 
@@ -108,6 +120,8 @@
     import SlideUploaderComponent from './SlideUploaderComponent.vue'
     import MemberFeebackComponent from './MemberFeebackComponent.vue'
     import SatisfactionSurveyComponent from './SatisfactionSurveyComponent.vue'
+    import TutorDisconnectedComponent from './TutorDisconnectedComponent.vue'
+    
 
     export default {
 
@@ -247,7 +261,7 @@
 
             this.socket.on('START_SESSION', (response) => {
 
-                //console.log("start session");
+                console.log("start session");
 
                 if (this.$props.is_broadcaster == false) {
 
@@ -359,9 +373,11 @@
 
             this.socket.on("CALL_USER_PINGBACK", (userData) => {
 
+                console.log("pinging back");
+
                 if (this.$props.is_broadcaster == true  && userData.type == "MEMBER") {
                  
-                    //console.log("CALL_USER_PINGBACK, RECIEVED FROM :" + userData.type , userData);
+                    console.log("CALL_USER_PINGBACK, RECIEVED FROM :" + userData.type , userData);
 
                     this.socket.emit('JOIN_SESSION_PINGBACK', userData); 
                     this.$refs['TutorSessionInvite'].hideCallUserModal();
@@ -369,7 +385,9 @@
                 }
 
                 if (this.$props.is_broadcaster == false && userData.type == "TUTOR") {
-                    //console.log("CALL_USER_PINGBACK, RECIEVED FROM :" + userData.type , userData);
+
+                    console.log("CALL_USER_PINGBACK, RECIEVED FROM :" + userData.type , userData);
+
                     this.socket.emit('JOIN_SESSION_PINGBACK', userData);         
                     this.$refs['TutorSessionInvite'].hideCallUserModal(); 
                     this.$refs['TutorSessionInvite'].showWaitingListModal(); 
@@ -409,7 +427,7 @@
 
                 if (this.$props.is_broadcaster == true && userData.type == "MEMBER") {
 
-                    //console.log("JOIN_SESSION_PINGBACK  FROM [" + userData.type + "]", userData);
+                    console.log("JOIN_SESSION_PINGBACK  FROM [" + userData.type + "]", userData);
                 
                     this.$refs['TutorSessionInvite'].hideCallUserModal();
                     this.$refs['TutorSessionInvite'].addParticipants(userData);  
@@ -423,7 +441,8 @@
 
               if (this.$props.is_broadcaster == false && userData.type == "TUTOR") {
                     //TUTOR JOINED THE SESSION
-                    //console.log("JOIN_SESSION_PINGBACK FROM [" + userData.type + "]", userData);                
+                    console.log("JOIN_SESSION_PINGBACK FROM [" + userData.type + "]", userData);                
+
                     this.$refs['TutorSessionInvite'].hideCallUserModal(); 
                     this.$refs['TutorSessionInvite'].addParticipants(userData);
                     this.$refs['TutorSessionInvite'].hideWaitingListModal()
@@ -433,7 +452,16 @@
 
             this.socket.on('LEAVE_CANVAS_SESSION', (userData) => {
 
-                console.log("LEAVE_CANVAS_SESSION triggered");
+                if (this.$props.is_broadcaster == false && userData.type == "TUTOR") {
+                    console.log("LEAVE_CANVAS_SESSION triggered", userData, "is lesson completed? "+ this.isLessonCompleted);
+
+                    if ( this.isLessonCompleted == false) {
+                        this.$refs['TutorDisconnected'].showDisconnectedModal();
+                    } else {
+                        console.log("Lesson completed, we will not show tutor disconnection modal")
+                    }
+                    
+                }
 
             });
 
@@ -519,7 +547,16 @@
             {
 
                 if (this.$props.is_broadcaster == false) {
-                    console.log("ACCEPT_CALL, (call accepted by member)", userData);
+
+                    console.log("ACCEPT_CALL, (call  auto accepted by member)", userData);
+
+                    //hide disconnected modal
+                    this.$refs['TutorDisconnected'].hideDisconnectedModal();
+                    this.$refs['TutorDisconnected'].showReconnected();
+                    this.$refs['TutorDisconnected'].delayHideReconnected();
+                    
+
+                    //hide call user modal
                     this.$refs['TutorSessionInvite'].hideCallUserModal(); 
                     this.$refs['TutorSessionInvite'].hideWaitingListModal(); 
                 } 
@@ -556,15 +593,21 @@
                 }
 
                if (this.$props.is_broadcaster == true) {
-                    //console.log("UPDATE_DRAWING TUTOR");   
+                    console.log("UPDATE_DRAWING TUTOR");   
+
                } else {          
-                    //console.log("UPDATE_DRAWING MEMBER");   
 
-                    this.$refs['LessonSlider'].delegateUpdateCanvas(response.currentSlide, response.canvasData);
-                    this.$refs['LessonSlider'].delegateSetZoom(response.currentSlide, response.canvasZoom);
+                    console.log("UPDATE_DRAWING MEMBER");   
 
-                    if (response.canvasDelta !== null) {
-                        this.$refs['LessonSlider'].delegateRelativePan(response.currentSlide, response.canvasDelta);
+                    if (this.isLessonCompleted == false) {
+                    
+                        this.$refs['LessonSlider'].delegateUpdateCanvas(response.currentSlide, response.canvasData);
+                        this.$refs['LessonSlider'].delegateSetZoom(response.currentSlide, response.canvasZoom);
+
+                        if (response.canvasDelta !== null) {
+                            this.$refs['LessonSlider'].delegateRelativePan(response.currentSlide, response.canvasDelta);
+                        }
+                    
                     }
                }
             });
@@ -576,9 +619,16 @@
                 if (this.$refs['audioPlayer']) {    
                     this.$refs['audioPlayer'].resetAudioIndex() 
                 }
-                this.viewerCurrentSlide = data.num
-                this.currentSlide = data.num;
-                this.$refs['LessonSlider'].goToSlide(data.num);            
+
+                if (this.isLessonCompleted == false) {
+
+                    if (this.currentSlide !== data.num) {
+                        this.viewerCurrentSlide = data.num
+                        this.currentSlide = data.num;
+                        this.$refs['LessonSlider'].goToSlide(data.num);                  
+                    }     
+                }
+         
             }); 
 
 
@@ -817,6 +867,14 @@
                 }
 
             }); 
+
+
+
+            this.$root.$on('openCustomerSupport', (alarmAudio) => {                
+                this.$refs['TutorSessionInvite'].quickHideWaitingListModal(); 
+                this.$refs['TutorSessionInvite'].hideCallUserModal();                                
+                this.openFloatingChatBox();
+            });            
 
         },
        methods: {
@@ -1095,8 +1153,13 @@
                             } else {
 
 
+
+                                 console.log("|join session|")
+
                                 this.$refs['TutorSessionInvite'].showWaitingListModal();
 
+                                this.$refs['TutorSessionInvite'].resetWaitingTimer();
+                                this.$refs['TutorSessionInvite'].startWaitingTimer()  
                             
                                 //member joined...
                                 //console.log("EMIT JOIN_SESSION TO TUTOR");

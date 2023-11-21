@@ -1593,6 +1593,7 @@ export default {
         display: inline-block;
         vertical-align: middle;
         height: 70px;
+        margin-bottom: 15px;
     }
     
     #newSlideButton {
