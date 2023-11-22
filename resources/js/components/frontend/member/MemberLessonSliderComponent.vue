@@ -452,8 +452,9 @@
 
             this.socket.on('LEAVE_CANVAS_SESSION', (userData) => {
 
-                if (this.$props.is_broadcaster == false && userData.type == "TUTOR") {
-                    console.log("LEAVE_CANVAS_SESSION triggered", userData, "is lesson completed? "+ this.isLessonCompleted);
+                if (this.$props.is_broadcaster == false && userData.type == "TUTOR") 
+                {
+                    console.log("MEMBER LEAVE_CANVAS_SESSION triggered", userData, "is lesson completed? "+ this.isLessonCompleted);
 
                     if ( this.isLessonCompleted == false) {
                         this.$refs['TutorDisconnected'].showDisconnectedModal();
@@ -461,11 +462,37 @@
                         console.log("Lesson completed, we will not show tutor disconnection modal")
                     }
                     
+                } 
+                else if(this.$props.is_broadcaster == true && userData.type == "MEMBER") 
+                {
+
+                    console.log("TUTOR LEAVE_CANVAS_SESSION triggered", userData, "is lesson completed? "+ this.isLessonCompleted);
+
+                    if ( this.isLessonCompleted == false) {
+
+                        this.$refs['TutorSessionInvite'].removeParticipants(userData); 
+                        this.$refs['TutorSessionInvite'].stopLessonTimer()
+                        this.$refs['TutorSessionInvite'].showWaitingListModal();
+                        this.$refs['TutorSessionInvite'].resetWaitingTimer();
+                        this.$refs['TutorSessionInvite'].startWaitingTimer()                           
+                    }
+
+                } else {
+
+
+
+                    console.log("LEAVE_CANVAS_SESSION triggered", userData, "is lesson completed? "+ this.isLessonCompleted);
+
                 }
+
 
             });
 
             this.socket.on('LEAVE_SESSION', (userData) => {
+
+                /*
+
+
                 let currrentTutor = this.getRecipient();
 
                 if (userData.userid == currrentTutor.userid) {
@@ -509,9 +536,8 @@
                            
                             this.$refs['TutorSessionInvite'].removeParticipants(userData); 
                             this.$refs['TutorSessionInvite'].stopLessonTimer()
-                            this.$refs['TutorSessionInvite'].showWaitingListModal();
 
-                            //waiting timer for tutor to make an "emit" a "redialUser"
+                            this.$refs['TutorSessionInvite'].showWaitingListModal();                         
                             this.$refs['TutorSessionInvite'].resetWaitingTimer();
                             this.$refs['TutorSessionInvite'].startWaitingTimer()   
                     
@@ -521,11 +547,8 @@
 
                             this.$refs['TutorSessionInvite'].removeParticipants(userData); 
                             this.$refs['TutorSessionInvite'].stopLessonTimer()
+
                             this.$refs['TutorSessionInvite'].showWaitingListModal();
-
-                            //this.$refs['TutorSessionInvite'].resetLessonTimer()
-                            //this.$refs['TutorSessionInvite'].startLessonStartTimer();
-
                             this.$refs['TutorSessionInvite'].resetWaitingTimer();
                             this.$refs['TutorSessionInvite'].startWaitingTimer()  
 
@@ -533,13 +556,10 @@
 
                        
                     }
-                        
-
-
                 }
 
-           
-            ; 
+                */
+             
             });
 
 
