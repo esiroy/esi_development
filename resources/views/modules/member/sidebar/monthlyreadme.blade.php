@@ -15,7 +15,7 @@
 
       <!-- Modal Header -->
       <div class="modal-header">
-        <h4 class="modal-title">月額制プラン ご留意点</h4>
+        <h2 class="modal-title text-danger">月額制プラン ご留意点</h2>
         <button type="button" class="close" data-dismiss="modal">&times;</button>
       </div>
 
