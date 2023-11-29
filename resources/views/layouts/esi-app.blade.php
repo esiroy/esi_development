@@ -19,6 +19,8 @@
     <!-- Scripts -->
     <script src="{{ asset('js/app.js') .'?id=version_6_0_1'  }}" defer ></script>
 
+
+
     <!-- Fonts -->
     <link rel="dns-prefetch" href="//fonts.gstatic.com" />
     <link rel="preconnect" href="//fonts.gstatic.com"  crossorigin />
@@ -26,6 +28,7 @@
     
  
     @yield('styles')
+
     <noscript>
         <link rel="stylesheet" type="text/css" href="">
     </noscript>
@@ -863,6 +866,36 @@
         });
     </script>
 
+    <script type="text/javascript"> 
+        function memberMarkAgreedMonthlyTerms(memberID) {
+            $.ajax({
+                type: 'POST', 
+                url: 'api/memberAgreeMonthlyTerms?api_token=' + api_token,
+                data: {
+                    memberID: memberID
+                }, headers: {
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                }, success: function(data) {              
+                 
+                    if (data.success == true) {
+                        closeMonthlyTermsModal();
+                    }
+                }
+            });
+        }
+
+        function openMonthlyTermsModal() {     
+            $("#modal-monthlyreadme-dialog").modal({ backdrop: 'static', keyboard: false });
+        }
+
+        function closeMonthlyTermsModal() {
+            $("#modal-monthlyreadme-dialog").modal('hide');
+        }
+
+        window.addEventListener('load', function() {           
+            openMonthlyTermsModal()
+        });
+    </script>
 
     @include('modules.member.popup.loading') 
     @include('modules.member.popup.msgboxSuccess')
@@ -893,6 +926,8 @@
 
 
     @yield('scripts')
+
+
 </body>
 
 </html>

@@ -26,6 +26,8 @@ use App\Models\MergedAccount;
    
 use App\Models\MemberMiniTestSetting;
 use App\Models\MemberSetting;
+use App\Models\MemberMonthlyTerm;
+
 
 use Auth, Hash, Storage;
 use Carbon\Carbon;
@@ -567,12 +569,18 @@ class MemberController extends Controller
         $hideMemberTabs = $memberSettingsObj->getMemberSetting($memberID, 'hide_member_tabs');
 
     
+        $memberMonthlyTermObj = new MemberMonthlyTerm();
+        $memberMonthlyTerm = $memberMonthlyTermObj->isMonthlyNotificationEnabled($memberID);        
+
+        $isMemberAgreedToTerms = $memberMonthlyTermObj->isMemberAgreedToMonthlyTerms($memberID); 
+        
 
         //View all the stufff
         return view('admin.modules.member.edit', compact('agentInfo', 'memberships', 'shifts', 'attributes',
             'userInfo', 'memberInfo', 'userImage', 'latestReportCard',
             'lessonGoals', 'lessonClasses', 'desiredSchedule', 'purpose', 'memberLatestExamScore', 'currentMemberlevel',
-            'minitest', 'hideMemberTabs'
+            'minitest', 'hideMemberTabs',
+            'memberMonthlyTerm', 'isMemberAgreedToTerms'
             ));
 
     }

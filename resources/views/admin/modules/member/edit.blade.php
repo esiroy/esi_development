@@ -147,6 +147,8 @@
 
                             <member-update-component 
                                 ref="MemberUpdateComponent"
+                                :membermonthlyterm="{{ json_encode($memberMonthlyTerm) }}"
+                                :memberagreedtoterms="{{ json_encode($isMemberAgreedToTerms) }}"
                                 :minitest="{{ json_encode($minitest) }}"
                                 :memberships="{{ json_encode($memberships) }}" 
                                 :attributes="{{ json_encode($attributes) }}" 

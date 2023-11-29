@@ -247,3 +247,7 @@ Route::middleware('auth:api')->post('/createAdminMergedAccount', 'API\MergeAccou
 //miniTest Results
 Route::middleware('auth:api')->post('/getMemberMiniTestResult', 'API\MemberMiniTestResultController@get')->name('APIGetMemberMiniTestResults');
 Route::middleware('auth:api')->post('/deleteMemberMiniTestResult/{id}', 'API\MemberMiniTestResultController@destroy')->name('APIDeleteMemberMiniTestResults');
+
+
+//Monthly Terms Agreements
+Route::middleware('auth:api')->post('/memberAgreeMonthlyTerms', 'API\MemberMonthlyTerms@agree')->name('APIMemberAgreeMonthlyTerms');

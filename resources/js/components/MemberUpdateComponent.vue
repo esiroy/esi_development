@@ -159,7 +159,7 @@
                                 <input type="checkbox"  name="hideMemberTabs" id="hideMemberTabs" v-model="user.hideMemberTabs" >
                             </div>
                         </div>
-                    </div>                    
+                    </div>              
                 </div>
 
                 <div id="nickname-row" class="row pt-2">
@@ -185,12 +185,26 @@
                             </div>
                         </div>
                     </div>
+
+                    
+                    <div class="col-6">
+                        <div class="row">
+                            <div class="col-6 small">
+                               Show Monthly Terms Notification
+                            </div>
+                            <div class="col-6">
+                                <input type="checkbox"  name="showMonthlyTermsNotification" id="showMonthlyTermsNotification" v-model="user.showMonthlyTermsNotification" >
+                            </div>
+                        </div>
+                    </div>   
+                   
                 </div>
 
                 <div id="gender-row" class="row pt-2">
-                    <div class="col-12">
+                    
+                    <div class="col-6">
                         <div class="row">
-                            <div class="col-2 small pr-0">
+                            <div class="col-4 small pr-0">
                                 <label for="last_name" class="px-0 col-md-12 col-form-label"><span class="text-danger">*</span> Gender <div class="float-right">:</div></label>
                             </div>
                             <div class="col-8 pr-0 mr-0">
@@ -198,10 +212,10 @@
                                 
                                     <div class="form-group">                                           
                                         <input type="radio" v-model="user.gender" name="gender" :checked="user.gender === 'MALE'" value="MALE" class="" :class="{ 'is-invalid': submitted && $v.user.gender.$error }" />
-                                        <label for="gender" class="small col-2 col-xs-2 col-md-1 px-0">Male</label>
+                                        <label for="gender" class="small pr-4">Male</label>
 
                                         <input type="radio" v-model="user.gender" name="gender" :checked="user.gender === 'FEMALE'" value="FEMALE" class="" :class="{ 'is-invalid': submitted && $v.user.gender.$error }" />
-                                        <label for="gender" class="small col-2 col-xs-2 col-md-1 px-0">Female</label>
+                                        <label for="gender" class="small pr-4">Female</label>
 
                                         <div v-if="submitted && !$v.user.gender.required" class="invalid-feedback">
                                             Gender is required
@@ -212,6 +226,17 @@
                             </div>
                         </div>
                     </div>
+
+                    <div class="col-6">
+                        <div class="row">
+                            <div class="col-6 small">
+                                Member Accepted Monthly Terms
+                            </div>
+                            <div class="col-6">
+                                <input type="checkbox"  name="acceptedMonthlyTerms" id="acceptedMonthlyTerms" v-model="user.acceptedMonthlyTerms" >
+                            </div>
+                        </div>
+                    </div>                        
                 </div>
 
                 <div id="communication-app-row" class="row pt-2">
@@ -1480,6 +1505,8 @@ export default {
         MemberMiniTestViewerComponent,
     },
     props: {
+        membermonthlyterm: Boolean,
+        memberagreedtoterms: Boolean,
         hidemembertabs: {
             type: Object
         },
@@ -1919,6 +1946,9 @@ export default {
 
             //users
             user: {
+                showMonthlyTermsNotification: "",
+                acceptedMonthlyTerms: "",
+
                 agent_id: "",
 				agent_name_en: "",
                 id: "",
@@ -2044,6 +2074,9 @@ export default {
 
         this.getMergedAccounts();
 
+
+        this.user.showMonthlyTermsNotification = this.$props.membermonthlyterm;
+        this.user.acceptedMonthlyTerms  = this.$props.memberagreedtoterms;
 
         if (this.currentmemberlevel) {
             this.selectedMemberLevel = this.currentmemberlevel.level;

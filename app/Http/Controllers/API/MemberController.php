@@ -25,7 +25,7 @@ use App\Models\Purpose;
 use App\Models\MemberLevel;
 use App\Models\MemberMiniTestSetting;
 use App\Models\MemberSetting;
-
+use App\Models\MemberMonthlyTerm;
 
 use Auth, App;
 use DB;
@@ -1454,6 +1454,15 @@ class MemberController extends Controller
                 MemberDesiredSchedule::where('member_id', $user->id)->delete();
                 MemberDesiredSchedule::insert($desiredSchedules);
 
+                
+
+                $memberSetting = new MemberSetting();
+                $memberSetting->createOrUpdateSetting($user->id, "hide_member_tabs", $data->hideMemberTabs);
+
+                $memberMonthlyTerm = new MemberMonthlyTerm();
+                $memberMonthlyTerm->createOrUpdateSetting($user->id, "show_monthly_member_notification", $data->showMonthlyTermsNotification, "show monthly Member notification");
+                $memberMonthlyTerm->createOrUpdateSetting($user->id, "member_agreed_monthly_terms", $data->acceptedMonthlyTerms, 'member has accepted terms from monthly member notification');
+
                 DB::commit();
 
                 return Response()->json([
@@ -1779,6 +1788,11 @@ class MemberController extends Controller
 
                 $memberSetting = new MemberSetting();
                 $memberSetting->createOrUpdateSetting($memberID, "hide_member_tabs", $data->hideMemberTabs);
+
+                $memberMonthlyTerm = new MemberMonthlyTerm();
+                $memberMonthlyTerm->createOrUpdateSetting($memberID, "show_monthly_member_notification", $data->showMonthlyTermsNotification, "show monthly Member notification");
+                $memberMonthlyTerm->createOrUpdateSetting($memberID, "member_agreed_monthly_terms", $data->acceptedMonthlyTerms, 'member has accepted terms from monthly member notification');
+
 
                 DB::commit();
 

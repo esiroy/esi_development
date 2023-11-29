@@ -144,6 +144,18 @@
                         <span id="monthlyLessonsLeft"> {{ $memberInfo->getMonthlyLessonsLeft() }}</span> 回)
                     </div>
 
+                 
+                    <!-- NEW! ADDED FOR MONTHLY MEMBER NOTICE --> 
+
+                    @if (isset($memberMonthlyNotification) && $memberMonthlyNotification->value == true && $memberMonthlyNotification->valid == true)  
+                        @if (isset($memberAgreedMonthlyTerms) && $memberAgreedMonthlyTerms->value == true && $memberAgreedMonthlyTerms->valid == true)  
+
+                        @else
+                            @include('modules.member.sidebar.monthlyreadme')
+                        @endif                        
+                    @endif
+
+
                 @else
 
                     <div class="point">
