@@ -38,7 +38,19 @@
             <li>解約（休会）について：　月額制プランは自動更新となります。解約・休会の際は、引落予定日（更新日）の５日前までにメールで通知が必要です。</li>
             <li>複数アカントをお持ちの方はお支払い後に、当該マイページ「カスタマーサポート」からお支払いが完了したことをご連絡ください。</li>
             <li>6日以降、月途中でお申込みの場合、初月と最終月が日割りでポイントが設定されます<br><a href="JavaScript:PopupCenter('https://www.mytutor-jpn.com/info/2023/1118120224.html','',900,820);">（月額制プラン月途中開始で、開始月のポイントが日割りになる理由）</a></li>
+
         </ul>      
+
+        <p>＜初月と最終月が日割りでポイントが設定＞</p>
+
+        <div class="container">
+          <div class="row">
+            <div class="col-12 px-5">
+              <img src={{asset('images/img_month.gif')}} alt="monthly" class="img-fluid w-100 px-5">
+            </div>  
+          </div>
+        </div>
+
       </div>
 
       <!-- Modal Footer -->
