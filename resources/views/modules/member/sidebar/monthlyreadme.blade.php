@@ -46,8 +46,8 @@
                                 <p class="text-danger">で日割りになります。</p>
                                 <p>お申込み翌月からはご契約されました「毎月〇〇回コース」回数が表示されます。</p>
                                 <p>
-                                    <span class="font-weight-bold">※　
-                                        <a href="https://www.mytutor-jpn.com/info/2023/1118120224.html"
+                                    <span class="font-weight-bold">※　									
+                                        <a href="JavaScript:PopupCenter('https://www.mytutor-jpn.com/info/2023/1118120224.html','月額制プラン月途中開始で、開始月のポイントが日割りになる理由',900,820);"
                                             class="text-primary">月額制プラン月途中開始で、開始月のポイントが日割りになる理由</a></span>
                                 </p>
 
