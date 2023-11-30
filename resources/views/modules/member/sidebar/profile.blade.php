@@ -135,7 +135,7 @@
                     <!--(test total reserved current month: ) {{ $scheduleItemObj->getTotalReservedForCurrentMonth($memberInfo->user_id) }}-->
 
                     <div class="text-secondary" title="lessonLimit">
-                        <a href="JavaScript:PopupCenter('https://www.mytutor-jpn.com/info/2019/0426105431.html','Monthly Lesson Limit',900,820);" class="text-danger">
+                        <a href="JavaScript:PopupCenter('https://www.mytutor-jpn.com/service.html#notice_month','Monthly Lesson Limit',900,820);" class="text-danger">
                             Class: 月額会員対象
                         </a>                       
                     </div>

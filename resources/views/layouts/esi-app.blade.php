@@ -892,9 +892,13 @@
             $("#modal-monthlyreadme-dialog").modal('hide');
         }
 
-        window.addEventListener('load', function() {           
-            openMonthlyTermsModal()
-        });
+
+        @if(Request::segment(1) == 'home')
+            window.addEventListener('load', function() {           
+                openMonthlyTermsModal()
+            });
+        @endif
+
     </script>
 
     @include('modules.member.popup.loading') 
