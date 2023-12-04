@@ -526,8 +526,15 @@ export default {
         },
 
         //New Slide
-        prepareNewSlide() {
-            this.$refs['slideUploader'].prepareSlider(this.$props.reservation, this.slides + 1);
+        prepareNewSlide() {            
+
+            if (this.is_lesson_started == false) {
+                alert ("Please start the lesson before adding new slides");
+                return false;                
+            } else {
+                this.$refs['slideUploader'].prepareSlider(this.$props.reservation, this.slides + 1);
+            }
+
         },       
         userCreateNewEmptySlide() {   
 
