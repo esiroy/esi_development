@@ -126,9 +126,10 @@ class TutorWebRTCVideoController extends Controller
                             ->where('tutor_id',$reserve->tutor_id)
                             ->where('schedule_id',$scheduleID)
                             ->where('status', "COMPLETED")
+                            ->orWhere('status', "INCOMPLETE")
                             ->first();
 
-                      $folderID = $completed->folder_id;
+                    $folderID = $completed->folder_id;
 
                   
 

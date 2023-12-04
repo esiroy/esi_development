@@ -246,6 +246,9 @@ export default {
             isLoading: false,
             socket: null,
 
+
+            lessonStarted: false,
+
             //if user select new folder and or background image
             currentFolderID: null,
             newFolderID: null,
@@ -322,6 +325,8 @@ export default {
     },
     mounted() {
 
+        this.lessonStarted = this.is_lesson_started;
+
         this.socket = io.connect(this.$props.canvas_server);
 
         if (this.$props.folder_id == '' || this.$props.folder_id == null || this.$props.folder_id == 'null' ) {
@@ -343,6 +348,9 @@ export default {
         },
         getRecipient() { 
             return this.$props.recipient_info;
+        },
+        updateLessonStartStatus(status) {
+            this.lessonStarted = status;
         },
         getSlideMaterials(reservation, newFolderID) {
 
@@ -528,7 +536,7 @@ export default {
         //New Slide
         prepareNewSlide() {            
 
-            if (this.is_lesson_started == false) {
+            if (this.lessonStarted == false) {
                 alert ("Please start the lesson before adding new slides");
                 return false;                
             } else {

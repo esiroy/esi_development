@@ -67,6 +67,10 @@
             </div>
            
         </div>
+
+
+        <ImageViewerComponent ref="ImageViewerComponent" />
+        
     </div>
 
 
@@ -74,9 +78,11 @@
 
 <script>
 
+import ImageViewerComponent from "../../image/imageViewerComponent.vue"; // Import the modal component
+
 export default {
   name: "lessonSlideChatViewerComponent",
-  components: {},    
+  components: { ImageViewerComponent },    
   props: {
     user: Object,
     api_token: String,
@@ -91,6 +97,11 @@ export default {
     console.log(this.$props.messages)
 
     this.scrollToEnd();
+
+    //add the image viewer
+    document.body.addEventListener("click", this.imageViewerClick);
+
+
   },
   methods: {
 
@@ -114,6 +125,21 @@ export default {
         });
 
     }, 
+
+    imageViewerClick(event) {
+      // Check if the clicked element has the "img_preview" class
+      if (event.target.classList.contains("img_preview")) {
+        event.preventDefault();
+        // Extract the image URL from the clicked element and open the modal
+        const imageUrl = event.target.getAttribute("src");
+        
+        //this.$refs.ImageViewerComponent.isModalOpen = true; // Open the modal
+        //this.$refs.ImageViewerComponent.modalImageUrl = imageUrl; // Set the image URL
+
+        this.$refs.ImageViewerComponent.openModal(imageUrl); // Open the modal
+
+      }
+    },    
   },
   computed: {},
 

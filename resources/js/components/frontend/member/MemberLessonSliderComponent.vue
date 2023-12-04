@@ -1111,6 +1111,10 @@
 
                     if (response.data.success == true) {
                         
+                        this.$refs['LessonSlider'].updateLessonStartStatus(true);
+
+                        
+
                         this.$refs['NavigationMenu'].startTimer();
                         //console.log("emit start session")
                         this.socket.emit('START_SESSION', this.getSessionData());   
