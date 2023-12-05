@@ -125,15 +125,20 @@ export default {
   },
   mounted() {
 
-      this.currentBatch = Object.keys(this.$props.lesson_batch).length;
+      let lessonBatchLegth = Object.keys(this.$props.lesson_batch).length;
 
+      //get the current batch from the latest
+      this.currentBatch = this.$props.lesson_batch[lessonBatchLegth].batch;
+
+      //reset slide and load audio, which is now depends on the current batch
       this.currentSlide = 1;    
       this.audioFiles = this.$props.audio_files;
       this.loadAudio();
 
+      //load the lesson
       this.loadLesson(this.currentBatch) 
 
-      console.log("audio files " , this.$props.audio_files)
+      //console.log("audio files " , this.$props.audio_files)
       
   },
   methods: {

@@ -155,10 +155,7 @@ class LessonSlideHistoryController extends Controller
 
             if (count($lessons) >= 1) 
             {
-                foreach ($lessons as $lesson) 
-                {
-
-                   
+                foreach ($lessons as $lesson) {                   
                     
                     $folderID = $lesson->folder_id;
 
