@@ -37,7 +37,6 @@ class LessonSlideHistoryController extends Controller
                         Folder $folder, File $file, LessonChat $lessonChat,
                         MemberFeedback $memberFeedback, MemberFeedbackDetails $memberFeedbackDetails, ReportCard $reportcards)
     {     
-
    
         //Determine if parent or
         $historyItem = $lessonHistory->where('schedule_id', $lessonHistoryID)
@@ -101,14 +100,16 @@ class LessonSlideHistoryController extends Controller
 
 
             
-
+            /*
             //we will get the material images
             $files      = $file->where('files.folder_id', $lessonHistory->folder_id)->orderBy('files.order_id', 'ASC')->get();
+
             $audioFiles = [];
 
             if ($files) {
 
                 $slides = [];
+                
                 foreach ($files as $index => $file) {
                     array_push($slides, url($file->path));
                     //make the index same as the slide number
@@ -120,7 +121,7 @@ class LessonSlideHistoryController extends Controller
                 $slides = [];
                 
             }
-
+            */
        
 
             $memberFeedback = $memberFeedback->where('member_feedback.schedule_id', $lessonHistory->schedule_id)->get();
@@ -137,9 +138,6 @@ class LessonSlideHistoryController extends Controller
                   $memberFeedback[$index]['details'] = (object) [];
             }
 
-           
-
-
             if (isset($lessonHistory->schedule_id))
             {
                 $homework = Homework::where('schedule_item_id', $lessonHistory->schedule_id)->first();
@@ -149,27 +147,42 @@ class LessonSlideHistoryController extends Controller
 
 
 
-            //@todo: get all batch from lesson 
-            
-          
-            $lessons = $lessonHistory->select('lesson_history.id', 'lesson_history.batch', 'folders.folder_name', 'folders.folder_description')
+            //Get all batch from lesson 
+            $lessons = $lessonHistory->select('lesson_history.id', 'lesson_history.batch', 'folders.id as folder_id', 'folders.folder_name', 'folders.folder_description')
                                     ->leftJoin('folders', 'folders.id', '=', 'lesson_history.folder_id')
                                     ->where('schedule_id', $lessonHistory->schedule_id)                                    
                                     ->orderBy('batch', 'DESC')->get();
 
-            /*
-            $lessons = $lessonHistory->select('lesson_history.id', 'lesson_history.batch')                                    
-            ->where('schedule_id', $lessonHistory->schedule_id)                                    
-            ->orderBy('batch', 'DESC')->get();
-            */
+            if (count($lessons) >= 1) 
+            {
+                foreach ($lessons as $lesson) 
+                {
 
-            if (count($lessons) >= 1) {
+                   
+                    
+                    $folderID = $lesson->folder_id;
 
-                foreach ($lessons as $lesson) {
+                    //GET THE FILES FOR THIS FOLDER
+                    $files      = $file->where('files.folder_id', $folderID)->orderBy('files.order_id', 'ASC')->get();
+                    if ($files) 
+                    {
+                        
+
+                        foreach ($files as $index => $file) {
+                            //make the index same as the slide number
+                            $audioFiles[$lesson->batch][$index+1] = FileAudio::where('file_id', $file->id)->get(['id', 'file_id', 'path', 'file_name']);
+                        }           
+        
+                    } else {            
+                         $audioFiles[$lesson->batch][] = [];                        
+                    } 
+
                     $lessonBatch[$lesson->batch] = $lesson;
-                    $slideImages[$lesson->batch] = $lessonSlideHistory->where('lesson_history_id',  $lesson->id )->orderBy('slide_index', 'ASC')->get();                
+                    $slideImages[$lesson->batch] = $lessonSlideHistory->where('lesson_history_id',  $lesson->id )->orderBy('slide_index', 'ASC')->get();
+                 
                 }
-    
+
+              
 
             } else {
 
@@ -177,6 +190,8 @@ class LessonSlideHistoryController extends Controller
             }
 
 
+
+         
            
 
             //latest slide history

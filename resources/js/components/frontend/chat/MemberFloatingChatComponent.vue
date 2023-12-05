@@ -1058,7 +1058,7 @@ export default {
         // Add a click event listener to the "chatbox" element
         chatboxElement.addEventListener("click", imageViewerClick);
     } else {
-        console.error("Element with class 'chatbox' not found");
+        console.log("Element with class 'chatbox' not found");
     }
 
   },
