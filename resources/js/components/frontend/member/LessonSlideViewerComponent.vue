@@ -124,6 +124,9 @@ export default {
       };
   },
   mounted() {
+
+      this.currentBatch = Object.keys(this.$props.lesson_batch).length;
+
       this.currentSlide = 1;    
       this.audioFiles = this.$props.audio_files;
       this.loadAudio();
