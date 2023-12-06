@@ -751,23 +751,21 @@ export default {
 
 				this.$forceUpdate()		
 
+				//(added August 2023)
+				if (typeof this.$parent.openNewSlideMaterials === 'function') {
+					// The method exists in the parent component
+					//console.log('openNewSlideMaterials exists in the parent component');
+					this.$parent.openNewSlideMaterials(response.data.newFolderID);
+
+				} else {
+					// The method does not exist in the parent component (this will not fire)
+					// Standalone: This is method was used in member and tutor 
+					//console.log('openNewSlideMaterials does not exist in the parent component');
+				}
+
 				setTimeout(() => {
-					this.showSuccessMessage = false;
-
-					//(added August 2023)
-					if (typeof this.$parent.openNewSlideMaterials === 'function') {
-						// The method exists in the parent component
-						//console.log('openNewSlideMaterials exists in the parent component');
-						this.$parent.openNewSlideMaterials(response.data.newFolderID);
-
-					} else {
-						// The method does not exist in the parent component (this will not fire)
-						// Standalone: This is method was used in member and tutor 
-						//console.log('openNewSlideMaterials does not exist in the parent component');
-					}
-					
+					this.showSuccessMessage = false;					
 					this.$bvModal.hide("modalLessonSelection");      
-
 				}, 3000);
 				
 			} else {

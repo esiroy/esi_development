@@ -429,6 +429,9 @@ import VolumeSlider from './VolumeSlider.vue'; // Import your TriangleSlider com
             console.log(this.audioFiles);
 
             if (this.audioIndex <  this.audioFiles.length -1 ) {
+
+                console.log("audio index :  " + this.audioIndex)
+
                 this.audioIndex = this.audioIndex + 1;
                 this.loadAudio(this.audioFiles[this.audioIndex], {'autoPlay': true });
 

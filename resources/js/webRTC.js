@@ -275,7 +275,7 @@ function createUserMedia(video, audio, constraints) {
 
         } else {
 
-            //alert("no media detected, please connect and try again")
+            alert("no input media detected, please connect and refresh your browser")
         }
     });
 

@@ -448,7 +448,11 @@ export default {
             });
 
         },
-        getSlidesFromFiles(files){
+        getSlidesFromFiles(files)
+        {
+            console.log("getting slides from files");
+
+
             //Slide Count and Custom Slide length
             this.imageURL       = files;
             this.slides         = files.length;
@@ -457,21 +461,11 @@ export default {
                 this.createCanvas(i);
                 this.canvas[i]  = new fabric.Canvas('canvas'+i, { backgroundColor : "#fff" });  
                 this.setSlideBackgroundImage(i, this.imageURL[i-1]);
-
-                if (i == this.slides) {
-                    
-                    // Add a delay of 1 seconds (adjust the delay as needed)
-                    var delayInMilliseconds = 1000;
-                    var delayPromise = new Promise((resolve) => {
-                        setTimeout(resolve, delayInMilliseconds);
-                    });
-
-                    delayPromise.then(() => {
-                       this.saveAllSlides(); 
-                    });
-                }
             }
 
+            setTimeout(() => {
+                this.saveAllSlides();   
+            }, 3000);
         },
         getSlidesFromHistory(slideHistory) {
 
@@ -1405,12 +1399,19 @@ export default {
         },        
         async saveAllSlides() 
         {
+            //@todo: make this only for tutor
+            if (this.$props.is_broadcaster == true) {
 
-            for (var index = 1; index <= this.slides; index++) {
-                let canvasData  = await this.getCanvasSlideData(index);                
-                this.saveSlideHistoryData(canvasData, index);                                       
+                for (var index = 1; index <= this.slides; index++) {
+                    let canvasData  = await this.getCanvasSlideData(index);                
+                    this.saveSlideHistoryData(canvasData, index);                                       
+                }
+                return true;
+            } else {
+                console.log("saving is not allowed for members")
+                return false
             }
-            return true;
+
         },
         openNewSlideMaterials(newFolderID) { 
             this.newFolderID = newFolderID;
