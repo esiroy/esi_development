@@ -164,6 +164,11 @@ function addMyVideo(video, stream) {
 
 
 function addAudio(audio, stream) {
+
+    while (videoGrid.firstChild) {
+        videoGrid.removeChild(videoGrid.firstChild);
+    }
+
     audio.srcObject = stream;
     audio.addEventListener('loadedmetadata', () => {
         audio.play()
@@ -172,6 +177,11 @@ function addAudio(audio, stream) {
 }
 
 function addVideo(video, stream) {
+
+    while (videoGrid.firstChild) {
+        videoGrid.removeChild(videoGrid.firstChild);
+    }
+    
     video.srcObject = stream;
     video.addEventListener('loadedmetadata', () => {
         video.play()
