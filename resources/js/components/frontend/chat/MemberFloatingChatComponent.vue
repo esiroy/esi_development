@@ -666,7 +666,23 @@ export default {
 
         //mark read after opening
         this.delayandMarkUnread();
+
+        this.addImagePopupListener();
     },    
+    addImagePopupListener() {
+
+        //add the image viewer
+        var chatboxElement = document.querySelector('.chatbox');
+        
+        // Check if the element with the class "chatbox" exists
+        if (chatboxElement) {        
+            // Add a click event listener to the "chatbox" element
+            chatboxElement.addEventListener("click", this.imageViewerClick);
+        } else {
+            console.log("Element with class 'chatbox' not found");
+        }
+
+    },
     getUser() {
         return {
             userid: this.$props.userid ,
@@ -1035,6 +1051,9 @@ export default {
   mounted: function () 
   {
 
+
+    
+
     socket = io.connect(this.$props.chatserver_url);
     window.addEventListener("keyup", (e) =>
     {
@@ -1050,16 +1069,7 @@ export default {
     //This will get all the message from the customer support
     this.getUnreadMemberMessages(this.userid);
 
-    //add the image viewer
-    var chatboxElement = document.querySelector('.chatbox');
-    
-    // Check if the element with the class "chatbox" exists
-    if (chatboxElement) {
-        // Add a click event listener to the "chatbox" element
-        chatboxElement.addEventListener("click", imageViewerClick);
-    } else {
-        console.log("Element with class 'chatbox' not found");
-    }
+    this.addImagePopupListener();
 
   },
 };

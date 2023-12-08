@@ -201,7 +201,7 @@
                     <div id="gender-row" class="row pt-2">
                         <div class="col-6">
                             <div class="row">
-                                <div class="col-2 small pr-0">
+                                <div class="col-4 small pr-0">
                                     <label for="last_name" class="px-0 col-md-12 col-form-label">
                                         <!--<span class="text-danger">*</span> -->
                                         Gender <div class="float-right">:</div>
@@ -211,10 +211,10 @@
                                     <div class="form-group my-0 pt-2">
                                         <div class="form-group">                                           
                                             <input type="radio" v-model="user.gender" name="gender" checked="checked" value="MALE" class="" />
-                                            <label for="gender" class="small col-2 col-xs-2 col-md-1 px-0">Male</label>
+                                            <label for="gender" class="small mr-3">Male</label>
 
                                             <input type="radio" v-model="user.gender" name="gender" value="FEMALE" class=""  />
-                                            <label for="gender" class="small col-2 col-xs-2 col-md-1 px-0">Female</label>
+                                            <label for="gender" class="small">Female</label>
                                             <!--
                                             <div v-if="submitted && !$v.user.gender.required" class="invalid-feedback">
                                                 Gender is required
