@@ -640,13 +640,18 @@
                     this.$refs['audioPlayer'].resetAudioIndex() 
                 }
 
-                if (this.isLessonCompleted == false) {
+                if (this.isLessonCompleted == false) 
+                {
 
                     if (this.currentSlide !== data.num) {
                         this.viewerCurrentSlide = data.num
                         this.currentSlide = data.num;
-                        this.$refs['LessonSlider'].goToSlide(data.num);                  
-                    }     
+                        this.$refs['LessonSlider'].goToSlide(this.currentSlide);                  
+                    } else {
+
+                        console.log("GOTO_SLIDE : " + this.currentSlide + " " + data.num)
+                        this.$refs['LessonSlider'].goToSlide(data.num);       
+                    }
                 }
          
             }); 
