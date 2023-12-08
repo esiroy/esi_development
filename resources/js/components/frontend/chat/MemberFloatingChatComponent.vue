@@ -324,9 +324,7 @@ export default {
       if (event.target.classList.contains("img_preview")) {
         event.preventDefault();
         // Extract the image URL from the clicked element and open the modal
-        const imageUrl = event.target.getAttribute("src");       
-
-
+        const imageUrl = event.target.getAttribute("src");   
         this.$refs.ImageViewerComponent.openModal(imageUrl); // Open the modal
 
       }
@@ -1069,7 +1067,7 @@ export default {
     //This will get all the message from the customer support
     this.getUnreadMemberMessages(this.userid);
 
-    this.addImagePopupListener();
+    //this.addImagePopupListener();
 
   },
 };

@@ -93,18 +93,29 @@ export default {
      
     };
   },
-  mounted() {   
-    console.log(this.$props.messages)
-
+  mounted() 
+  {      
     this.scrollToEnd();
-
-    //add the image viewer
-    document.body.addEventListener("click", this.imageViewerClick);
-
-
+    this.addLessonImagePopupListener();
+    console.log("lesson slide chat viewer");
   },
   methods: {
 
+    addLessonImagePopupListener() 
+    {
+
+        
+        //add the image viewer
+        var chatboxElement = document.querySelector('.chatbox-container');
+        
+        // Check if the element with the class "chatbox" exists
+        if (chatboxElement) {        
+            // Add a click event listener to the "chatbox" element
+            chatboxElement.addEventListener("click", this.imageViewerClick);
+        } else {
+            console.log("Element with class 'message-container' not found");
+        }
+    },
     scrollToTop: function() {
         this.$forceUpdate();
         var container = this.$el.querySelector("#user-chatlog");
