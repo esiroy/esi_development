@@ -34,10 +34,11 @@
                                 <tbody>
                                     @if ($isMerged == true)
                                     <tr>
-                                         <td width="250">Consecutive Schedule Parent:</td>
-                                         <td>: </td>
-                                         <td>
-                                            <a href="{{ url('lessonslidehistory/'.$parentHistoryID) }}">Go to parent schedule</a>
+                                        <td width="250">Consecutive Schedule Parent:</td>
+                                        <td>: </td>
+                                        <td>
+                                            <a href="{{ url('lessonslidehistory/'.$parentHistoryID) }}">Go to parent
+                                                schedule</a>
                                         </td>
                                     </tr>
                                     @endif
@@ -45,15 +46,16 @@
                                         <td width="150">Member Name</td>
                                         <td>: </td>
                                         <td><strong>
-                                            @php
-                                                $member = \App\Models\Member::where('user_id', $lessonHistory->member_id)->first(); 
-                                            @endphp
+                                                @php
+                                                $member = \App\Models\Member::where('user_id',
+                                                $lessonHistory->member_id)->first();
+                                                @endphp
 
-                                            {{ $member->user->firstname ?? '' }}
-                                            {{ " " }}
-                                            {{ $member->user->lastname ?? '' }}
-                                            
-                                        </strong></td>
+                                                {{ $member->user->firstname ?? '' }}
+                                                {{ " " }}
+                                                {{ $member->user->lastname ?? '' }}
+
+                                            </strong></td>
                                     </tr>
 
                                     <tr>
@@ -61,11 +63,12 @@
                                         <td>:</td>
                                         <td>
                                             @php
-                                                $schedule = \App\Models\ScheduleItem::find($lessonHistory->schedule_id);                                               
+                                            $schedule = \App\Models\ScheduleItem::find($lessonHistory->schedule_id);
                                             @endphp
 
                                             @php
-                                                $tutor = \App\Models\Tutor::where('user_id', $lessonHistory->tutor_id)->first(); 
+                                            $tutor = \App\Models\Tutor::where('user_id',
+                                            $lessonHistory->tutor_id)->first();
                                             @endphp
 
                                             {{ $tutor->user->firstname }}
@@ -84,7 +87,7 @@
                                         <td>:</td>
                                         <td>
                                             @php
-                                                $schedule = \App\Models\ScheduleItem::find($lessonHistory->schedule_id);                                                
+                                            $schedule = \App\Models\ScheduleItem::find($lessonHistory->schedule_id);
                                             @endphp
 
                                             {{ $schedule->lesson_time ?? '' }}
@@ -101,17 +104,16 @@
 
 
                                     <tr>
-                                         <td class="mt-3">
+                                        <td class="mt-3">
                                             <h5 class="font-weight-bold mt-4">Slide Materials </h5>
                                         </td>
                                     </tr>
 
                                     <tr>
                                         <td colspan="3">
-                                            <lesson-viewer-component  
-                                                ref="lessonSliderComponent" 
-                                                :channelid="{{ $lessonHistory->schedule_id }}"   
-                                                :reservation="{{ json_encode($reservationData) }}"   
+                                            <lesson-viewer-component ref="lessonSliderComponent"
+                                                :channelid="{{ $lessonHistory->schedule_id }}"
+                                                :reservation="{{ json_encode($reservationData) }}"
                                                 :lessons="{{ json_encode($lessons)  }}"
                                                 :lesson_batch="{{ json_encode($lessonBatch) }}"
                                                 :lesson_history="{{ json_encode($lessonHistory) }}"
@@ -119,26 +121,32 @@
                                                 :audio_files="{{ json_encode($audioFiles) }}"
                                                 :member_feedback="{{ json_encode($memberFeedback) }}"
                                                 :slide_images="{{ json_encode($slideImages) }}"
-                                                api_token="{{ Auth::user()->api_token }}" 
-                                                csrf_token="{{ csrf_token() }}"
-                                                ></lesson-viewer-component>                                        
+                                                api_token="{{ Auth::user()->api_token }}"
+                                                csrf_token="{{ csrf_token() }}"></lesson-viewer-component>
                                         </td>
                                     </tr>
-                                                                                                       
+
                                     <tr>
                                         <td colspan="3">
                                             <div class="card esi-card mt-2">
                                                 <div class="card-header esi-card-header-title">
-                                                     <span class="small">Homework</span>
+                                                    <span class="small">Homework</span>
                                                 </div>
                                                 <div class="card-body">
                                                     @if (isset($homework))
 
-                                                    <div class="instruction">                                                        
-                                                        <span class="font-weight-bold">File: </span>                                                     
-                                                        <span class="small">                                                        
-                                                            <a href="{{ url( Storage::url($homework->original) ) }}"download="{{ url( Storage::url($homework->original) ) }}" >{{ $homework->filename }}</a>
+                                                    <div class="instruction">
+                                                        <span class="font-weight-bold">File: </span>
+
+                                                        <span class="small">
+                                                            <a href="javascript:void(0);"
+                                                                onclick="openImageModal('{{ url( Storage::url($homework->original) ) }}', '{{ $homework->filename }}')">{{ $homework->filename }}</a>
                                                         </span>
+                                                        <!--
+                                                        <span class="small img_preview">                                                        
+                                                            <a href="{{ url( Storage::url($homework->original) ) }}" download="{{ url( Storage::url($homework->original) ) }}" >{{ $homework->filename }}</a>
+                                                        </span>-->
+
                                                     </div>
 
                                                     <div class="instruction">
@@ -146,36 +154,33 @@
                                                         <span class="small">{!! $homework->instruction ?? '' !!}<span>
                                                     </div>
                                                     @else
-                                                        <div class="text-center">
-                                                            <span class="small text-secondary">No homework found!</span>
-                                                        </div>
+                                                    <div class="text-center">
+                                                        <span class="small text-secondary">No homework found!</span>
+                                                    </div>
                                                     @endif
                                                 </div>
                                             </div>
                                         </td>
                                     </tr>
 
-                                   
+
                                 </tbody>
-                            </table>                   
+                            </table>
                         </div>
                     </div>
 
 
                     <table cellspacing="5" cellpadding="3" width="100%">
                         <tr>
-                                <td class="mt-3"  colspan="3">                                            
+                            <td class="mt-3" colspan="3">
                                 <h5 class="font-weight-bold mt-4">Chat Messages</h5>
-                            </td>  
+                            </td>
                         </tr>
-                        <tr>                                  
+                        <tr>
                             <td colspan="3">
-                                <lesson-chat-viewer-component  
-                                    ref="lessonSliderComponent"
-                                    :user="{{  json_encode(Auth::user()) }}"                                                
-                                    :messages="{{ json_encode($messages) }}"
-                                >
-                                </lesson-chat-viewer-component>                                        
+                                <lesson-chat-viewer-component ref="lessonSliderComponent"
+                                    :user="{{  json_encode(Auth::user()) }}" :messages="{{ json_encode($messages) }}">
+                                </lesson-chat-viewer-component>
                             </td>
                         </tr>
                     </table>
@@ -183,6 +188,27 @@
                 </div>
 
             </div>
+
+
+            <!-- Modal -->
+            <div class="modal fade" tabindex="-1" role="dialog" id="imageModal">
+                <div class="modal-dialog modal-dialog-centered modal-xl" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="exampleModalLabel">Homework</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>                    
+                        <div class="modal-body text-center">
+                            <!-- Center the content -->
+                            <img id="modalImage" src="" alt="Homework Image" class="img-fluid mx-auto d-block">
+                            <!-- Center the image -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+
         </div>
 
 
@@ -196,15 +222,30 @@
 
 
 @section('styles')
-    <style>
-        canvas {
-            width: 100% !important;
-            height: auto !important;
-        }
+<style>
+canvas {
+    width: 100% !important;
+    height: auto !important;
+}
 
-        .canvas-container {
-            width: 100% !important;         
-        }
-    </style>
+.canvas-container {
+    width: 100% !important;
+}
+</style>
 
+@endsection
+
+
+
+@section('scripts')
+<script>
+function openImageModal(imageUrl, filename) {
+    // Set the modal image source and filename
+    document.getElementById('modalImage').src = imageUrl;
+    document.getElementById('modalImage').alt = filename;
+
+    // Open the modal
+    $('#imageModal').modal('show');
+}
+</script>
 @endsection

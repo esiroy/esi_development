@@ -1,11 +1,24 @@
 <template>
     <div>
         <!-- Vue Bootstrap Modal for Image Preview -->
-        <b-modal v-model="isModalOpen" size="xl" centered  hide-footer hide-header>
+        <b-modal v-model="isModalOpen" size="xl" title="Image Preview" centered  hide-footer > 
+            
+            <!--
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Image Preview</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+                </button>
+            </div>    
+            
             <div class="custom-btn-close text-right">
                 <b-icon icon="x-circle-fill" font-scale="1.75" @click="closeModal" aria-hidden="true"></b-icon>
             </div>
-            <img :src="modalImageUrl" alt="Image Preview" class="img-fluid" />
+            -->
+            <div class="modal-body text-center">
+                <img :src="modalImageUrl" alt="Image Preview" class="img-fluid" />
+            </div>
+
         </b-modal>
 
     </div>
@@ -90,4 +103,7 @@ export default {
     /* Style for the displayed image */
     max-width: 100%;
     max-height: 80vh;
-}</style>
+}
+
+
+</style>
