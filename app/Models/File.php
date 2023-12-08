@@ -3,26 +3,18 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use Auth;
-use Gate;
+
+use App\Models\User;
+use App\Models\File;
+use Auth, DB, Str, Gate;
+
+
+
 
 class File extends Model
 {
-    /**
-     * The attributes that are mass assignable.
-     *
-     * @var array
-     */
-    protected $fillable = [
-        'user_id',
-        'folder_id', 
-        'file_name', 
-        'upload_name', 
-        'size', 
-        'path',
-        'type',
-        'privacy',
-    ];
+    
+    protected $guarded = array('created_at', 'updated_at');
 
     /**
      * The attributes that should be hidden for arrays.
@@ -163,6 +155,43 @@ class File extends Model
 
     public static function getLink($id) {
         return url("file/$id");
+    }
+
+    public static function reorder($files) {    
+
+        DB::beginTransaction();
+
+        try {           
+
+            $loop = 1;
+
+            foreach ($files as $file) {
+                
+                File::where('id', $file['id'])->update(['order_id' => $loop]);
+
+                $loop ++;
+            }
+           
+
+            DB::commit();
+
+
+            return (object) [
+                'response' => true,
+                'message'  => "File order has been updated successfully."
+            ];
+
+
+        } catch (\Exception $e) {
+
+            DB::rollBack();
+
+            return (object) [
+                'response' => false,
+                'message'  => $e->getMessage()
+            ];
+
+        }
     }
 
 }

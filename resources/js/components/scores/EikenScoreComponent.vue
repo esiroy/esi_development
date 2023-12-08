@@ -297,7 +297,6 @@ export default
         {
             if (this.gradeLevel > 3) 
             {
-            
                 this.total = this.getValue('EIKEN-grade_'+ this.gradeLevel);        
                 this.examScore.EIKEN.total  = this.total;
 

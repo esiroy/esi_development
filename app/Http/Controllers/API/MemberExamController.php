@@ -229,8 +229,6 @@ class MemberExamController extends Controller
 
                 } else {
                 
-
-
                     if (intval($examLevel) > 3) 
                     {
                         $grade =   $examScores['grade_'.$examLevel];
@@ -273,6 +271,8 @@ class MemberExamController extends Controller
 
 
                         //check level 1 and level 2
+                        //if (isset($grade_s1) && isset($grade_s2)) 
+
                         if (isset($grade_s1) && isset($grade_s2)) 
                         {
                             $examScores = [
@@ -283,28 +283,11 @@ class MemberExamController extends Controller
                                         ];
                             $json_scores = json_encode($examScores);
 
-                        } else if (isset($grade_s1)) {
-                            
-                            //only grade1
-                            $examScores = [
-                                "exam_level" => ucwords(str_replace('_', ' ', $examLevel)),
-                                'grade_'.$examLevel."_1st_stage" =>  $grade_s1,
-                                "total" => $grade_s1
+                            $data = [
+                                'examDate' => $examDate,
+                                'examType' => $examType . "_Grade_". $examLevel,
+                                'examScores' => $json_scores,
                             ];
-                            $json_scores = json_encode($examScores);
-
-                        } else {                        
-                            return Response()->json([
-                                'success' => false,
-                                'message' => 'Please check if all scores are filled up',
-                            ]);                       
-                        }
-                        
-                        $data = [
-                            'examDate' => $examDate,
-                            'examType' => $examType . "_Grade_". $examLevel,
-                            'examScores' => $json_scores,
-                        ];
 
                         $memberExamScore->addScore($memberID, $data);
 
@@ -315,6 +298,13 @@ class MemberExamController extends Controller
                             'examType' => str_replace('_', ' ', $examType),
                             'examScores' => $json_scores,
                         ]);
+
+                        } else {                        
+                            return Response()->json([
+                                'success' => false,
+                                'message' => 'Please check if all scores are filled up',
+                            ]);                       
+                        }
 
                     
                     }  

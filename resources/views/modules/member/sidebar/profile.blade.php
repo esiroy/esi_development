@@ -208,12 +208,28 @@
                 </div>
             </div>
 
-            @if (strtolower($memberInfo->communication_app) == "skype")
+                <member-com-editor-component
+                    :user="{{  json_encode(Auth::user()) }}" 
+                    :member_info="{{  json_encode(Auth::user()->memberInfo) }}" 
+                    api_token="{{ Auth::user()->api_token }}" 
+                    csrf_token="{{ csrf_token() }}">
+                </member-com-editor-component>
+
+            <!--
+            @if (strtolower($memberInfo->communication_app) == "mytutor")
+                <div class="col-md-12">
+                    <div class="text-secondary pt-1">
+                        <a href="JavaScript:PopupCenter('https://www.mytutor-jpn.com/info/2022/0212121907.html','スカイプ（ZOOM) ID変更方法',900,820);">
+                            MyTutor  <a href="javascript:void(0)" onClick="window.memberComEditorComponent.showEditPrimaryComm()"><i class="fas fa-edit"></i></a>
+                        </a>
+                    </div>
+                </div>
+            @elseif (strtolower($memberInfo->communication_app) == "skype")
                 <div class="col-md-12">
                     <div class="text-secondary pt-1">
                         
                         <a href="JavaScript:PopupCenter('https://www.mytutor-jpn.com/info/2022/0212121907.html','スカイプ（ZOOM) ID変更方法',900,820);">
-                            Skype ID:
+                            Skype ID:  <a href="javascript:void(0)" onClick="window.memberComEditorComponent.showEditPrimaryComm()"><i class="fas fa-edit"></i></a>
                         </a>
                         
                     </div>
@@ -227,8 +243,8 @@
                 <div class="col-md-12">
                     <div class="text-secondary pt-1">
                         <a href="JavaScript:PopupCenter('https://www.mytutor-jpn.com/info/2022/0212121907.html','スカイプ（ZOOM) ID変更方法',900,820);">
-                            Zoom ID:
-                        </a>
+                            Zoom ID:  <a href="javascript:void(0)" onClick="window.memberComEditorComponent.showEditPrimaryComm()"><i class="fas fa-edit"></i></a>
+                        </a> 
                     </div>
                 </div>
                 <div class="col-md-12">
@@ -237,7 +253,7 @@
                     </div>
                 </div>
             @endif
-
+            -->
 
         </div>
     </div>

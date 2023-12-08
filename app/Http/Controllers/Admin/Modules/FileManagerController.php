@@ -12,6 +12,9 @@ use App\Models\User;
 use App\Models\Folder;
 use App\Models\File;
 
+use Illuminate\Support\Facades\File as FileManager;
+
+
 use Gate;
 use Validator;
 use Input;
@@ -245,20 +248,59 @@ class FileManagerController extends Controller
     {
         abort_if(Gate::denies('filemanager_delete'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
-        $folder = Folder::find($id);
+        $file = File::find($id);
         
-        if ($folder) {
+        if ($file) {
+     
+            //delete image
+
+           
+            try {
 
 
-            Storage::deleteDirectory("public/uploads/". $folder->id);
+               $isDeleted = $file->delete();
 
-            $folder->delete();
 
-            return redirect( route('admin.module.filemanager.index') )->with('message', 'Folder has been deleted successfully!');
+                if ($isDeleted) {
+
+                   
+                    FileManager::delete('storage/uploads/lesson_slide_materials/'.$file->folder_id ."/". basename($file->path));
+
+                    return Response()->json([
+                        'success'   => true,
+                        'message'   => "File has been deleted successfully"
+                    ]);
+
+
+                } else {
+                
+                    return Response()->json([
+                        'success'   => false,
+                        'message'   => "Sorry, File can't be deleted."
+                    ]);
+                }
+
+
+            } catch (\Exception $e) {
+              
+
+                return Response()->json([
+                        'success'   => false,
+                        'message'   => $e->getMessage()
+                    ]);                
+            }
+
+
+           
+
+            //return redirect( route('admin.module.filemanager.index') )->with('message', 'File has been deleted successfully!');
             
         } else {
 
-            return redirect( route('admin.module.filemanager.index') )->with('error_message', 'Folder cant be found, it may have been deleted already.');
+
+       
+
+           // return redirect( route('admin.module.filemanager.index') )->with('error_message', 'Folder cant be found, it may have been deleted already.');
         }
 
     }

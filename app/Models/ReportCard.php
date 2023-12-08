@@ -18,12 +18,21 @@ class ReportCard extends Model
     public function getLatest($memberID)
     {
         //report cards
+        /*
         $latestReportCard = ReportCard::select('report_card.*', 'schedule_item.lesson_time')
                                     ->join('schedule_item', 'report_card.schedule_item_id', '=', 'schedule_item.id')
                                     ->where('report_card.member_id', $memberID)
                                     ->orderBy('schedule_item.lesson_time', 'DESC')
                                     ->first();
-       
+        */        
+
+        $latestReportCard = ReportCard::select('report_card.*', 'schedule_item.lesson_time', 'schedule_item.schedule_status')
+            ->join('schedule_item', 'report_card.schedule_item_id', '=', 'schedule_item.id')
+            ->where('report_card.member_id', $memberID)
+            ->where('schedule_item.lesson_time', '<', now()) // Ensure the lesson is in the past
+            ->orderBy('report_card.created_at', 'DESC') // Order by ReportCard creation time in descending order
+            ->first();
+                    
         return $latestReportCard;
     }
 

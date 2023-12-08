@@ -48,14 +48,21 @@ if (url[1] === 'admin') {
                 Vue.component('member-mini-test-viewer-component', require('./components/backend/member/MemberMiniTestViewerComponent.vue').default);
             }
             break;
+
         case 'reportcard':
             Vue.component('member-notes-component', require('./components/backend/member/MemberNotesComponent.vue').default);
-
             break;
+
         case 'customerchatsupport':
             Vue.component('admin-chat-component', require('./components/AdminChatComponent.vue').default);
             break;
 
+        case 'filemanager':
+            Vue.component('vue-tree-list-component', require('./components/modules/VueTreeListComponent.vue').default);
+            Vue.component('admin-uploader-component', require('./components/modules/AdminUploaderComponent.vue').default);
+            Vue.component('audio-uploader-component', require('./components/modules/AudioUploaderComponent.vue').default);
+            Vue.component('folder-files-component', require('./components/modules/FolderFilesComponent.vue').default);
+            break;
 
         default:
             console.log("admin default page loaded")
@@ -75,6 +82,7 @@ if (url[1] === 'admin') {
 
     //Vue.component('simple-uploader-component', require('./components/SimpleUploaderComponent.vue').default);
 
+    //Vue.component('lesson-slider-component', require('./components/frontend/member/MemberLessonSliderComponent.vue').default);
 
     //front end 
     switch (url[1]) {
@@ -83,12 +91,26 @@ if (url[1] === 'admin') {
             break;
         default:
             Vue.component('member-floating-chat-component', require('./components/frontend/chat/MemberFloatingChatComponent.vue').default);
-            //console.log("default front end")
+
+            //Vue.component('member-unrated-lessons-component', require('./components/frontend/member/UnratedLessonComponent.vue').default);
+
     }
 }
 
+Vue.component('lesson-selector-component', require('./components/frontend/member/LessonSelectorComponent.vue').default);
+//Vue.component('new-lesson-slide-selector-component', require('./components/frontend/member/NewLessonSlideSelectorComponent.vue').default);
 
+Vue.component('lesson-slider-component', require('./components/frontend/member/MemberLessonSliderComponent.vue').default);
+Vue.component('lesson-slider-chatroom-component', require('./components/frontend/member/MemberLessonSliderChatroomComponent.vue').default);
+Vue.component('member-caller-component', require('./components/frontend/member/MemberCallerComponent.vue').default);
 
+Vue.component('lesson-viewer-component', require('./components/frontend/member/LessonSlideViewerComponent.vue').default);
+Vue.component('lesson-chat-viewer-component', require('./components/frontend/member/LessonSlideChatViewerComponent.vue').default);
+
+Vue.component('member-com-editor-component', require('./components/frontend/member/memberComEditorComponent.vue').default);
+
+Vue.component('TutorDisconnectedComponent', require('./components/frontend/member/TutorDisconnectedComponent.vue').default);
+Vue.component('MemberDisconnectedComponent', require('./components/frontend/member/MemberDisconnectedComponent.vue').default);
 
 /**
  * The following block of code may be used to automatically register your

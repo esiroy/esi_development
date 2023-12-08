@@ -51,13 +51,15 @@
         </div>
 
         <!--[START] CHAT BUTTON -->
-        <div class="position-bottom-right" v-show="showChatbox == false">
-            <b-button class="chat-button mb-4 mr-5"  variant="primary" @click="openChatBox">
-                 <h2 class="fa fa-comments mt-1"></h2>
-                 <span class="badge badge-danger text-white small m-0 p-1" v-show="this.unread_message_count > 0">
-                 {{this.unread_message_count}}
-                 </span>
-            </b-button>
+        <div class="floatingChatIcon" v-show="showFloatingChatIcon == true">
+            <div class="position-bottom-right" v-show="showChatbox == false">
+                <b-button class="chat-button mb-4 mr-5"  variant="primary" @click="openChatBox">
+                    <h2 class="fa fa-comments mt-1"></h2>
+                    <span class="badge badge-danger text-white small m-0 p-1" v-show="this.unread_message_count > 0">
+                    {{this.unread_message_count}}
+                    </span>
+                </b-button>
+            </div>
         </div>
         <!--[END] CHAT BUTTON -->
        
@@ -216,6 +218,9 @@
 
             </div>
         </div>
+
+
+        <ImageViewerComponent ref="ImageViewerComponent" />
     </div>
 
 
@@ -224,16 +229,19 @@
 <script>
 import io from "socket.io-client";
 import FileUpload from 'vue-upload-component'
+import ImageViewerComponent from "../../image/imageViewerComponent.vue"; // Import the modal component
 
 var socket = null;
 
 export default {
   name: "member-floating-chat-component",
   components: {
-    FileUpload,
+    FileUpload, ImageViewerComponent
   },    
   data() {
     return {            
+
+        showFloatingChatIcon: true,
 
         //history is fetching status
         isFetching: false,
@@ -310,6 +318,19 @@ export default {
     {
        return this.urlify(message);
     },
+
+    imageViewerClick(event) {
+      // Check if the clicked element has the "img_preview" class
+      if (event.target.classList.contains("img_preview")) {
+        event.preventDefault();
+        // Extract the image URL from the clicked element and open the modal
+        const imageUrl = event.target.getAttribute("src");       
+
+
+        this.$refs.ImageViewerComponent.openModal(imageUrl); // Open the modal
+
+      }
+    },     
     linkify_v1(str) {
        return str.replace(/((http(s)?(\:\/\/))?(www\.)?([\w\-\.\/])*(\.[a-zA-Z]{2,3}\/?))(?!(.*a>)|(\'|\"))/g, '<a href="$1"  target="_blank" >$1</a>');    
     },
@@ -623,6 +644,12 @@ export default {
                 sendBtn.style.display = "block";
             }
         }        
+    },    
+    openFloatingChatIcon() {
+        this.showFloatingChatIcon = true;
+    },
+    closeFloatingChatIcon() {
+        this.showFloatingChatIcon = false;
     },    
     closeChatBox() {
         this.showChatbox = false;
@@ -1007,6 +1034,7 @@ export default {
   computed: {},
   mounted: function () 
   {
+
     socket = io.connect(this.$props.chatserver_url);
     window.addEventListener("keyup", (e) =>
     {
@@ -1021,6 +1049,17 @@ export default {
 
     //This will get all the message from the customer support
     this.getUnreadMemberMessages(this.userid);
+
+    //add the image viewer
+    var chatboxElement = document.querySelector('.chatbox');
+    
+    // Check if the element with the class "chatbox" exists
+    if (chatboxElement) {
+        // Add a click event listener to the "chatbox" element
+        chatboxElement.addEventListener("click", imageViewerClick);
+    } else {
+        console.log("Element with class 'chatbox' not found");
+    }
 
   },
 };

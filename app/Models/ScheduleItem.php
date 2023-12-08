@@ -2,12 +2,15 @@
 
 namespace App\Models;
 
+use App\Models\LessonHistory;
+use App\Models\MemoReply;
+use App\Models\MiniTestResult;
+use App\Models\ScheduleItem;
 use Auth;
+use Carbon\Carbon;
+use DateTime;
 use DB;
 use Illuminate\Database\Eloquent\Model;
-use App\Models\MemoReply;
-
-use App\Models\MiniTestResult;
 
 class ScheduleItem extends Model
 {
@@ -23,16 +26,306 @@ class ScheduleItem extends Model
         return $this->hasOne(ReportCard::class, 'schedule_item_id');
     }
     
-    /**
-     * PLOT RESERVATIONS FOR MEMBERS
-     * @param  $dateFrom
-     * @return lessons
-
-     */
-    public function getMemberLessons($member) 
+    public function getLessonTimeDuration($scheduleID)
     {
 
-        $reserves = ScheduleItem::where('member_id', $member->user_id)->where('valid', 1)->where(function ($q) use ($member) {                
+        $scheduleItem = new ScheduleItem(); // Assuming ScheduleItem is a model or a class representing the schedule item entity
+
+        $firstSchedule = $scheduleItem->where('id', $scheduleID)->where('valid', true)->first();
+
+        if ($firstSchedule) {
+
+            //first scheudle
+            $lessonTimeStart = $firstSchedule->lesson_time;
+
+            $firstScheduleTimeEnd = date('Y-m-d H:i:s', strtotime($lessonTimeStart . '+25 minutes'));
+
+            $firstHistoryItem = LessonHistory::where('schedule_id', $scheduleID)->first();
+
+            if ($firstHistoryItem) {
+
+                $firstScheduleID = $firstHistoryItem->id;
+
+                $lessonHistoryItems = LessonHistory::where('parent_lesson_id', $firstScheduleID)->get();
+
+                if ($lessonHistoryItems->isNotEmpty()) {
+
+                    foreach ($lessonHistoryItems as $lessonHistoryItem) {
+                        $consecutiveLesson = $scheduleItem->where('id', $lessonHistoryItem->schedule_id)->where('valid', true)->first();
+                        if ($consecutiveLesson) {
+                            $consecutiveLessons[] = $consecutiveLesson;
+                        }
+                    }
+
+                    if (!empty($consecutiveLessons)) {
+
+                        $lastConsecutiveLesson = end($consecutiveLessons);
+                        $lastConsecutiveLessonTime = $lastConsecutiveLesson->lesson_time;
+                        $lessonTimeEnd = date('Y-m-d H:i:s', strtotime($lastConsecutiveLessonTime . '+25 minutes'));
+
+                        return (object) [
+                            'startTime' => $lessonTimeStart,
+                            'endTime' => $lessonTimeEnd,
+                            'jp_startTime' => ESIDateTimeFormat($lessonTimeStart),
+                            'jp_endTime' => ESIDateTimeFormat($lessonTimeEnd),
+                        ];
+                    } else {
+
+                        return (object) [
+                            'startTime' => $lessonTimeStart,
+                            'endTime' => $firstScheduleTimeEnd,
+                            'jp_startTime' => ESIDateTimeFormat($lessonTimeStart),
+                            'jp_endTime' => ESIDateTimeFormat($firstScheduleTimeEnd),
+                        ];
+
+                    }
+
+                } else {
+
+                    return (object) [
+                        'startTime' => $lessonTimeStart,
+                        'endTime' => $firstScheduleTimeEnd,
+                        'jp_startTime' => ESIDateTimeFormat($lessonTimeStart),
+                        'jp_endTime' => ESIDateTimeFormat($firstScheduleTimeEnd),
+                    ];
+                }
+
+            }
+
+        } else {
+
+            return null;
+        }
+    }
+
+    /**
+     * Retrieves completed consecutive lessons starting from the given schedule ID.
+     *
+     * @param int $scheduleID The ID of the schedule item to start from.
+     * @return array An array of completed consecutive schedule items, or an empty array if no consecutive completed lessons are found.
+     */
+    public function getCompletedConsecutiveLessons($scheduleID)
+    {
+
+        $scheduleItem = new ScheduleItem();
+        $noLessons = array();
+        $firstScheduledLesson = $scheduleItem->where('id', $scheduleID)->where('valid', true)->first();
+
+        if ($firstScheduledLesson) {
+            $firstLessonTime = Carbon::parse($firstScheduledLesson->lesson_time)->format('Y-m-d H:i:s');
+            $remainingLessons = $this->getMemberCompletedSchedule($firstScheduledLesson);
+            $consecutiveLessons = $this->filterConsecutiveSchedules($remainingLessons);
+
+            //Compare first lesson to the first consecutive lesson for the day and return if is
+            if (count($consecutiveLessons) >= 1) {
+                if ($firstLessonTime == $consecutiveLessons[0]['startTime']) {
+                    return $consecutiveLessons;
+                } else {
+                    return $noLessons;
+                }
+            } else {
+                return $noLessons;
+            }
+
+        } else {
+            return $noLessons;
+        }
+    }
+
+    /**
+     * Retrieves consecutive lessons starting from the given schedule ID.
+     *
+     * @param int $scheduleID The ID of the schedule item to start from.
+     * @return array An array of consecutive schedule items, or an empty array if no consecutive lessons are found.
+     */
+    public function getConsecutiveLessons($scheduleID)
+    {
+
+        $scheduleItem = new ScheduleItem();
+        $noLessons = array();
+        $firstScheduledLesson = $scheduleItem->where('id', $scheduleID)->where('valid', true)->first();
+
+        if ($firstScheduledLesson) {
+            $firstLessonTime = Carbon::parse($firstScheduledLesson->lesson_time)->format('Y-m-d H:i:s');
+            $remainingLessons = $this->getMemberSchedule($firstScheduledLesson);
+            $consecutiveLessons = $this->filterConsecutiveSchedules($remainingLessons);
+
+            //Compare first lesson to the first consecutive lesson for the day and return if is
+            if (count($consecutiveLessons) >= 1) {
+                if ($firstLessonTime == $consecutiveLessons[0]['startTime']) {
+                    return $consecutiveLessons;
+                } else {
+                    return $noLessons;
+                }
+            } else {
+                return $noLessons;
+            }
+
+        } else {
+            return $noLessons;
+        }
+    }
+
+    /**
+     * Retrieves the client reserved and client reserved B schedules of a student.
+     *
+     * @param Schedule $schedule The schedule object containing lesson time and member ID.
+     * @return array An array of client reserved and client reserved B schedule items.
+     */
+    public function getMemberSchedule($schedule)
+    {
+
+        $lessonTime = $schedule->lesson_time;
+        $memberID = $schedule->member_id;
+
+        $currentDate = new DateTime($lessonTime);
+        $startDate = Carbon::parse($currentDate);
+        $endDate = Carbon::parse($currentDate)->addDay()->setTime(1, 30, 0);
+
+        $scheduleItem = new ScheduleItem();
+
+        return $scheduleItem->select('id', 'lesson_time')
+            ->where('member_id', $memberID)
+            ->where('valid', true)
+            ->whereBetween('lesson_time', [$startDate, $endDate])
+            ->where(function ($query) {
+                $query->where('schedule_status', 'CLIENT_RESERVED')
+                    ->orWhere('schedule_status', 'CLIENT_RESERVED_B');
+            })
+            ->get()
+            ->toArray();
+    }
+
+    /**
+     * Retrieves only the completed schedule items for a member.
+     *
+     * @param Schedule $schedule The schedule object containing lesson time and member ID.
+     * @return array An array of completed schedule items.
+     */
+    public function getMemberCompletedSchedule($schedule)
+    {
+
+        $lessonTime = $schedule->lesson_time;
+        $memberID = $schedule->member_id;
+
+        $currentDate = new DateTime($lessonTime);
+        $startDate = Carbon::parse($currentDate);
+        $endDate = Carbon::parse($currentDate)->addDay()->setTime(1, 30, 0);
+
+        $scheduleItem = new ScheduleItem();
+
+        return $scheduleItem->select('id', 'lesson_time')
+            ->where('member_id', $memberID)
+            ->where('valid', true)
+            ->whereBetween('lesson_time', [$startDate, $endDate])
+            ->where(function ($query) {
+                $query->where('schedule_status', 'COMPLETED');
+                //->orWhere('schedule_status', 'CLIENT_RESERVED_B');
+            })
+            ->get()
+            ->toArray();
+    }
+
+    /**
+     * Filters an array of schedule items to retrieve consecutive schedules.
+     *
+     * @param array $schedule An array of schedule items.
+     * @return array An array of consecutive schedule items.
+     */
+    public function filterConsecutiveSchedules(array $schedule): array
+    {
+        $filteredSchedules = [];
+        $numSchedules = count($schedule);
+
+        if ($numSchedules < 2) {
+            // return $schedule; // Only one schedule or empty array, so return the original schedule
+
+            if (isset($schedule[0])) {
+                $filteredSchedules[] = $this->formatLessonTime($schedule[0]);
+                return $filteredSchedules;
+            } else {
+                return $filteredSchedules;
+            }
+
+        }
+
+        $firstTime = strtotime($schedule[0]['lesson_time']);
+
+        $filteredSchedules[] = $this->formatLessonTime($schedule[0]); // Add the first schedule as it's always considered consecutive
+
+        for ($i = 1; $i < $numSchedules; $i++) {
+            $currentTime = strtotime($schedule[$i]['lesson_time']);
+            $timeDiff = $currentTime - $firstTime;
+
+            if ($timeDiff === ($i * 1800)) {
+                $filteredSchedules[] = $this->formatLessonTime($schedule[$i]); // Add the schedule if it's 30 minutes apart from the first schedule
+            }
+        }
+
+        return $filteredSchedules;
+    }
+
+    /**
+     * Calculates the duration of consecutive lessons.
+     *
+     * @param array $consecutiveLessons An array of consecutive lesson items.
+     * @return array An array containing the start time, end time, and length of the consecutive lessons.
+     */
+    public function getConsecutiveLessonDuration($consecutiveLessons)
+    {
+
+        $lessonCount = count($consecutiveLessons);
+        $duration = $lessonCount * 25; //minutes
+
+        if ($lessonCount == 1) {
+
+            return [
+                'startTime' => $consecutiveLessons[0]['startTime'],
+                'endTime' => $consecutiveLessons[0]['endTime'],
+                'length' => $duration,
+            ];
+
+        } elseif ($lessonCount > 1) {
+            return [
+                'startTime' => $consecutiveLessons[0]['startTime'],
+                'endTime' => $consecutiveLessons[$lessonCount - 1]['endTime'],
+                'length' => $duration,
+            ];
+        }
+
+    }
+
+    /**
+     * Formats the lesson time by adding 25 minutes to the start time and returning the start and end times.
+     *
+     * @param array $schedule The schedule item containing the ID and start time.
+     * @return array An array containing the ID, start time, and end time of the lesson.
+     */
+    public function formatLessonTime($schedule)
+    {
+
+        $id = $schedule['id'];
+        $startTime = $schedule['lesson_time'];
+        $newTime = Carbon::parse($startTime);
+        $endTime = $newTime->addMinutes(25)->format('Y-m-d H:i:s');
+
+        return [
+            'id' => $id,
+            'startTime' => $startTime,
+            'endTime' => $endTime,
+        ];
+    }
+
+    /**
+     * Retrieves the lessons of a member.
+     *
+     * @param object $member The member object.
+     * @return Illuminate\Database\Eloquent\Collection A collection of lesson schedule items for the member.
+     */
+    public function getMemberLessons($member)
+    {
+
+        $reserves = ScheduleItem::where('member_id', $member->user_id)->where('valid', 1)->where(function ($q) use ($member) {
             $q->orWhere('schedule_status', 'CLIENT_RESERVED')
                 ->orWhere('schedule_status', 'CLIENT_RESERVED_B');
         })->orderby('created_at', 'ASC')->get();
@@ -40,26 +333,23 @@ class ScheduleItem extends Model
         return $reserves;
     }
 
-
-  
-    public function getMemberAllActiveLessons($member) 
+    public function getMemberAllActiveLessons($member)
     {
         $date = date('Y-m-d H:i:s');
 
-        $schedules = ScheduleItem::where('member_id', $member->user_id)->where('valid', 1)->where(function ($q) use ($member) {                
+        $schedules = ScheduleItem::where('member_id', $member->user_id)->where('valid', 1)->where(function ($q) use ($member) {
             $q->orWhere('schedule_status', 'CLIENT_RESERVED')
-            ->orWhere('schedule_status', 'CLIENT_RESERVED_B');
+                ->orWhere('schedule_status', 'CLIENT_RESERVED_B');
         })->where('lesson_time', ">=", $date)
-        ->orderby('lesson_time', 'ASC')
-        ->get();
+            ->orderby('lesson_time', 'ASC')
+            ->get();
 
         $results = array();
 
-        foreach ($schedules as $schedule) 
-        {
-           $latestReply = MemoReply::where('schedule_item_id', $schedule->id)->orderBy('updated_at', 'DESC')->first();           
-            
-           if ($latestReply) {
+        foreach ($schedules as $schedule) {
+            $latestReply = MemoReply::where('schedule_item_id', $schedule->id)->orderBy('updated_at', 'DESC')->first();
+
+            if ($latestReply) {
                 $results[] = array(
                     'id' => $schedule->id,
                     "memo" => $schedule->memo,
@@ -67,11 +357,11 @@ class ScheduleItem extends Model
                     'message' => $latestReply->message,
                     "member_id" => $schedule->member_id,
                     "tutor_id" => $schedule->tutor_id,
-                    'updated_at' => $latestReply->updated_at ,
+                    'updated_at' => $latestReply->updated_at,
                 );
-           }
+            }
 
-        }               
+        }
 
         usort($results, sortByDate('updated_at'));
         $results = (object) $results;
@@ -79,39 +369,37 @@ class ScheduleItem extends Model
         return $object;
     }
 
-
-    public function getMemberAllActiveLessons_standard($member) 
+    public function getMemberAllActiveLessons_standard($member)
     {
         $date = date('Y-m-d H:i:s');
 
-        $reserves = ScheduleItem::where('member_id', $member->user_id)->where('valid', 1)->where(function ($q) use ($member) {                
+        $reserves = ScheduleItem::where('member_id', $member->user_id)->where('valid', 1)->where(function ($q) use ($member) {
             $q->orWhere('schedule_status', 'CLIENT_RESERVED')
-            ->orWhere('schedule_status', 'CLIENT_RESERVED_B');
+                ->orWhere('schedule_status', 'CLIENT_RESERVED_B');
         })->where('lesson_time', ">=", $date)
-        ->orderby('lesson_time', 'ASC')
-        ->get();
+            ->orderby('lesson_time', 'ASC')
+            ->get();
 
         return $reserves;
     }
-    
-    public function getTutorAllActiveLessons($tutor) 
+
+    public function getTutorAllActiveLessons($tutor)
     {
         $date = date('Y-m-d H:i:s');
 
-        $schedules = ScheduleItem::where('tutor_id', $tutor->user_id)->where('valid', 1)->where(function ($q) use ($tutor) {                
+        $schedules = ScheduleItem::where('tutor_id', $tutor->user_id)->where('valid', 1)->where(function ($q) use ($tutor) {
             $q->orWhere('schedule_status', 'CLIENT_RESERVED')
-            ->orWhere('schedule_status', 'CLIENT_RESERVED_B');
+                ->orWhere('schedule_status', 'CLIENT_RESERVED_B');
         })->where('lesson_time', ">=", $date)
-        ->orderby('lesson_time', 'ASC')
-        ->get();
+            ->orderby('lesson_time', 'ASC')
+            ->get();
 
         $results = array();
 
-        foreach ($schedules as $schedule) 
-        {
-           $latestReply = MemoReply::where('schedule_item_id', $schedule->id)->orderBy('updated_at', 'DESC')->first();           
-            
-           if ($latestReply) {
+        foreach ($schedules as $schedule) {
+            $latestReply = MemoReply::where('schedule_item_id', $schedule->id)->orderBy('updated_at', 'DESC')->first();
+
+            if ($latestReply) {
                 $results[] = array(
                     'id' => $schedule->id,
                     "memo" => $schedule->memo,
@@ -119,72 +407,67 @@ class ScheduleItem extends Model
                     'message' => $latestReply->message,
                     "member_id" => $schedule->member_id,
                     "tutor_id" => $schedule->tutor_id,
-                    'updated_at' => $latestReply->updated_at ,
+                    'updated_at' => $latestReply->updated_at,
                 );
-           }
+            }
 
-        }               
+        }
 
         usort($results, sortByDate('updated_at'));
         $results = (object) $results;
         $object = json_decode(json_encode($results));
         return $object;
-    }  
+    }
 
-
-    public function getTutorAllActiveLessons_standard($tutor) 
+    public function getTutorAllActiveLessons_standard($tutor)
     {
         $date = date('Y-m-d H:i:s');
 
-        $reserves = ScheduleItem::where('tutor_id', $tutor->user_id)->where('valid', 1)->where(function ($q) use ($tutor) {                
+        $reserves = ScheduleItem::where('tutor_id', $tutor->user_id)->where('valid', 1)->where(function ($q) use ($tutor) {
             $q->orWhere('schedule_status', 'CLIENT_RESERVED')
-            ->orWhere('schedule_status', 'CLIENT_RESERVED_B');
+                ->orWhere('schedule_status', 'CLIENT_RESERVED_B');
         })->where('lesson_time', ">=", $date)
-        ->orderby('lesson_time', 'ASC')
-        ->get();
-        
+            ->orderby('lesson_time', 'ASC')
+            ->get();
+
         return $reserves;
-    }    
-    
- 
-    public function getMemberActiveLessons($member) 
+    }
+
+    public function getMemberActiveLessons($member)
     {
         $date_now = date('Y-m-d H:i:s');
         //
-        $date_30minutes_validity = date("Y-m-d H:i:s", strtotime($date_now ." - 30 minutes"));
+        $date_30minutes_validity = date("Y-m-d H:i:s", strtotime($date_now . " - 30 minutes"));
 
-        $reserves = ScheduleItem::where('member_id', $member->user_id)->where('valid', 1)->where(function ($q) use ($member) {                
+        $reserves = ScheduleItem::where('member_id', $member->user_id)->where('valid', 1)->where(function ($q) use ($member) {
             $q->orWhere('schedule_status', 'CLIENT_RESERVED')
-            ->orWhere('schedule_status', 'CLIENT_RESERVED_B');
+                ->orWhere('schedule_status', 'CLIENT_RESERVED_B');
         })->where('lesson_time', ">=", $date_30minutes_validity)
-        ->orderby('lesson_time', 'ASC')
-        ->paginate(5);
+            ->orderby('lesson_time', 'ASC')
+            ->paginate(5);
 
         return $reserves;
     }
-    
 
     /* @Added: MAY 21, 2021
-     * @Desc:  Returns total number count of Reserved (A & B ONLY), this is for the member schedule list limiter to 
+     * @Desc:  Returns total number count of Reserved (A & B ONLY), this is for the member schedule list limiter to
      * @Params: @MembeID - User ID of Member
      * Returns: @total (site wide number of reserved A and B)
-    */
-    public function getTotalMemberReserved($member) 
+     */
+    public function getTotalMemberReserved($member)
     {
         $dateOfReservation = date('Y-m-d H:i:s');
-                     
+
         $total = ScheduleItem::where('member_id', $member->user_id)
-        ->where('valid', 1)
-        ->where(function ($q) use ($member) 
-        {
-            $q
-                ->orWhere('schedule_status', 'CLIENT_RESERVED')
-                ->orWhere('schedule_status', 'CLIENT_RESERVED_B');
+            ->where('valid', 1)
+            ->where(function ($q) use ($member) {
+                $q
+                    ->orWhere('schedule_status', 'CLIENT_RESERVED')
+                    ->orWhere('schedule_status', 'CLIENT_RESERVED_B');
 
-        })
-        ->where('lesson_time', ">=", $dateOfReservation)
-        ->count();
-
+            })
+            ->where('lesson_time', ">=", $dateOfReservation)
+            ->count();
 
         return $total;
     }
@@ -195,250 +478,242 @@ class ScheduleItem extends Model
      * @Params: @membeID - User ID of Member
      * @Params: @date (format Y, M, D)
      * Returns: @total (number of reserved A and B in a particular day for a particular member)
-    */
-    public function getTotalMemberDailyReserved($memberID, $date) 
+     */
+    public function getTotalMemberDailyReserved($memberID, $date)
     {
 
         $nextDay = date("Y-m-d", strtotime($date . " + 1 day"));
 
-        $total = ScheduleItem::where('member_id', $memberID)                            
-                            ->where(function ($q) use ($memberID) {       
-                                $q->orWhere('schedule_status', 'CLIENT_RESERVED')
-                                  ->orWhere('schedule_status', 'CLIENT_RESERVED_B');
-                            })->whereDate('lesson_time', '=', $date)                            
-                            ->orWhereDate('lesson_time', '=',  $nextDay . " 00:30:00")
-                            ->orWhereDate('lesson_time', '=',  $nextDay . " 00:00:00")                            
-                            ->where('valid', 1)                            
-                            ->count();
+        $total = ScheduleItem::where('member_id', $memberID)
+            ->where(function ($q) use ($memberID) {
+                $q->orWhere('schedule_status', 'CLIENT_RESERVED')
+                    ->orWhere('schedule_status', 'CLIENT_RESERVED_B');
+            })->whereDate('lesson_time', '=', $date)
+            ->orWhereDate('lesson_time', '=', $nextDay . " 00:30:00")
+            ->orWhereDate('lesson_time', '=', $nextDay . " 00:00:00")
+            ->where('valid', 1)
+            ->count();
 
         return $total;
     }
 
     /**
      * @Added: JUNE 7, 2021
-     * @Desc: Returns total number of reserve A and B for a particular day for a particular Tutor         
+     * @Desc: Returns total number of reserve A and B for a particular day for a particular Tutor
      * @Params: @membeID - User ID of Member
      * @Params: @tutor - Tutot ID of Teacher
      * @Params: @date (format Y, M, D)
      * Returns: @total (number of reserved A and B in a particular day)
-    */    
-    public function getTotalTutorDailyReserved($memberID, $tutorID, $date) 
-    {      
+     */
+    public function getTotalTutorDailyReserved($memberID, $tutorID, $date)
+    {
 
         $nextDay = date("Y-m-d", strtotime($date . " + 1 day"));
 
-        $reserved = ScheduleItem::whereRaw("(lesson_time >= ? AND lesson_time <= ?)", [$date, $nextDay." 00:30:00"])
-                        ->where('member_id', $memberID)
-                        ->where('tutor_id', $tutorID)  
-                        ->where('valid', 1)          
-                        ->where('schedule_status', 'CLIENT_RESERVED')
-                        ->count();                           
+        $reserved = ScheduleItem::whereRaw("(lesson_time >= ? AND lesson_time <= ?)", [$date, $nextDay . " 00:30:00"])
+            ->where('member_id', $memberID)
+            ->where('tutor_id', $tutorID)
+            ->where('valid', 1)
+            ->where('schedule_status', 'CLIENT_RESERVED')
+            ->count();
 
-        $reserved_b = ScheduleItem::whereRaw("(lesson_time >= ? AND lesson_time <= ?)", [$date, $nextDay." 00:30:00"])
-                        ->where('member_id', $memberID)
-                        ->where('tutor_id', $tutorID)  
-                        ->where('valid', 1)          
-                        ->where('schedule_status', 'CLIENT_RESERVED_B')                                                    
-                        ->count();                           
-                    
-              
-              
+        $reserved_b = ScheduleItem::whereRaw("(lesson_time >= ? AND lesson_time <= ?)", [$date, $nextDay . " 00:30:00"])
+            ->where('member_id', $memberID)
+            ->where('tutor_id', $tutorID)
+            ->where('valid', 1)
+            ->where('schedule_status', 'CLIENT_RESERVED_B')
+            ->count();
+
         $total = $reserved + $reserved_b;
 
         return $total;
     }
 
+    /*  @description : Get the time interval of the current time
+    @returns     : Returns current time lesson interval
+    Lesson is null - Returns current time lesson interval
+    @foramt      :  date('Y-m-d H:i:s')
+     */
 
-    /*  @description : Get the time interval of the current time 
-        @returns     : Returns current time lesson interval
-                        Lesson is null - Returns current time lesson interval
-        @foramt      :  date('Y-m-d H:i:s')
-    */
-
-    function getCurrentTimeDuration($lessonTime = null) 
+    public function getCurrentTimeDuration($lessonTime = null)
     {
         $currenTime = date('Y-m-d H:i:s');
 
-        if ($lessonTime == null) {        
-            $lessonDate = $this->adjustToJapaneseHours($currenTime);    
-        } else {        
-            $lessonDate =  $this->adjustToJapaneseHours($lessonTime);
+        if ($lessonTime == null) {
+            $lessonDate = $this->adjustToJapaneseHours($currenTime);
+        } else {
+            $lessonDate = $this->adjustToJapaneseHours($lessonTime);
         }
 
         return $this->calculateLessonStartTime($lessonDate);
     }
 
+    /*
+    @DESCRIPTION: Base on the date, it will get the time in within30 minute
 
-    /* 
-        @DESCRIPTION: Base on the date, it will get the time in within30 minute 
-
-        @note:  A LESSON THAT FALLS ON 00:00:00 till 00:30:00 will be considered a day before 24:00:00 
-    */
-    public function adjustToJapaneseHours($lessonTime) 
+    @note:  A LESSON THAT FALLS ON 00:00:00 till 00:30:00 will be considered a day before 24:00:00
+     */
+    public function adjustToJapaneseHours($lessonTime)
     {
         if (date('H', strtotime($lessonTime)) == '00') {
-            return date('Y-m-d H:i:s', strtotime($lessonTime ." - 1 day"));            
-        } else {    
-            return date('Y-m-d H:i:s', strtotime($lessonTime)); 
+            return date('Y-m-d H:i:s', strtotime($lessonTime . " - 1 day"));
+        } else {
+            return date('Y-m-d H:i:s', strtotime($lessonTime));
         }
     }
 
-    /* 
-        @DESCRIPTION: Base on the date, it will get the time in within30 minute 
-    */
+    /*
+    @DESCRIPTION: Base on the date, it will get the time in within30 minute
+     */
 
-    public function calculateLessonStartTime($date) 
+    public function calculateLessonStartTime($date)
     {
 
-        $day        =  date('Y-m-d', strtotime($date));
-        $hour       = date('H', strtotime($date));
-        $min        = date('i', strtotime($date));
-        $seconds    = "00";    
+        $day = date('Y-m-d', strtotime($date));
+        $hour = date('H', strtotime($date));
+        $min = date('i', strtotime($date));
+        $seconds = "00";
 
         if ($min >= 0 && $min <= 25) {
             $minute = "00";
         } else if ($min > 25 && $min <= 59) {
-            $minute = "30";        
-        }  else {
+            $minute = "30";
+        } else {
             $minute = "00";
         }
 
-        return ($day ." ". $hour.":".$minute.":".$seconds);
+        return ($day . " " . $hour . ":" . $minute . ":" . $seconds);
     }
-
 
     /* Returns the Schedules based on Lesson Time, month, year */
     /*
-    public function getTotalLessonReserved_version1($memberID, $month, $year) 
+    public function getTotalLessonReserved_version1($memberID, $month, $year)
     {
-        $reserved = ScheduleItem::where('member_id', $memberID)
-                    ->whereYear('lesson_time', '=', $year)
-                    ->whereMonth('lesson_time','=', $month)
-                    ->where('schedule_status', '=', "CLIENT_RESERVED")      
-                    //->where('valid', 1)
-                    ->count();
+    $reserved = ScheduleItem::where('member_id', $memberID)
+    ->whereYear('lesson_time', '=', $year)
+    ->whereMonth('lesson_time','=', $month)
+    ->where('schedule_status', '=', "CLIENT_RESERVED")
+    //->where('valid', 1)
+    ->count();
 
-        $reserved_b = ScheduleItem::where('member_id', $memberID)
-            ->whereYear('lesson_time', '=', $year)
-            ->whereMonth('lesson_time','=', $month)
-            ->where('schedule_status', '=', "CLIENT_RESERVED_B")                       
-            //->where('valid', 1)
-            ->count();                       
+    $reserved_b = ScheduleItem::where('member_id', $memberID)
+    ->whereYear('lesson_time', '=', $year)
+    ->whereMonth('lesson_time','=', $month)
+    ->where('schedule_status', '=', "CLIENT_RESERVED_B")
+    //->where('valid', 1)
+    ->count();
 
-        $completed = ScheduleItem::where('member_id', $memberID)
-            ->whereYear('lesson_time', '=', $year)
-            ->whereMonth('lesson_time','=', $month)
-            ->where('schedule_status', '=', "COMPLETED")                       
-            ->where('valid', 1)
-            ->count();
+    $completed = ScheduleItem::where('member_id', $memberID)
+    ->whereYear('lesson_time', '=', $year)
+    ->whereMonth('lesson_time','=', $month)
+    ->where('schedule_status', '=', "COMPLETED")
+    ->where('valid', 1)
+    ->count();
 
-        $not_available = ScheduleItem::where('member_id', $memberID)
-            ->whereYear('lesson_time', '=', $year)
-            ->whereMonth('lesson_time','=', $month)
-            ->where('schedule_status', '=', "CLIENT_NOT_AVAILABLE")                       
-            //->where('valid', 1)
-            ->count();            
+    $not_available = ScheduleItem::where('member_id', $memberID)
+    ->whereYear('lesson_time', '=', $year)
+    ->whereMonth('lesson_time','=', $month)
+    ->where('schedule_status', '=', "CLIENT_NOT_AVAILABLE")
+    //->where('valid', 1)
+    ->count();
 
-        $reserveCount = $reserved + $reserved_b + $completed + $not_available;
+    $reserveCount = $reserved + $reserved_b + $completed + $not_available;
 
-        return $reserveCount;        
+    return $reserveCount;
     }
-    */
+     */
 
     /* Returns the Schedules based on Lesson Time for current month*/
     /*
-    public function getTotalLessonForCurrentMonth_version1($memberID) 
+    public function getTotalLessonForCurrentMonth_version1($memberID)
     {
-        $currentYear = date('Y');
-        $currentMonth = date('m');
+    $currentYear = date('Y');
+    $currentMonth = date('m');
 
-        $reserved = ScheduleItem::where('member_id', $memberID)
-                    ->whereYear('lesson_time', '=', $currentYear)
-                    ->whereMonth('lesson_time','=', $currentMonth)
-                    ->where('schedule_status', '=', "CLIENT_RESERVED")                       
-                    //->where('valid', 1)
-                    ->count();
-        
-        $reserved_b = ScheduleItem::where('member_id', $memberID)
-                    ->whereYear('lesson_time', '=', $currentYear)
-                    ->whereMonth('lesson_time','=', $currentMonth)
-                    ->where('schedule_status', '=', "CLIENT_RESERVED_B")                       
-                    //->where('valid', 1)
-                    ->count();                    
-                    
-        $completed = ScheduleItem::where('member_id', $memberID)
-                    ->whereYear('lesson_time', '=', $currentYear)
-                    ->whereMonth('lesson_time','=', $currentMonth)
-                    ->where('schedule_status', '=', "COMPLETED")                       
-                    //->where('valid', 1)
-                    ->count();
+    $reserved = ScheduleItem::where('member_id', $memberID)
+    ->whereYear('lesson_time', '=', $currentYear)
+    ->whereMonth('lesson_time','=', $currentMonth)
+    ->where('schedule_status', '=', "CLIENT_RESERVED")
+    //->where('valid', 1)
+    ->count();
 
-        $not_available = ScheduleItem::where('member_id', $memberID)
-                        ->whereYear('lesson_time', '=', $currentYear)
-                        ->whereMonth('lesson_time','=', $currentMonth)
-                        ->where('schedule_status', '=', "CLIENT_NOT_AVAILABLE")                       
-                        //->where('valid', 1)
-                        ->count();
-                        
-        $reserveCount = $reserved + $reserved_b + $completed + $not_available;
+    $reserved_b = ScheduleItem::where('member_id', $memberID)
+    ->whereYear('lesson_time', '=', $currentYear)
+    ->whereMonth('lesson_time','=', $currentMonth)
+    ->where('schedule_status', '=', "CLIENT_RESERVED_B")
+    //->where('valid', 1)
+    ->count();
 
-        return $reserveCount;
+    $completed = ScheduleItem::where('member_id', $memberID)
+    ->whereYear('lesson_time', '=', $currentYear)
+    ->whereMonth('lesson_time','=', $currentMonth)
+    ->where('schedule_status', '=', "COMPLETED")
+    //->where('valid', 1)
+    ->count();
+
+    $not_available = ScheduleItem::where('member_id', $memberID)
+    ->whereYear('lesson_time', '=', $currentYear)
+    ->whereMonth('lesson_time','=', $currentMonth)
+    ->where('schedule_status', '=', "CLIENT_NOT_AVAILABLE")
+    //->where('valid', 1)
+    ->count();
+
+    $reserveCount = $reserved + $reserved_b + $completed + $not_available;
+
+    return $reserveCount;
     }
-    */
+     */
 
     /* Returns the Total Schedule Count for the current month based on lesson Time (active or inactive will) */
     /*
-    public function getTotalReservedForCurrentMonth_version1($memberID) 
+    public function getTotalReservedForCurrentMonth_version1($memberID)
     {
-        //CLient rserve / Client reserve B / Completed /Client not available
-        $currentYear = date('Y');
-        $currentMonth = date('m');
+    //CLient rserve / Client reserve B / Completed /Client not available
+    $currentYear = date('Y');
+    $currentMonth = date('m');
 
-        
-        $reserved = ScheduleItem::where('member_id', $memberID)
-                    ->whereYear('lesson_time', '=', $currentYear)
-                    ->whereMonth('lesson_time','=', $currentMonth)
-                    ->where('schedule_status', '=', "CLIENT_RESERVED")                       
-                    //->where('valid', 1)
-                    ->count();
+    $reserved = ScheduleItem::where('member_id', $memberID)
+    ->whereYear('lesson_time', '=', $currentYear)
+    ->whereMonth('lesson_time','=', $currentMonth)
+    ->where('schedule_status', '=', "CLIENT_RESERVED")
+    //->where('valid', 1)
+    ->count();
 
-        
-        $reserved_b = ScheduleItem::where('member_id', $memberID)
-                    ->whereYear('lesson_time', '=', $currentYear)
-                    ->whereMonth('lesson_time','=', $currentMonth)
-                    ->where('schedule_status', '=', "CLIENT_RESERVED_B")                       
-                    //->where('valid', 1)
-                    ->count();                    
-                    
-        $completed = ScheduleItem::where('member_id', $memberID)
-                    ->whereYear('lesson_time', '=', $currentYear)
-                    ->whereMonth('lesson_time','=', $currentMonth)
-                    ->where('schedule_status', '=', "COMPLETED")                       
-                    //->where('valid', 1)
-                    ->count();
+    $reserved_b = ScheduleItem::where('member_id', $memberID)
+    ->whereYear('lesson_time', '=', $currentYear)
+    ->whereMonth('lesson_time','=', $currentMonth)
+    ->where('schedule_status', '=', "CLIENT_RESERVED_B")
+    //->where('valid', 1)
+    ->count();
 
-        $not_available = ScheduleItem::where('member_id', $memberID)
-                        ->whereYear('lesson_time', '=', $currentYear)
-                        ->whereMonth('lesson_time','=', $currentMonth)
-                        ->where('schedule_status', '=', "CLIENT_NOT_AVAILABLE")                       
-                        //->where('valid', 1)
-                        ->count();
+    $completed = ScheduleItem::where('member_id', $memberID)
+    ->whereYear('lesson_time', '=', $currentYear)
+    ->whereMonth('lesson_time','=', $currentMonth)
+    ->where('schedule_status', '=', "COMPLETED")
+    //->where('valid', 1)
+    ->count();
 
-        $reserveCount = $reserved + $reserved_b + $completed + $not_available;   
-                    
-        return $reserveCount;
+    $not_available = ScheduleItem::where('member_id', $memberID)
+    ->whereYear('lesson_time', '=', $currentYear)
+    ->whereMonth('lesson_time','=', $currentMonth)
+    ->where('schedule_status', '=', "CLIENT_NOT_AVAILABLE")
+    //->where('valid', 1)
+    ->count();
+
+    $reserveCount = $reserved + $reserved_b + $completed + $not_available;
+
+    return $reserveCount;
     }
-    */
-
+     */
 
     /*
-        Description: This will check how many reserved for a specific month and year for a client
-        Parameters:
-            @month - the month of the schedule
-            @year  - the year of the schedule
-            @memberID - member ID of user        
-    */
-    public function getTotalLessonReserved($memberID, $month, $year) 
+    Description: This will check how many reserved for a specific month and year for a client
+    Parameters:
+    @month - the month of the schedule
+    @year  - the year of the schedule
+    @memberID - member ID of user
+     */
+    public function getTotalLessonReserved($memberID, $month, $year)
     {
 
         //start date
@@ -450,38 +725,37 @@ class ScheduleItem extends Model
 
         //final end date
         $endDate = $endDateNextDay . " 00:30:00";
-        
-        
+
         $reserved = ScheduleItem::where('member_id', $memberID)
-                    ->whereBetween('lesson_time', [$startDate, $endDate])
-                    ->where('schedule_status', '=', "CLIENT_RESERVED")      
-                    //->where('valid', 1)
-                    ->count();
+            ->whereBetween('lesson_time', [$startDate, $endDate])
+            ->where('schedule_status', '=', "CLIENT_RESERVED")
+        //->where('valid', 1)
+            ->count();
 
         $reserved_b = ScheduleItem::where('member_id', $memberID)
-                    ->whereBetween('lesson_time', [$startDate, $endDate])
-                    ->where('schedule_status', '=', "CLIENT_RESERVED_B")                       
-                    //->where('valid', 1)
-                    ->count();                       
+            ->whereBetween('lesson_time', [$startDate, $endDate])
+            ->where('schedule_status', '=', "CLIENT_RESERVED_B")
+        //->where('valid', 1)
+            ->count();
 
         $completed = ScheduleItem::where('member_id', $memberID)
-                    ->whereBetween('lesson_time', [$startDate, $endDate])
-                    ->where('schedule_status', '=', "COMPLETED")                       
-                    ->where('valid', 1)
-                    ->count();
+            ->whereBetween('lesson_time', [$startDate, $endDate])
+            ->where('schedule_status', '=', "COMPLETED")
+            ->where('valid', 1)
+            ->count();
 
         $not_available = ScheduleItem::where('member_id', $memberID)
-                    ->whereBetween('lesson_time', [$startDate, $endDate])
-                        ->where('schedule_status', '=', "CLIENT_NOT_AVAILABLE")                       
-                        //->where('valid', 1)
-                        ->count();            
+            ->whereBetween('lesson_time', [$startDate, $endDate])
+            ->where('schedule_status', '=', "CLIENT_NOT_AVAILABLE")
+        //->where('valid', 1)
+            ->count();
 
         $reserveCount = $reserved + $reserved_b + $completed + $not_available;
 
-        return $reserveCount;        
-    }    
+        return $reserveCount;
+    }
 
-    public function getTotalLessonForCurrentMonth($memberID) 
+    public function getTotalLessonForCurrentMonth($memberID)
     {
         //start date
         $startDate = date('Y-m-d H:i:s', strtotime(date('Y-m-01 09:00:00')));
@@ -494,49 +768,44 @@ class ScheduleItem extends Model
         $endDate = $endDateNextDay . " 00:30:00";
 
         $reserved = ScheduleItem::where('member_id', $memberID)
-                    ->whereBetween('lesson_time', [$startDate, $endDate])
-                    ->where('schedule_status', '=', "CLIENT_RESERVED")                       
-                    //->where('valid', 1)
-                    ->count();
-        
+            ->whereBetween('lesson_time', [$startDate, $endDate])
+            ->where('schedule_status', '=', "CLIENT_RESERVED")
+        //->where('valid', 1)
+            ->count();
+
         $reserved_b = ScheduleItem::where('member_id', $memberID)
-                    ->whereBetween('lesson_time', [$startDate, $endDate])
-                    ->where('schedule_status', '=', "CLIENT_RESERVED_B")                       
-                    //->where('valid', 1)
-                    ->count();                    
-                    
+            ->whereBetween('lesson_time', [$startDate, $endDate])
+            ->where('schedule_status', '=', "CLIENT_RESERVED_B")
+        //->where('valid', 1)
+            ->count();
+
         $completed = ScheduleItem::where('member_id', $memberID)
-                    ->whereBetween('lesson_time', [$startDate, $endDate])
-                    ->where('schedule_status', '=', "COMPLETED")                       
-                    //->where('valid', 1)
-                    ->count();
+            ->whereBetween('lesson_time', [$startDate, $endDate])
+            ->where('schedule_status', '=', "COMPLETED")
+        //->where('valid', 1)
+            ->count();
 
         $not_available = ScheduleItem::where('member_id', $memberID)
-                        ->whereBetween('lesson_time', [$startDate, $endDate])
-                        ->where('schedule_status', '=', "CLIENT_NOT_AVAILABLE")                       
-                        //->where('valid', 1)
-                        ->count();
-                        
+            ->whereBetween('lesson_time', [$startDate, $endDate])
+            ->where('schedule_status', '=', "CLIENT_NOT_AVAILABLE")
+        //->where('valid', 1)
+            ->count();
 
         $writingPoints = WritingEntries::where('user_id', $memberID)
-                            ->whereBetween('created_at', [$startDate, $endDate])
-                            ->where('type', 'Monthly')
-                            ->sum('total_points');
+            ->whereBetween('created_at', [$startDate, $endDate])
+            ->where('type', 'Monthly')
+            ->sum('total_points');
 
-
-        $miniTestCount =  MiniTestResult::where('user_id', $memberID)
-                            ->whereBetween('time_started', [$startDate, $endDate])
-                            ->where('type', 'Monthly')->count();
-
-        
+        $miniTestCount = MiniTestResult::where('user_id', $memberID)
+            ->whereBetween('time_started', [$startDate, $endDate])
+            ->where('type', 'Monthly')->count();
 
         $reserveCount = $reserved + $reserved_b + $completed + $not_available + $writingPoints + $miniTestCount;
 
         return $reserveCount;
     }
-    
-    
-    public function getTotalReservedForCurrentMonth($memberID) 
+
+    public function getTotalReservedForCurrentMonth($memberID)
     {
         //start date
         $startDate = date('Y-m-d H:i:s', strtotime(date('Y-m-1 01:00:00')));
@@ -549,50 +818,43 @@ class ScheduleItem extends Model
         $endDate = $endDateNextDay . " 00:30:00";
 
         $reserved = ScheduleItem::where('member_id', $memberID)
-                    ->whereBetween('lesson_time', [$startDate, $endDate])
-                    ->where('schedule_status', '=', "CLIENT_RESERVED")
-                    //->where('valid', 1)
-                    ->count();                    
+            ->whereBetween('lesson_time', [$startDate, $endDate])
+            ->where('schedule_status', '=', "CLIENT_RESERVED")
+        //->where('valid', 1)
+            ->count();
 
-        
         $reserved_b = ScheduleItem::where('member_id', $memberID)
-                    ->whereBetween('lesson_time', [$startDate, $endDate])
-                    ->where('schedule_status', '=', "CLIENT_RESERVED_B")                       
-                    //->where('valid', 1)
-                    ->count();                    
-                    
+            ->whereBetween('lesson_time', [$startDate, $endDate])
+            ->where('schedule_status', '=', "CLIENT_RESERVED_B")
+        //->where('valid', 1)
+            ->count();
+
         $completed = ScheduleItem::where('member_id', $memberID)
-                        ->whereBetween('lesson_time', [$startDate, $endDate])
-                        ->where('schedule_status', '=', "COMPLETED")                       
-                        //->where('valid', 1)
-                        ->count();
+            ->whereBetween('lesson_time', [$startDate, $endDate])
+            ->where('schedule_status', '=', "COMPLETED")
+        //->where('valid', 1)
+            ->count();
 
         $not_available = ScheduleItem::where('member_id', $memberID)
-                        ->whereBetween('lesson_time', [$startDate, $endDate])
-                        ->where('schedule_status', '=', "CLIENT_NOT_AVAILABLE")                       
-                        //->where('valid', 1)
-                        ->count();
+            ->whereBetween('lesson_time', [$startDate, $endDate])
+            ->where('schedule_status', '=', "CLIENT_NOT_AVAILABLE")
+        //->where('valid', 1)
+            ->count();
 
-      
         $writingPoints = WritingEntries::where('user_id', $memberID)
-                                ->whereBetween('created_at', [$startDate, $endDate])
-                                ->where('type', 'Monthly')
-                                ->sum('total_points');
+            ->whereBetween('created_at', [$startDate, $endDate])
+            ->where('type', 'Monthly')
+            ->sum('total_points');
 
+        $miniTestCount = MiniTestResult::where('user_id', $memberID)
+            ->whereBetween('time_started', [$startDate, $endDate])
+            ->where('type', 'Monthly')
+            ->count();
 
-        $miniTestCount =  MiniTestResult::where('user_id', $memberID)
-                            ->whereBetween('time_started', [$startDate, $endDate])
-                            ->where('type', 'Monthly')
-                            ->count();
+        $reserveCount = $reserved + $reserved_b + $completed + $not_available + $writingPoints + $miniTestCount;
 
-      
-
-        $reserveCount = $reserved + $reserved_b + $completed + $not_available + $writingPoints + $miniTestCount ;
-                    
         return $reserveCount;
     }
-    
-
 
     /** @v2
      * @param tutorID - ID FROM tutor admin panel
@@ -608,14 +870,14 @@ class ScheduleItem extends Model
         ->where('lesson_time', '<=', $dateTo)
         ->get();
          */
-        
-        $dateToExtended = date('Y-m-d', strtotime($dateTo ." + 1 day"));   
-        
+
+        $dateToExtended = date('Y-m-d', strtotime($dateTo . " + 1 day"));
+
         $lessonItems = ScheduleItem::whereBetween(DB::raw('DATE(lesson_time)'), array($dateFrom, $dateToExtended))->where('tutor_id', $tutor->user_id)->where('valid', 1)->get();
 
         foreach ($lessonItems as $item) {
             //find nickname
-            $nickname = "";            
+            $nickname = "";
             $firstname = "";
             $lastname = "";
             $japanese_firstname = "";
@@ -660,7 +922,7 @@ class ScheduleItem extends Model
                 'member_id' => $item->member_id,
                 'nickname' => $nickname,
                 'firstname' => preg_replace('/[^A-Za-z0-9]/', ' ', $firstname),
-                'lastname' => preg_replace('/[^A-Za-z0-9]/', ' ', $lastname)
+                'lastname' => preg_replace('/[^A-Za-z0-9]/', ' ', $lastname),
             ];
         }
 
@@ -688,8 +950,7 @@ class ScheduleItem extends Model
 
         $schedules['tutors'] = $tutors;
 
-        foreach ($tutors as $tutor) 
-        {
+        foreach ($tutors as $tutor) {
             $scheduleItems = ScheduleItem::whereBetween(DB::raw('DATE(lesson_time)'), array($date, $nextDay))
                 ->where('tutor_id', $tutor->user_id)
                 ->where('valid', 1)
@@ -762,16 +1023,15 @@ class ScheduleItem extends Model
         //$scheduleItems = ScheduleItem::whereBetween(DB::raw('DATE(lesson_time)'), array($date, $nextDay))->where('valid', 1)->get();
 
         $scheduleItems = ScheduleItem::whereDate('lesson_time', '=', $date)
-                            ->where('valid', 1)
-                            ->orWhereDate('lesson_time', '=',  $nextDay . " 00:30:00")
-                            ->orWhereDate('lesson_time', '=',  $nextDay . " 00:00:00")                            
-                            ->get();
+            ->where('valid', 1)
+            ->orWhereDate('lesson_time', '=', $nextDay . " 00:30:00")
+            ->orWhereDate('lesson_time', '=', $nextDay . " 00:00:00")
+            ->get();
 
         $reportCard = new ReportCard();
 
         $schedules = [];
-        foreach ($scheduleItems as $item) 
-        {
+        foreach ($scheduleItems as $item) {
 
             //add questionnair marker
             $questionnaire = Questionnaire::where('schedule_item_id', $item->id)->first();
@@ -781,7 +1041,6 @@ class ScheduleItem extends Model
                 $hasQuestionnaire = false;
             }
 
-
             //add report card marker
             $memberReportCard = $reportCard->getReportbyScheduleItemID($item->id);
             if ($memberReportCard) {
@@ -790,8 +1049,7 @@ class ScheduleItem extends Model
                 $hasReportCard = false;
             }
 
-            if ($item->valid === 1 || $item->valid === '1') 
-            {                
+            if ($item->valid === 1 || $item->valid === '1') {
                 $schedules[$item->tutor_id][date('Y-m-d', strtotime($item->lesson_time))][date("H:i", strtotime($item->lesson_time . " -1 hour"))] = [
                     'valid' => $item->valid,
                     'id' => $item->id,
@@ -800,15 +1058,14 @@ class ScheduleItem extends Model
                     'endTime' => date("H:i", strtotime($item->lesson_time)),
                     'scheduled_at' => date('Y-m-d', strtotime($item->lesson_time)),
                     'email_type' => $item->email_type,
-                    'duration' => $item->duration,                
+                    'duration' => $item->duration,
                     'member_id' => $item->member_id,
                     'member_memo' => $item->memo,
                     'hasReportCard' => $hasReportCard,
-                    'hasQuestionnaire' => $hasQuestionnaire
+                    'hasQuestionnaire' => $hasQuestionnaire,
                     //'questionnaire' => $questionnaire,
                 ];
             }
-
 
         }
 
@@ -822,17 +1079,15 @@ class ScheduleItem extends Model
         //$scheduleItems = ScheduleItem::whereBetween(DB::raw('DATE(lesson_time)'), array($date, $nextDay))->where('valid', 1)->get();
 
         $scheduleItems = ScheduleItem::whereDate('lesson_time', '=', $date)
-                            ->where('valid', 1)
-                            ->orWhereDate('lesson_time', '=',  $nextDay . " 00:30:00")
-                            ->orWhereDate('lesson_time', '=',  $nextDay . " 00:00:00")                            
-                            ->get();
+            ->where('valid', 1)
+            ->orWhereDate('lesson_time', '=', $nextDay . " 00:30:00")
+            ->orWhereDate('lesson_time', '=', $nextDay . " 00:00:00")
+            ->get();
 
         $reportCard = new ReportCard();
 
         $schedules = [];
-        foreach ($scheduleItems as $item) 
-        {
-           
+        foreach ($scheduleItems as $item) {
 
             //add questionnair marker
             $questionnaire = Questionnaire::where('schedule_item_id', $item->id)->first();
@@ -842,7 +1097,6 @@ class ScheduleItem extends Model
                 $hasQuestionnaire = false;
             }
 
-
             //add report card marker
             $memberReportCard = $reportCard->getReportbyScheduleItemID($item->id);
             if ($memberReportCard) {
@@ -851,10 +1105,7 @@ class ScheduleItem extends Model
                 $hasReportCard = false;
             }
 
-           
-
-            if ($item->valid === 1 || $item->valid === '1') 
-            {                
+            if ($item->valid === 1 || $item->valid === '1') {
                 $userMemoValid = null;
 
                 //the memo from schedule is null, letst take a look at the memo replies if there are sent by teacher
@@ -864,7 +1115,7 @@ class ScheduleItem extends Model
                     $memoReplies = MemoReply::where('schedule_item_id', $item->id)->count();
                     if ($memoReplies >= 1) {
                         $userMemoValid = true;
-                    } 
+                    }
                 }
 
                 $schedules[$item->tutor_id][date('Y-m-d', strtotime($item->lesson_time))][date("H:i", strtotime($item->lesson_time . " -1 hour"))] = [
@@ -875,42 +1126,38 @@ class ScheduleItem extends Model
                     'endTime' => date("H:i", strtotime($item->lesson_time)),
                     'scheduled_at' => date('Y-m-d', strtotime($item->lesson_time)),
                     'email_type' => $item->email_type,
-                    'duration' => $item->duration,                
+                    'duration' => $item->duration,
                     'member_id' => $item->member_id,
                     'member_memo' => $userMemoValid,
                     'hasReportCard' => $hasReportCard,
-                    'hasQuestionnaire' => $hasQuestionnaire
+                    'hasQuestionnaire' => $hasQuestionnaire,
                     //'questionnaire' => $questionnaire,
                 ];
             }
-
 
         }
 
         return $schedules;
     }
 
-
-
     //List ALL specific Member schedules
     public function getMemberScheduledLesson($memberID)
     {
         /*
         $lessons = ScheduleItem::select('schedule_item.*', 'users.firstname', 'users.lastname')
-            //->join('tutors', 'tutors.user_id', '=', 'schedule_item.tutor_id')
-            ->join('users', 'users.id', '=', 'schedule_item.tutor_id')
-            ->where('member_id', $memberID)
-            //->where('schedule_item.valid', 1)
+        //->join('tutors', 'tutors.user_id', '=', 'schedule_item.tutor_id')
+        ->join('users', 'users.id', '=', 'schedule_item.tutor_id')
+        ->where('member_id', $memberID)
+        //->where('schedule_item.valid', 1)
+        ->orderBy('lesson_time', 'desc')
+        ->paginate(Auth::user()->items_per_page);
+         */
+
+        $lessons = ScheduleItem::where('member_id', $memberID)
+        //->where('schedule_item.valid', 1)
+        //->orderBy('created_at', 'desc')
             ->orderBy('lesson_time', 'desc')
             ->paginate(Auth::user()->items_per_page);
-        */
-
-             $lessons = ScheduleItem::where('member_id', $memberID)
-            //->where('schedule_item.valid', 1)
-            //->orderBy('created_at', 'desc')
-            ->orderBy('lesson_time', 'desc')
-            ->paginate(Auth::user()->items_per_page);
-
 
         return $lessons;
     }
@@ -933,4 +1180,45 @@ class ScheduleItem extends Model
         return $lessonItems->count();
     }
 
+    public function getFirstActiveSchedule($member)
+    {
+
+        $date = date('Y-m-d H:i:s');
+
+        $schedule = ScheduleItem::where('member_id', $member->user_id)->where('valid', 1)
+            ->where(function ($q) use ($member) {
+                $q->orWhere('schedule_status', 'CLIENT_RESERVED')->orWhere('schedule_status', 'CLIENT_RESERVED_B');
+            })
+            ->where('lesson_time', ">=", $date)
+            ->orderby('lesson_time', 'ASC')
+            ->first();
+
+        return $schedule;
+    }
+
+    public function isMemberValidToUpdate($member)
+    {
+
+        $firstLesson = $this->getFirstActiveSchedule($member);
+
+        if ($firstLesson) {
+            $dateTime = date('Y-m-d H:i:s');
+            $dateTimeAfterOneHour = date('Y-m-d H:i:s', strtotime($dateTime . ' +1 hour'));
+
+            $currentDate = new DateTime($dateTimeAfterOneHour);
+            $lessonDate = new DateTime($firstLesson->lesson_time);
+
+            if ($currentDate >= $lessonDate) {
+                $isValid = false;
+            } else {
+                $isValid = true;
+            }
+
+        } else {
+
+            $isValid = true;
+        }
+
+        return $isValid;
+    }
 }

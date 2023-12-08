@@ -304,7 +304,7 @@ class TutorController extends Controller
             ]);
 
         if ($validator->fails()) {
-            return redirect()->route('admin.tutor.edit')->withErrors($validator)->withInput();           
+            return redirect()->route('admin.tutor.edit', $id)->withErrors($validator)->withInput();           
 
         } else {
             

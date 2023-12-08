@@ -204,22 +204,35 @@
                     
                     <div class="col-6">
                         <div class="row">
-                            <div class="col-4 small pr-0">
-                                <label for="last_name" class="px-0 col-md-12 col-form-label"><span class="text-danger">*</span> Gender <div class="float-right">:</div></label>
+                            <div class="col-2 small pr-0">
+                                <label for="last_name" class="px-0 col-md-12 col-form-label">
+                                    <!--<span class="text-danger">*</span> -->
+                                    Gender <div class="float-right">:</div>
+                                </label>
                             </div>
                             <div class="col-8 pr-0 mr-0">
                                 <div class="form-group my-0 pt-2">
                                 
-                                    <div class="form-group">                                           
+                                    <div class="form-group">   
+                                         <!--                                        
                                         <input type="radio" v-model="user.gender" name="gender" :checked="user.gender === 'MALE'" value="MALE" class="" :class="{ 'is-invalid': submitted && $v.user.gender.$error }" />
                                         <label for="gender" class="small pr-4">Male</label>
 
                                         <input type="radio" v-model="user.gender" name="gender" :checked="user.gender === 'FEMALE'" value="FEMALE" class="" :class="{ 'is-invalid': submitted && $v.user.gender.$error }" />
                                         <label for="gender" class="small pr-4">Female</label>
 
+                                       
                                         <div v-if="submitted && !$v.user.gender.required" class="invalid-feedback">
                                             Gender is required
                                         </div>
+                                        -->
+
+                                        <input type="radio" v-model="user.gender" name="gender" :checked="user.gender === 'MALE'" value="MALE" class="">
+                                        <label for="gender" class="small col-2 col-xs-2 col-md-1 px-0">Male</label>
+
+                                        <input type="radio" v-model="user.gender" name="gender" :checked="user.gender === 'FEMALE'" value="FEMALE" class="">
+                                        <label for="gender" class="small col-2 col-xs-2 col-md-1 px-0">Female</label>                                        
+                                        
                                     </div>
 
                                 </div>
@@ -239,11 +252,43 @@
                     </div>                        
                 </div>
 
+                <div id="myroom-communication-app-row" class="row pt-2">
+
+                    <div class="col-6">
+                        <div class="row">
+                            <div class="col-4 small pr-0">
+                                <label for="is_myroom_enabled" class="px-0 col-md-12 col-form-label"><span class="text-danger">*</span> 
+                                Primary Communication App <div class="float-right">:</div></label>
+                            </div>
+                            
+                            <div class="col-8">
+                                <div class="row my-0">
+                                    <div class="col-5">
+
+
+                                        <select id="is_myroom_enabled" name="is_myroom_enabled"                                                
+                                                class="form-control form-control-sm" 
+                                                v-model="user.is_myroom_enabled">
+                                            <option :value="true" :selected="user.is_myroom_enabled === true">MyRoom</option>
+                                            <option :value="false" :selected="user.is_myroom_enabled === false">Backup</option>
+                                        </select>
+                                                                                   
+                                    </div>
+                                </div>
+
+                            </div>                            
+                        </div>
+                    </div>
+                </div>
+
+                <!--<div id="communication-app-row" class="row pt-2" v-show="user.is_myroom_enabled === true">-->
+
                 <div id="communication-app-row" class="row pt-2">
                     <div class="col-6">
                         <div class="row">
                             <div class="col-4 small pr-0">
-                                <label for="communication_app" class="px-0 col-md-12 col-form-label"><span class="text-danger">*</span> Communication App <div class="float-right">:</div></label>
+                                <label for="communication_app" class="px-0 col-md-12 col-form-label">
+                                <span class="text-danger">*</span> Backup Communication App <div class="float-right">:</div></label>
                             </div>
                             <div class="col-8">
                                 <div class="row my-0">
@@ -253,17 +298,19 @@
                                             v-model="user.communication_app"
                                             :class="{ 'is-invalid': submitted && $v.user.communication_app.$error }"
                                             @blur='checkIsValid($v.user.communication_app, $event)'
+                                            @change="handleCommunicationAppChange"
                                         >
                                             <option value="">-- Select --</option>
-                                            <option value="Skype" :selected="this.memberinfo.communication_app === 'Skype'">Skype</option>
-                                            <option value="Zoom" :selected="this.memberinfo.communication_app === 'Zoom'">Zoom</option>
+                                           
+                                            <option value="Skype" :selected="this.memberinfo.communication_app == 'Skype'">Skype</option>
+                                            <option value="Zoom" :selected="this.memberinfo.communication_app == 'Zoom'">Zoom</option>
                                         </select>
                                         <div v-if="submitted && !$v.user.communication_app.required" class="invalid-feedback">
                                             Communication App is required, Please select from choices
                                         </div>                                            
                                     </div>
                                     <div class="col-6 px-0">                                          
-                                        <div class="form-group">                                               
+                                        <div class="form-group" >                                               
                                             <input type="text" v-model="user.communication_app_username" id="communication_app_username" name="communication_app_username" 
                                                 class="form-control form-control-sm" 
                                                 :class="{ 'is-invalid': submitted && $v.user.communication_app_username.$error }"
@@ -482,9 +529,11 @@
                                       -->
 
                                     <li>
+                                        <!--{{ user.preference.purpose.OTHERS }}-->
+                                        
                                         <input type="checkbox" ref="purposes" name="purposes" id="others" v-model="user.preference.purpose.OTHERS" value="OTHERS"> Note 
                                         <textarea id="extraDetails" name="extraDetails" rows="2" cols="20" style="min-height: 20px; vertical-align: top;" class="ckeditor col-3 pl-1 form-control form-control-sm d-inline-block" 
-                                            v-if="user.preference.purpose.OTHERS" v-model="user.preference.purposeExtraDetails.OTHERS"></textarea>
+                                            v-show="user.preference.purpose.OTHERS == 'true'" v-model="user.preference.purposeExtraDetails.OTHERS"></textarea>
                                     </li>
                                 </ul>
 
@@ -1123,8 +1172,6 @@
                         </div>
                     </div>
 
-
-
                     <div class="col-12">
                         <div class="row">
                             <div class="col-2 small pr-0">
@@ -1158,6 +1205,23 @@
                             </div>
                         </div>
                     </div>
+
+                    <div class="col-12">
+                        <div class="row">
+                            <div class="col-2 small pr-0">
+                                <label for="agent" class="px-0 col-md-12 col-form-label">
+                                    Subject <div class="float-right">:</div>
+                                </label>
+                            </div>
+                            <div class="col-10">
+                                <div class="row">
+                                    <div class="col-10 pt-1">
+                                       {{ this.latestreportcard.lesson_subject }}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>                    
 
                     <div class="col-12">
                         <div class="row">
@@ -1201,7 +1265,7 @@
                                                 </div>
 
                                                 <div class="small">
-                                                    Instruction : {{ this.latestreportcard.homework.instruction }}
+                                                    Instruction : <span v-html="this.latestreportcard.homework.instruction"></span>
                                                 </div>
                                             </div>
                                             <div v-else>                   
@@ -1966,6 +2030,8 @@ export default {
                 email: "",
                 username: "",
                 gender: "",
+
+                is_myroom_enabled: false,
                 communication_app: "",
                 communication_app_username: "",
                 birthday: "",
@@ -2111,8 +2177,9 @@ export default {
            this.user.agent_name_en = "";
         }
 
-        //console.log(this.userinfo);
-        //console.log(this.latestreportcard);
+      
+        //let is_myroom_enabled = false;
+        
 
         //get user
         this.user.user_id                       = this.userinfo.id;
@@ -2128,19 +2195,30 @@ export default {
 		this.user.gender						= this.memberinfo.gender;		
 		this.user.communication_app             = this.memberinfo.communication_app;
 
+        if (this.memberinfo.is_myroom_enabled == true) {
+           // is_myroom_enabled = true;
+           this.user.is_myroom_enabled             = true;
+        } else {
+            this.user.is_myroom_enabled            = false;
+        }
+
         if ( this.user.communication_app === 'Skype' || this.user.communication_app === 'skype') 
         {
             this.user.communication_app_username    = this.memberinfo.skype_account; 
 
         } else if ( this.user.communication_app === 'Zoom' || this.user.communication_app === 'zoom') {
 
-            this.user.communication_app_username    = this.memberinfo.zoom_account;
+            this.user.communication_app_username    = this.memberinfo.zoom_account;     
+
         } else {
 
             //member added skype so lets set comm app to skype
-            if (this.memberinfo.skype_account) {               
+            if (this.memberinfo.skype_account) {          
+
                 this.user.communication_app = "Skype";
-                this.user.communication_app_username    = this.memberinfo.skype_account;
+                this.user.communication_app_username    = this.memberinfo.skype_account;           
+    
+
             } else {
                 //member added zoom account so let make it zoom
                 this.user.communication_app = "Zoom";
@@ -2321,9 +2399,11 @@ export default {
             nickname: {
                 required
             },
+            /*
             gender: {
                 required
             },
+            */
             communication_app: {
                 required
             },            
@@ -2356,6 +2436,7 @@ export default {
 
         handleSubmit(e) 
         {
+
             this.submitted = true;
             // stop here if form is invalid
             this.$v.$touch();
@@ -2368,7 +2449,7 @@ export default {
             this.user.preference.purposeExtraDetails.OTHERS = $('#extraDetails').val()
             
             //console.log(this.user.preference.purposeExtraDetails.OTHERS, $('#extraDetails').val());    
-            
+
        
             axios.post("/api/update_member?api_token=" + this.api_token, 
             {
@@ -2396,6 +2477,20 @@ export default {
             
                         
         },
+        handleCommunicationAppChange() {
+            console.log("handleCommunicationAppChange")
+
+            if (this.user.communication_app == 'Mytutor') {
+                this.user.communication_app_username = "-";
+
+            } else if (this.user.communication_app == 'Skype') {
+                this.user.communication_app_username = this.memberinfo.skype_account;
+
+            } else if (this.user.communication_app == 'Zoom') {
+                this.user.communication_app_username = this.memberinfo.zoom_account;
+            }
+        },        
+          
         handleChangeExamType(event) 
         {
             this.examLevel = "";
@@ -3069,6 +3164,9 @@ export default {
         },
         checkIsValid (val, event) 
         {
+
+            console.log(val, event);
+
             if (val.$anyError) 
             {
                 //console.log("shake!")

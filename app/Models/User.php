@@ -11,6 +11,8 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Passport\HasApiTokens;
 
+use Illuminate\Support\Facades\Storage;
+
 class User extends Authenticatable implements MustVerifyEmail
 {
     use SoftDeletes, Notifiable, HasApiTokens;
@@ -156,4 +158,16 @@ class User extends Authenticatable implements MustVerifyEmail
     {
         return $this->hasMany(MemberSetting::class, 'user_id', 'id');
     }    
+
+    public function image() 
+    {        
+        $userImage = UserImage::where('user_id', $this->id)->where('valid', 1)->first();
+
+        if ($userImage) {
+            return  Storage::url($userImage['original']);
+        } else {
+            return null;
+        }       
+     
+    }   
 }

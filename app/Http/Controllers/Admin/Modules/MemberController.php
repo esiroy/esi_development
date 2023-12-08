@@ -197,7 +197,7 @@ class MemberController extends Controller
 
                 $reportCard = new ReportCard();
                 //$latestReportCard = $reportCard->getLatest($mergedAccount->member_id);
-                 $latestReportCard = $reportCard->getLatest($memberID);
+                $latestReportCard = $reportCard->getLatest($memberID);
 
                 //member CEFR Level
                 $memberLevel = new MemberLevel();      
@@ -458,6 +458,8 @@ class MemberController extends Controller
     public function edit($memberID)
     {
 
+
+
         abort_if(Gate::denies('member_edit'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
         $memberInfo = Member::where('user_id', $memberID)->first();
@@ -481,9 +483,7 @@ class MemberController extends Controller
         //get latest report card
         $reportCardObject = new ReportCard();
         $latestReportCardValue = $reportCardObject->getLatest($memberID);
-
       
-
         
         if (isset($latestReportCardValue->schedule_item_id))
         {
@@ -510,6 +510,7 @@ class MemberController extends Controller
             'lesson_level' => isset($latestReportCardValue->lesson_level)? $latestReportCardValue->lesson_level : ' - ',
             'lesson_course' => isset($latestReportCardValue->lesson_course)? $latestReportCardValue->lesson_course : ' - ',
             'lesson_material' => isset($latestReportCardValue->lesson_material)? $latestReportCardValue->lesson_material : ' - ',
+            'lesson_subject' => isset($latestReportCardValue->lesson_subject)? $latestReportCardValue->lesson_subject : ' - ',
             'lesson_grade' => isset($latestReportCardValue->grade)? formatGrade($latestReportCardValue->grade) : ' - ',
             'homework' => $homeworkdata ?? '',
         ];

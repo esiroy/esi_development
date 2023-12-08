@@ -201,21 +201,25 @@
                     <div id="gender-row" class="row pt-2">
                         <div class="col-6">
                             <div class="row">
-                                <div class="col-4 small pr-0">
-                                    <label for="last_name" class="px-0 col-md-12 col-form-label"><span class="text-danger">*</span> Gender <div class="float-right">:</div></label>
+                                <div class="col-2 small pr-0">
+                                    <label for="last_name" class="px-0 col-md-12 col-form-label">
+                                        <!--<span class="text-danger">*</span> -->
+                                        Gender <div class="float-right">:</div>
+                                    </label>
                                 </div>
                                 <div class="col-8 pr-0 mr-0">
                                     <div class="form-group my-0 pt-2">
                                         <div class="form-group">                                           
-                                            <input type="radio" v-model="user.gender" name="gender" checked="checked" value="MALE" class="" :class="{ 'is-invalid': submitted && $v.user.gender.$error }" />
-                                            <label for="gender" class="small pr-4">Male</label>
+                                            <input type="radio" v-model="user.gender" name="gender" checked="checked" value="MALE" class="" />
+                                            <label for="gender" class="small col-2 col-xs-2 col-md-1 px-0">Male</label>
 
-                                            <input type="radio" v-model="user.gender" name="gender" value="FEMALE" class="" :class="{ 'is-invalid': submitted && $v.user.gender.$error }" />
-                                            <label for="gender" class="small pr-4">Female</label>
-
+                                            <input type="radio" v-model="user.gender" name="gender" value="FEMALE" class=""  />
+                                            <label for="gender" class="small col-2 col-xs-2 col-md-1 px-0">Female</label>
+                                            <!--
                                             <div v-if="submitted && !$v.user.gender.required" class="invalid-feedback">
                                                 Gender is required
                                             </div>
+                                            -->
                                         </div>
 
                                     </div>
@@ -234,11 +238,38 @@
                         </div>                             
                     </div>
 
+                    <div id="myroom-communication-app-row" class="row pt-2">
+                        <div class="col-6">
+                            <div class="row">
+                                <div class="col-4 small pr-0">
+                                    <label for="is_myroom_enabled" class="px-0 col-md-12 col-form-label"><span class="text-danger">*</span> 
+                                    Primary Communication App <div class="float-right">:</div></label>
+                                </div>
+                                <div class="col-8">
+                                    <div class="row my-0">
+                                        <div class="col-5">
+                                            <select id="is_myroom_enabled" name="is_myroom_enabled"                                                
+                                                    class="form-control form-control-sm" 
+                                                    v-model="user.is_myroom_enabled">
+                                                <option value="true" selected>MyRoom</option>
+                                                <option value="false">Backup</option>
+                                            </select>
+                                                                                    
+                                        </div>
+                                </div>
+
+                                </div>                            
+                            </div>
+                        </div>
+                    </div>                    
+
                     <div id="communication-app-row" class="row pt-2">
                         <div class="col-6">
                             <div class="row">
                                 <div class="col-4 small pr-0">
-                                    <label for="communication_app" class="px-0 col-md-12 col-form-label"><span class="text-danger">*</span> Communication App <div class="float-right">:</div></label>
+                                    <label for="communication_app" class="px-0 col-md-12 col-form-label">
+                                        <span class="text-danger">*</span> 
+                                        Communication App <div class="float-right">:</div></label>
                                 </div>
                                 <div class="col-8">
                                     <div class="row my-0">
@@ -248,6 +279,7 @@
                                                 class="form-control form-control-sm" 
                                                 :class="{ 'is-invalid': submitted && $v.user.communication_app.$error }"
                                                 @blur='checkIsValid($v.user.communication_app, $event)'
+                                                @change="handleCommunicationAppChange"
                                             >
                                                 <option value="">-- Select --</option>
                                                 <option value="skype">Skype</option>
@@ -257,8 +289,9 @@
                                                 Communication App is required, Please select from choices
                                             </div>                                            
                                         </div>
-                                        <div class="col-6 px-0">                                          
-                                            <div class="form-group">                                               
+                                        <div class="col-6 px-0">  
+                                                                    
+                                            <div  class="form-group">                                               
                                                 <input type="text" v-model="user.communication_app_username" id="communication_app_username" name="communication_app_username" 
                                                     class="form-control form-control-sm" 
                                                     :class="{ 'is-invalid': submitted && $v.user.communication_app_username.$error }"
@@ -1095,6 +1128,7 @@ export default {
                 email: "",
                 nickname: "",
                 gender: "",
+                is_myroom_enabled: true,
                 communication_app: "",
                 communication_app_username: "",
                 birthday: "",
@@ -1222,9 +1256,11 @@ export default {
             nickname: {
                 required
             },
+            /*
             gender: {
                 required
             },
+            */
             communication_app: {
                 required
             },            
@@ -1284,6 +1320,9 @@ export default {
                 alert("Error " + error);                
             });                        
         },
+        handleCommunicationAppChange() {
+            console.log("handleCommunicationAppChange")           
+        },         
         getAgentName() {
             axios.post("/api/get_agent_name?api_token=" + this.api_token, 
             {

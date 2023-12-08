@@ -21,6 +21,19 @@ if (! function_exists('JapaneseDateFormat')) {
     }
 }
 
+
+
+if (! function_exists('LessonTimeRange')) {
+    function LessonTimeRange($lessonTime) {
+        if (date('H', strtotime($lessonTime)) == '00') {
+            return date('Y年 m月 d日 24:i', strtotime($lessonTime ." - 1 day"))  ."-".   date('24:i', strtotime($lessonTime." + 25 minutes "));
+        } else {
+            return date('Y年 m月 d日 H:i', strtotime($lessonTime))  ."-".   date('H:i', strtotime($lessonTime." + 25 minutes "));
+        }
+    }
+}
+  
+
 //japanese date only formatter
 if (! function_exists('ESIDateFormat')) {
     function ESIDateFormat($date) 
@@ -541,6 +554,41 @@ if (! function_exists('getRemainingDays'))
         $daysleft = round((($timeleft/24)/60)/60); 
         return $daysleft;
     }  
+}
+
+
+
+/*********************************
+   Calculate Lesson Duration
+/********************************* */
+if (! function_exists('minutesToMilliseconds')) 
+{
+    function minutesToMilliseconds($minutes) {
+        $milliseconds = $minutes * 60000;
+        return $milliseconds;
+    }
+}
+
+if (! function_exists('millisecondsToMinutes')) 
+{
+    function millisecondsToMinutes($milliseconds) {
+        $seconds = floor($milliseconds / 1000); // Convert milliseconds to seconds
+        $minutes = floor($seconds / 60); // Calculate the minutes
+        $remainingSeconds = $seconds % 60; // Calculate the remaining seconds
+
+        return array('minutes' => $minutes, 'seconds' => $remainingSeconds);
+    }
+}
+
+
+
+
+if (! function_exists('calcuculateRemainingMinutes')) 
+{
+    function calculateRemainingMilliseconds($lessonDurationInMilliseconds, $elapsedMilliseconds) {
+        $remainingMilliseconds = $lessonDurationInMilliseconds - $elapsedMilliseconds;
+        return $remainingMilliseconds;
+    } 
 }
 
 

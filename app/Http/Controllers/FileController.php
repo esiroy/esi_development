@@ -23,6 +23,7 @@ class FileController extends Controller
     public function show($id)
     {
         $canView = File::canView($id);
+
         if ($canView->success) {
             $file = $canView->file;
             $title          = $file->file_name;
@@ -32,8 +33,10 @@ class FileController extends Controller
             $filename       = pathinfo($path, PATHINFO_FILENAME);  // get name from path
             return view('modules.publicfile.show', compact('title', 'url', 'file', 'filename', 'extension'));
         } else {
-            $data   = ['message' => $canView->message];
-            return view('modules.publicfolder.message', $data);
+                
+               
+            return abort('404', 'The post you are looking for was not found');
+           
         }
     }
 

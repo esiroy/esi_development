@@ -34,25 +34,56 @@
                 <div class="card-body">
 
                     <!--Search-->
-                    <div class="row">
-                        <form class="form-inline" style="width:100%" method="GET">
+                    <form  style="width:100%" method="GET">
+                        <div class="row form-inline">
+                        
+                                <div class="col-md-3">
+                                    <div class="form-group">
+                                        <label for="date_from" class="small col-4">From:</label>
+                                        <input id="date_from" required name="date_from" type="date" data-date-format="YYYY年 M月 DD日" class="inputDate form-control form-control-sm col-8" value="{{ request()->has('date_from') ? request()->get('date_from') : '' }}">
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="form-group">
+                                        <label for="date_to" class="small col-4">To:</label>
+                                        <input id="date_to" required name="date_to" type="date" data-date-format="YYYY年 M月 DD日" 
+                                        class="inputDate form-control form-control-sm col-8" value="{{ request()->has('date_to') ? request()->get('date_to') : '' }}">
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <button type="submit" class="btn btn-primary btn-sm col-1 ml-1">Go</button>
+                                </div>
+                            
+                        </div>
+                        <div class="row mt-2 form-inline">
                             <div class="col-md-3">
                                 <div class="form-group">
-                                    <label for="date_from" class="small col-4">From:</label>
-                                    <input id="date_from" required name="date_from" type="date" data-date-format="YYYY年 M月 DD日" class="inputDate form-control form-control-sm col-8" value="{{ request()->has('date_from') ? request()->get('date_from') : '' }}">
+                                    <label for="date_from" class="small col-4">Tutor:</label>
+
+                                    <select name="tutorID" class="form-control form-control-sm col-8">
+                                        <option value="">Select Tutor</option>
+                                        @foreach ($tutorList as $tutor)
+                                            <option value="{{$tutor->user_id}}" {{ $tutor->user_id == request()->get('tutorID') ? 'selected' : '' }}>{{$tutor->firstname}}</option>
+                                        @endforeach
+                                    </select>
                                 </div>
-                            </div>
+                            </div>     
                             <div class="col-md-3">
-                                <div class="form-group">
-                                    <label for="date_to" class="small col-4">To:</label>
-                                    <input id="date_to" required name="date_to" type="date" data-date-format="YYYY年  M月 DD日" class="inputDate form-control form-control-sm col-8" value="{{ request()->has('date_to') ? request()->get('date_to') : '' }}">
+                                <div class="form-group" >
+                                    <label for="date_from" class="small col-4">Member:</label>
+
+                                    <select name="memberID" class="form-control form-control-sm col-8">
+                                        <option value="">Select Member</option>
+                                        @foreach ($memberList as $member)
+                                            <option value="{{$member->user_id}}" {{ $member->user_id == request()->get('memberID') ? 'selected' : '' }}>
+                                                {{$member->lastname }}, {{$member->firstname}}
+                                            </option>
+                                        @endforeach
+                                    </select>
                                 </div>
-                            </div>
-                            <div class="col-md-6">
-                                <button type="submit" class="btn btn-primary btn-sm col-1 ml-1">Go</button>
-                            </div>
-                        </form>
-                    </div>
+                            </div>                                              
+                        </div>
+                    </form>
 
                     <!-- Gemerate -->
 
@@ -78,11 +109,57 @@
                                             <th class="small text-center bg-light text-dark font-weight-bold">Q2</th>
                                             <th class="small text-center bg-light text-dark font-weight-bold">Q3</th>
                                             <th class="small text-center bg-light text-dark font-weight-bold">Q4</th>
+
+                                            <!--
+                                            @php /**
+                                            <th class="small text-center bg-light text-dark font-weight-bold">Stars Rating</th>
+                                            */
+                                            @endphp
+                                            -->
+
                                             <th class="small text-center bg-light text-dark font-weight-bold">Remarks</th>
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        @foreach($questionnaires as $questionnaire)
+                                    @foreach($questionnaires as $questionnaire)
+                                        
+                                        @php
+
+
+                                            $questionnaireItems = $questionnaire->questionnaireItems->where('valid', true);
+
+                                            $questionnaireItem1 = $questionnaireItems->where('question', 'QUESTION_1')->where('valid', true)->first();
+                                            $questionnaireItem2 = $questionnaireItems->where('question', 'QUESTION_2')->where('valid', true)->first();
+                                            $questionnaireItem3 = $questionnaireItems->where('question', 'QUESTION_3')->where('valid', true)->first();
+                                            $questionnaireItem4 = $questionnaireItems->where('question', 'QUESTION_4')->where('valid', true)->first();
+                                        
+
+                                            //Get and Assign Stars Raiting
+                                            $starsRating = null;
+
+
+                                            $satisfactionSurveyObj = new \App\Models\SatisfactionSurvey();
+                                            
+                                            $satisfactionSurvey = $satisfactionSurveyObj->where('schedule_id', $questionnaire->schedule_item_id)->first();
+
+                                            if ($satisfactionSurvey) 
+                                            {
+
+                                                $satisfactionSurveyDetailObj = new \App\Models\SatisfactionSurveyDetails();
+                                                    
+                                                $satisfactionSurveyDetails = $satisfactionSurveyDetailObj
+                                                                                ->where('lesson_survey_id', $satisfactionSurvey->id)
+                                                                                ->where('name', 'teacher_performace_rating')
+                                                                                ->first();
+
+                                                    if ($satisfactionSurveyDetails) {
+                                                        //assign the stars
+                                                        $starsRating = $satisfactionSurveyDetails->value;
+                                                    }
+                                            }
+                                        @endphp
+
+
                                         <tr>
                                            
                                             <td id="{{ $questionnaire->id }}" class="small text-center bg-light text-dark font-weight-bold">
@@ -103,9 +180,7 @@
                                                     {{ date("H:i", strtotime($questionnaire->lesson_time)) }}
                                                 @endif        
                                             </td>
-                                           
 
-                                          
                                             <td class="small text-center">
                                                 @php
                                                 $member = \App\Models\Member::where('user_id', $questionnaire->member_id)->first()
@@ -121,12 +196,6 @@
                                                 {{ $tutor->user->firstname ?? "" }}                                                
                                             </td>
 
-                                            @php
-                                                $questionnaireItem1 = \App\Models\QuestionnaireItem::where('questionnaire_id', $questionnaire->id)->where('question', 'QUESTION_1')->where('valid', true)->first();
-                                                $questionnaireItem2 = \App\Models\QuestionnaireItem::where('questionnaire_id', $questionnaire->id)->where('question', 'QUESTION_2')->where('valid', true)->first();
-                                                $questionnaireItem3 = \App\Models\QuestionnaireItem::where('questionnaire_id', $questionnaire->id)->where('question', 'QUESTION_3')->where('valid', true)->first();
-                                                $questionnaireItem4 = \App\Models\QuestionnaireItem::where('questionnaire_id', $questionnaire->id)->where('question', 'QUESTION_4')->where('valid', true)->first();
-                                            @endphp
 
                                             <td class="question_1">
                                                 {{ $questionnaireItem1->grade ?? '' }}
@@ -140,9 +209,23 @@
                                             <td class="question_1">
                                                 {{ $questionnaireItem4->grade ?? '' }}
                                             </td>
+                                            <!--
+                                            @php /*
+                                            <td class="small text-center" style="width:300px">
+
+                                                @for ($count = 0; $count < $starsRating; $count++)
+                                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" class="bi bi-star-fill" viewBox="0 0 16 16">
+                                                    <path fill="#FFAE42" stroke="none" d="M8 0l2.47 5.03 5.53.8-3.99 3.89.94 5.51L8 12.52l-4.95 2.61.94-5.51L0 5.83l5.53-.8L8 0z"/>
+                                                    </svg>
+                                                @endfor
+                                                
+                                            </td>
+                                            */
+                                            @endphp
+                                            -->
                                             <td class="small text-center" style="width:300px">{{ $questionnaire->remarks }}</td>
                                         </tr>
-                                        @endforeach
+                                    @endforeach
                                     </tbody>
                                 </table>
 
@@ -151,8 +234,12 @@
                                         {{ $questionnaires->appends(request()->query())->links() }}
                                     </ul>
                                 </div>
-
-
+                                
+                                <!--
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="#FFAE42" class="bi bi-star-half" viewBox="0 0 16 16">
+                                <path d="M5.354 5.119 7.538.792A.516.516 0 0 1 8 .5c.183 0 .366.097.465.292l2.184 4.327 4.898.696A.537.537 0 0 1 16 6.32a.548.548 0 0 1-.17.445l-3.523 3.356.83 4.73c.078.443-.36.79-.746.592L8 13.187l-4.389 2.256a.52.52 0 0 1-.146.05c-.342.06-.668-.254-.6-.642l.83-4.73L.173 6.765a.55.55 0 0 1-.172-.403.58.58 0 0 1 .085-.302.513.513 0 0 1 .37-.245l4.898-.696zM8 12.027a.5.5 0 0 1 .232.056l3.686 1.894-.694-3.957a.565.565 0 0 1 .162-.505l2.907-2.77-4.052-.576a.525.525 0 0 1-.393-.288L8.001 2.223 8 2.226v9.8z"/>
+                                </svg>
+                                -->
 
                             </div>
 

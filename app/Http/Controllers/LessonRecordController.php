@@ -53,12 +53,6 @@ class LessonRecordController extends Controller
             $datereportcards = ReportCardDate::where('member_id', $member->user_id)->orderBy('created_at', 'DESC')->paginate(Auth::user()->items_per_page,['*'], 'datereportcards');    
             $latestReportCard = $reportcards->getLatest($member->user_id);
 
-            
-        
-
-            
-
-
             if ($request->display == 'none') 
             {
                 //@todo: (update to model)

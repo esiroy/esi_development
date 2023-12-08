@@ -31,6 +31,16 @@
  */
 
 /*!
+<<<<<<< HEAD
+=======
+ * clipboard.js v2.0.11
+ * https://clipboardjs.com/
+ *
+ * Licensed MIT © Zeno Rocha
+ */
+
+/*!
+>>>>>>> beta
  * jQuery JavaScript Library v3.7.1
  * https://jquery.com/
  *
@@ -51,6 +61,8 @@
   * https://github.com/linusborg/portal-vue
   * 
  */
+
+/*! Fabric.js Copyright 2008-2015, Printio (Juriy Zaytsev, Maxim Chernyak) */
 
 /*! https://mths.be/utf8js v2.1.2 by @mathias */
 
@@ -96,6 +108,13 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
+ */
+
+/**!
+ * Sortable 1.10.2
+ * @author	RubaXa   <trash@rubaxa.org>
+ * @author	owenm    <owen23355@gmail.com>
+ * @license MIT
  */
 
 //! Copyright (c) JS Foundation and other contributors
