@@ -26,6 +26,7 @@ use App\Models\Shift;
 use App\Models\Tutor;
 use App\Models\User;
 use App\Models\UserImage;
+use App\Models\MemberMonthlyTerm;
 
 use Auth;
 use DB;
