@@ -1,31 +1,18 @@
 {
-<<<<<<< HEAD
-    "/js/admin.js": "/js/admin.js?id=c53023146292e6835958",
-    "/js/admin.js.map": "/js/admin.js.map?id=69692d971a9d5a4c8dde",
-    "/js/app.js": "/js/app.js?id=7f3906de58ad2a6a41a3",
-    "/css/app.css": "/css/app.css?id=368b63c3d709eafa8d16",
-    "/css/admin.css": "/css/admin.css?id=83bea4e32a70acfc64ea",
-    "/css/steps/steps.css": "/css/steps/steps.css?id=9405e8fab316477490db",
-    "/js/app.js.map": "/js/app.js.map?id=9728d429347cf9f5f149",
-    "/css/app.css.map": "/css/app.css.map?id=bac6ee09f45991021ec7",
-    "/css/admin.css.map": "/css/admin.css.map?id=a274fcfe8734933ed66e",
-    "/css/steps/steps.css.map": "/css/steps/steps.css.map?id=17cb90db0df250d10eeb",
-=======
-    "/js/admin.js": "/js/admin.js?id=d97cdcbed691fe688c57",
-    "/js/admin.js.map": "/js/admin.js.map?id=226084d2689760d5ccc5",
-    "/js/app.js": "/js/app.js?id=3c3746a36622294e90d9",
+    "/js/admin.js": "/js/admin.js?id=1d457ded02a8a57155ad",
+    "/js/admin.js.map": "/js/admin.js.map?id=5586b28920a9f1b8be90",
+    "/js/app.js": "/js/app.js?id=8e0e4cfc2d7a4f2ae229",
     "/css/app.css": "/css/app.css?id=01dedb4f3b078169eb79",
     "/css/admin.css": "/css/admin.css?id=83bea4e32a70acfc64ea",
     "/css/steps/steps.css": "/css/steps/steps.css?id=9405e8fab316477490db",
     "/css/lessonslider.css": "/css/lessonslider.css?id=1790d7dcb20bf18acaa1",
-    "/js/app.js.map": "/js/app.js.map?id=8b39b81a4a891820ee7a",
+    "/js/app.js.map": "/js/app.js.map?id=ce951fdabb219fe63c06",
     "/css/app.css.map": "/css/app.css.map?id=a480d13e21be63f534d6",
     "/css/admin.css.map": "/css/admin.css.map?id=a274fcfe8734933ed66e",
     "/css/steps/steps.css.map": "/css/steps/steps.css.map?id=17cb90db0df250d10eeb",
     "/css/lessonslider.css.map": "/css/lessonslider.css.map?id=f7a5fb9c1d0b3a34cbd5",
     "/js/webRTC.js": "/js/webRTC.js?id=2fd25a5314ded45ec943",
     "/js/webRTC.js.map": "/js/webRTC.js.map?id=86c6a53a145590350d19",
->>>>>>> beta
     "/js/jquery/jquery-ui.js": "/js/jquery/jquery-ui.js?id=06c8b12668dc0e45a4c4",
     "/js/jquery/jquery-ui.min.js": "/js/jquery/jquery-ui.min.js?id=777b80b520786cf6f0ce",
     "/images/arrow.png": "/images/arrow.png?id=c21f8cc8e414ad52881d",
@@ -77,12 +64,9 @@
     "/images/iSuppressed.gif": "/images/iSuppressed.gif?id=fdfa71b724f2b601ae63",
     "/images/iTutorCancelled.gif": "/images/iTutorCancelled.gif?id=6f6fe512c6df04e30176",
     "/images/iTutorScheduled.gif": "/images/iTutorScheduled.gif?id=ce6e9e3364afce64732b",
-<<<<<<< HEAD
     "/images/monthly-plan.png": "/images/monthly-plan.png?id=e7cf2c50d13519cd1ba4",
-=======
     "/images/myroom_logo_light.png": "/images/myroom_logo_light.png?id=66d464f0ef0b800e8598",
     "/images/myroom_logo.png": "/images/myroom_logo.png?id=f413c4bc7610ba113d61",
->>>>>>> beta
     "/images/mytutor_logo.png": "/images/mytutor_logo.png?id=1b24071e96591426a82e",
     "/images/mytutor-logo-skype.jpg": "/images/mytutor-logo-skype.jpg?id=6648957e786d2beab967",
     "/images/newBtn3.png": "/images/newBtn3.png?id=ea4f4f53e550ec9791d1",

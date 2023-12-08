@@ -31,8 +31,6 @@
  */
 
 /*!
-<<<<<<< HEAD
-=======
  * clipboard.js v2.0.11
  * https://clipboardjs.com/
  *
@@ -40,7 +38,6 @@
  */
 
 /*!
->>>>>>> beta
  * jQuery JavaScript Library v3.7.1
  * https://jquery.com/
  *
