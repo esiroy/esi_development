@@ -88,6 +88,12 @@ class LessonSlideHistoryController extends Controller
 
             $reserve = ScheduleItem::where('id', $lessonHistory->schedule_id)->first();
 
+
+            if (!$reserve) {
+
+                return response()->view('errors.500', ['message'=> "Error: Lesson Not Found"], 500);
+            }
+
             $reservationData = [
                 'schedule_id'       => $reserve->id,
                 'tutor_id'          => $reserve->tutor_id,
@@ -99,30 +105,7 @@ class LessonSlideHistoryController extends Controller
             ];   
 
 
-            
-            /*
-            //we will get the material images
-            $files      = $file->where('files.folder_id', $lessonHistory->folder_id)->orderBy('files.order_id', 'ASC')->get();
-
-            $audioFiles = [];
-
-            if ($files) {
-
-                $slides = [];
-                
-                foreach ($files as $index => $file) {
-                    array_push($slides, url($file->path));
-                    //make the index same as the slide number
-                    $audioFiles[$index+1] = FileAudio::where('file_id', $file->id)->get(['id', 'file_id', 'path', 'file_name']);
-                    $notes[$index+1]  = $file->notes;
-                }           
-
-            } else {            
-                $slides = [];
-                
-            }
-            */
-       
+            $audioFiles = [];         
 
             $memberFeedback = $memberFeedback->where('member_feedback.schedule_id', $lessonHistory->schedule_id)->get();
 

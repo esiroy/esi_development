@@ -12,7 +12,6 @@
         <button @click="testConsecutive()">end</button>
         <button @click="showMemberFeedbackModal()">hide</button>
         -->
-
         
 
         <!-- Tutor to Member Feedback-->
@@ -210,6 +209,9 @@
         },
         mounted() {
 
+            console.log(this.consecutiveSchedules)
+        
+
             //console.log(this.currentFolderURLArray)
 
             this.socket = io.connect(this.$props.canvas_server);
@@ -261,7 +263,7 @@
 
             this.socket.on('START_SESSION', (response) => {
 
-                console.log("start session");
+                console.log("socket: START_SESSION" , response);
 
                 if (this.$props.is_broadcaster == false) {
 
@@ -269,11 +271,52 @@
                     
                         if (response.recipient.userid == this.user_info.id)
                         {                    
-                            //console.log("TEACHER STARTED A SESSION", response);
+                            console.log("TEACHER STARTED A SESSION", response);
 
                             if (this.isMainTimerStarted == false) {
-                                //console.log("this.startCountdown();")
-                                this.startCountdown(); 
+
+
+                                console.log("//=============================//");
+                                console.log("// START COUNTDOWN FOR MEMBER //");
+                                console.log("//=============================//");
+                                
+
+                                let params = {
+                                    'startTime' : this.consecutiveSchedules.duration.startTime,
+                                    'endTime'   : this.consecutiveSchedules.duration.endTime,
+                                    'length'    : this.consecutiveSchedules.duration.length
+                                };
+
+                                axios.post("/api/checkSessionValidity?api_token=" + this.api_token,
+                                {
+                                    'method'            : "POST",
+                                    'reservation'       : this.reservation,
+                                    'startTime'         : params.startTime,
+                                    'endTime'           : params.endTime,
+                                    'duration'          : params.length,
+                                }).then(response => {
+                                    
+                                    if (response.data.success == true) {
+
+
+                                        this.isLessonExpired        = response.data.isLessonExpired
+                                        this.isLessonStarted        = response.data.isLessonStarted;
+                                        this.isUserAbsent           = response.data.isUserAbsent;
+                                        this.callWaitingLimit       = response.data.callWaitingLimit;
+                                        this.totalElapsedMinutes    = response.data.totalElapsedMinutes;
+                                        this.gracePeriodInMinutes   = response.data.gracePerionInMinutes;
+                                        this.millisecondsLeft       = response.data.remaningDurationInMilliseconds;
+                                        this.message                = response.data.message;
+                                        this.title                  = response.data.title;
+                                        this.isLessonStartTimeInvalid = response.data.isStartTimeInvalid;    
+                                        
+                                        this.startCountdown(); 
+
+                                    } else {
+
+                                        alert ("session invalid")
+                                    }                                   
+                                });
                             }
                         
                         } else {                    
@@ -592,7 +635,7 @@
             /** [start] SOCKETS SERVERS **/
             this.socket.on("START_MEMBER_TIMER", (data) =>  {
                //MEMBER LESSON MINI TIMER
-                if (this.$props.is_broadcaster == false) {                 
+                if (this.$props.is_broadcaster == false) {
                     this.$refs['MemberLessonTimer'].setTimeRemaining(data.timeRemaining);
                     this.$refs['MemberLessonTimer'].startCountdown(); 
                 }
@@ -695,7 +738,9 @@
 
 
             //this will show consecutive lesson confirmation and let tutor confirm
-            this.$root.$on('tiggerStartSession', (params) => {
+            this.$root.$on('tiggerStartSession', (params) => 
+            {               
+                alert ("on tiggerStartSession, recieved")
                 this.showConsecutiveLessons();            
             });
 
@@ -739,7 +784,7 @@
 
             this.$root.$on('startMemberTimer', (timeRemaining) => {  
 
-                //console.log("startMemberTimer") ;
+                console.log(" on startMemberTimer") ;
 
                 if (this.$props.is_broadcaster == true) {
                     this.socket.emit('START_MEMBER_TIMER', {
@@ -1117,15 +1162,19 @@
                     if (response.data.success == true) {
                         
                         this.$refs['LessonSlider'].updateLessonStartStatus(true);
-
-                        
-
                         this.$refs['NavigationMenu'].startTimer();
-                        //console.log("emit start session")
+
+                        console.log("emit start session")
+
+                        /*************************************** */
+                        /************** WHERE USER EMIT THE START SESSION************************* */
+                        /*************************************** */
+
                         this.socket.emit('START_SESSION', this.getSessionData());   
 
                         if (this.isMainTimerStarted == false) {
-                            //console.log("this.startCountdown();")
+
+
                             this.startCountdown(); 
                         }
 
@@ -1180,13 +1229,8 @@
                                 }
 
                             } else {
-
-
-
-                                 console.log("|join session|")
-
+                                console.log("|join session|")
                                 this.$refs['TutorSessionInvite'].showWaitingListModal();
-
                                 this.$refs['TutorSessionInvite'].resetWaitingTimer();
                                 this.$refs['TutorSessionInvite'].startWaitingTimer()  
                             
@@ -1380,8 +1424,10 @@
             showSatisfactionSurveyModal() {
                 this.$refs['satisfactionSurvey'].showSatisfactionSurveyModal(this.reservation);
             },
-            showConsecutiveLessons() {
-                if (this.consecutiveSchedules.lessons.length > 1) {
+            showConsecutiveLessons() 
+            {
+                if (this.consecutiveSchedules.lessons.length > 1) 
+                {                
                     this.$refs['MemberConsecutiveLessons'].setConsecutiveLessons(this.consecutiveSchedules);
                 } else {
 
@@ -1405,6 +1451,9 @@
             },
             //Main Countdown timer
             startCountdown(millisecondsLeft) {
+
+                console.log("============ startCountdown ====================");
+
                 this.isMainTimerStarted = true;
 
                 //if method passed a parameter take this parameter else this.milliseconds will be added as value
@@ -1425,8 +1474,8 @@
                 clearInterval(this.countdownInterval); 
                 this.$refs['NavigationMenu'].stopTimer();                
             },
-            calculateTimeLeft() 
-            {               
+            calculateTimeLeft() {
+
                 const seconds = Math.floor(Math.abs(this.millisecondsLeft) / 1000);
                 const minutes = Math.floor(seconds / 60);
                 const hours = Math.floor(minutes / 60);
@@ -1438,6 +1487,8 @@
                 const sign = this.millisecondsLeft < 0 ? "-" : "";
 
                 this.formattedTime = `${sign}${formattedHours}:${formattedMinutes}:${formattedSeconds}`;
+
+               
 
                 //update the navigation menu timer
                 this.$refs['NavigationMenu'].updateTimer(this.formattedTime);
@@ -1465,7 +1516,7 @@
                 this.$refs['MemberLessonTimer'].showTimerControlModal()
             },
             startMemberTimer() {
-                //console.log("START_MEMBER_TIMER - EMIT")
+                console.log("EMIT START_MEMBER_TIMER - ")
                 this.socket.emit('START_MEMBER_TIMER', this.getSessionData()); 
                 this.isMainTimerStarted = true;
             },

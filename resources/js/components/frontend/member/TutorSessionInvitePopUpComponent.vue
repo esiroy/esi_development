@@ -682,8 +682,8 @@ export default {
             this.supportCountdownTimer = 15;
         },        
         stopSupportCountdownTimer() {
-
-            console.log("stop support timer triggered...")
+            
+            //console.log("stop support timer triggered...")
             this.isSupportTimerStarted = false;
             clearInterval(this.supportTimerInterval); 
         },

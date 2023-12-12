@@ -98,6 +98,7 @@
         },
         mounted() {
 
+           
 
             this.showNavigationMenu(true);
             this.enableNavigationMenu(true);
@@ -149,6 +150,8 @@
             },
 
             tiggerStartSession() {
+                alert ("start sesision")
+                console.log("tigger start session")
                 this.$root.$emit('tiggerStartSession')        
             },         
             tiggerConfirmEndSession() {
