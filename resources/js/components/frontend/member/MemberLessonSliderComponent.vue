@@ -1592,7 +1592,8 @@
                     this.endSession();
                 }
             },            
-            async endSession() {       
+            async endSession() 
+            {       
                 this.$refs['LessonSlider'].resetCanvas();      
                 this.$refs['LessonSlider'].saveAllSlides();          
                 this.postLessonEndSessionHistory(this.reservation);
@@ -1626,19 +1627,16 @@
                     if (this.$props.is_broadcaster == true) {
 
                         this.isLessonCompleted = true;
-
                         this.stopCountdown(); 
 
-                        if (this.is_broadcaster == true) {
+                        if (this.is_broadcaster == true) 
+                        {
                             this.$refs['NavigationMenu'].stopTimer();                    
                             this.$refs['NavigationMenu'].disableNavigationMenu();
                             this.socket.emit('END_SESSION', this.getSessionData()); 
                             //console.log("session end was broadcasted");
-
-
                             //this.showMemberFeedbackModal(this.reservation, this.files);
                             this.showMemberFeedbackModal();
-
                             $("#destroy-session-media").trigger("click"); 
                         }
 
