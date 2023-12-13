@@ -770,13 +770,16 @@ class Folder extends Model
         $recentLessonHistory   = $this->getAllRecentLessonHistory($memberID);
 
         if (isset($recentLessonHistory->folder_id)) 
-        {            
-            $currentFolder = $this->getCurrentFolder($recentLessonHistory->folder_id);
-
-            if ($currentFolder->status == "INCOMPLETE") 
+        {       
+            
+            if ($recentLessonHistory->status == "INCOMPLETE") 
             {
                 //incomplete then we will returen the folder id
-                return $currentFolder->folder_id;
+                return $recentLessonHistory->folder_id;
+                
+            } else {
+
+                $currentFolder = $this->getCurrentFolder($recentLessonHistory->folder_id);
             }
 
         } else {
