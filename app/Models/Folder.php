@@ -663,7 +663,18 @@ class Folder extends Model
 
     /************************************************************
         SLIDES FOLDER SEARCH NEXT IDS
-    ************************************************************/    
+    ************************************************************/   
+    
+    public function getAllRecentLessonHistory($memberID) {
+
+        $lessonHistory = LessonHistory::where('member_id', $memberID)
+            ->where('status', "COMPLETED")
+            ->where('status', "INCOMPLETE")
+            ->orderBy("time_ended", 'DESC')->first();        
+        if ($lessonHistory) { return $lessonHistory; } else { return false; }       
+    }
+
+
     public function getRecentLessonHistory($memberID, $status) 
     {    
         $lessonHistory = LessonHistory::where('member_id', $memberID)->where('status', $status)->orderBy("time_ended", 'DESC')->first();        
@@ -695,7 +706,9 @@ class Folder extends Model
 
     public function getNextFolderID_old($memberID) {
 
-        $recentLessonHistory   = $this->getRecentLessonHistory($memberID, "COMPLETED");
+       // $recentLessonHistory   = $this->getRecentLessonHistory($memberID, "COMPLETED");
+
+       $recentLessonHistory   = $this->getAllRecentLessonHistory($memberID);
         
         if ($recentLessonHistory) {   
 
@@ -752,11 +765,14 @@ class Folder extends Model
 
         $recentLessonHistory   = $this->getRecentLessonHistory($memberID, "COMPLETED");
 
-      
-
-        if (isset($recentLessonHistory->folder_id)) {
+        if (isset($recentLessonHistory->folder_id)) 
+        {
             $currentFolder = $this->getCurrentFolder($recentLessonHistory->folder_id);
+
         } else {
+
+
+            //check if there 
             $currentFolder = $this->getFirstRootFolder(); 
         }
 
