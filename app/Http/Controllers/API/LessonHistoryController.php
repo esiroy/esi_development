@@ -216,7 +216,7 @@ class LessonHistoryController extends Controller
     * @param Member $member The member object associated with the lesson.
     * @return JsonResponse The JSON response indicating the success or failure of the operation.
     */    
-    public function startLesson(Request $request, Member $member) {
+    public function startLesson(Request $request, Member $member, File $file) {
 
         $reservation        = $request->reservation;
         $isTimerStarted     = $request->isTimerStarted;
@@ -227,29 +227,26 @@ class LessonHistoryController extends Controller
 
         $lessonHistory = LessonHistory::where('schedule_id', $reservation['schedule_id'])->first();
 
-        if ($lessonHistory) {
-
+        if ($lessonHistory) 
+        {
             return Response()->json([
                 "success"       => true,
                 "currentTime"   => $currentTime,
                 "reservation"   => $request->reservation,
                 "message"       => "Lesson History already added."
-            ]); 
-
+            ]);
         
         } else if (!$lessonHistory) {
-
         
             $folderID = null; //reset to null;
 
             $selectedLesson = MemberSelectedLessonSlideMaterial::where('schedule_id', $reservation['schedule_id'])->first();
 
-            if ($selectedLesson) {
-            
+            if ($selectedLesson) 
+            {            
                 $folderID = $selectedLesson->folder_id;
+            } else {           
 
-            } else {
-            
                 if (isset($request->folder_id)) {                
                     $folderID = $request->folder_id;
                 } else {
@@ -257,10 +254,23 @@ class LessonHistoryController extends Controller
                 }
             }
 
+            //get total slides
+            if ($folderID !== null) {
+                $totalSlides = $file->getFileCount($folderID);
+                
+            } else {
+
+                //Total Slides will be automatically set to 1
+                $totalSlides = 1;
+            }
+
+
             $lessonHistory = lessonHistory::create([
                 'folder_id'         => $folderID,
                 'current_slide'     => $request->currentSlide,
-                'total_slides'      => $request->totalSlides,
+                //'total_slides'      => $request->totalSlides,
+
+                'total_slides'      => $totalSlides,
                 'schedule_id'       => $reservation['schedule_id'],
                 'tutor_id'          => $reservation['tutor_id'],
                 'member_id'         => $reservation['member_id'],

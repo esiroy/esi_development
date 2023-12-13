@@ -194,4 +194,9 @@ class File extends Model
         }
     }
 
+
+    public function getFileCount($folderID) 
+    {
+        return File::where('folder_id', $folderID)->count();
+    }
 }

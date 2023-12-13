@@ -1148,7 +1148,7 @@
                     'reservation'     : this.reservation, //reservationData,                
 
                     //'slidesData'      : this.slidesData,        
-                    //'totalSlides'     : this.slidesData.length,
+                    //'totalSlides'     : this.slidesData.length, (this is not using)
                     'isTimerStarted'  : this.isTimerStarted
 
                 }).then(response => {
@@ -1233,7 +1233,7 @@
 
                     } else {
                     
-
+                        
                     }
                 });
 
