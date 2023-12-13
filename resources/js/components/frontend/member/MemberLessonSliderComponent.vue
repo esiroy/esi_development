@@ -738,9 +738,8 @@
 
 
             //this will show consecutive lesson confirmation and let tutor confirm
-            this.$root.$on('tiggerStartSession', (params) => 
-            {               
-                alert ("on tiggerStartSession, recieved")
+            this.$root.$on('tiggerStartSession', (params) => {               
+               
                 this.showConsecutiveLessons();            
             });
 
@@ -1139,16 +1138,17 @@
                          
                 });
             },
-            async startSession() {
+            startSession() {
 
                 axios.post("/api/startLesson?api_token=" + this.api_token,
                 {
                     'method'          : "POST",
                     'folder_id'       : this.$props.folder_id,
-                    'totalSlides'     : this.slidesData.length,
                     'currentSlide'    : this.currentSlide,
                     'reservation'     : this.reservation, //reservationData,                
-                    'slidesData'      : this.slidesData,        
+
+                    //'slidesData'      : this.slidesData,        
+                    //'totalSlides'     : this.slidesData.length,
                     'isTimerStarted'  : this.isTimerStarted
 
                 }).then(response => {
@@ -1172,13 +1172,10 @@
 
                         this.socket.emit('START_SESSION', this.getSessionData());   
 
-                        if (this.isMainTimerStarted == false) {
-
-
+                        if (this.isMainTimerStarted == false) 
+                        {
                             this.startCountdown(); 
-                        }
-
-                   
+                        }                   
 
                         this.$refs['MemberConsecutiveLessons'].hideConsecutiveLessonModal(); 
 
@@ -1194,17 +1191,13 @@
                         } else if (this.isLessonStarted == true && this.isSessionExpired == false) {
 
                             //[NOTE] ADDED TO COMPLEMENT CALLING THE TUTOR IF REFRESHED
-
-                            if (this.$props.is_broadcaster == true) {
-
+                            if (this.$props.is_broadcaster == true) 
+                            {
                                 //console.log("we are calling member, since it has not expired")
                                 this.callMember(); 
-
                             } else {
-
                                 //console.log("check session accept tutor call")
                                 this.acceptTutorCall(); 
-
                             }
 
                         } else {
@@ -1219,7 +1212,7 @@
 
                                   // this.callMember();  (delegate to popup)
 
-                                } else if (this.isLessonStarted == false && this.isSessionExpired == false) {
+                                    // } else if (this.isLessonStarted == false && this.isSessionExpired == false) {
                                 
                                     //console.log("|| XXXXXXXXXXXXXXXXXX  SESSION_NOT_STARTED  XXXXXXXXXXXXXXXXXX  ||")
 
@@ -1232,10 +1225,7 @@
                                 console.log("|join session|")
                                 this.$refs['TutorSessionInvite'].showWaitingListModal();
                                 this.$refs['TutorSessionInvite'].resetWaitingTimer();
-                                this.$refs['TutorSessionInvite'].startWaitingTimer()  
-                            
-                                //member joined...
-                                //console.log("EMIT JOIN_SESSION TO TUTOR");
+                                this.$refs['TutorSessionInvite'].startWaitingTimer();
                                 this.socket.emit('JOIN_SESSION', this.user); 
                             }
 
@@ -1594,11 +1584,14 @@
             },            
             async endSession() 
             {       
-                this.$refs['LessonSlider'].resetCanvas();      
-                this.$refs['LessonSlider'].saveAllSlides();          
+                this.currentSlide = this.$refs['LessonSlider'].getCurrentSlide();
+                this.$refs['LessonSlider'].resetCanvas();     
+
+                //this.$refs['LessonSlider'].saveAllSlides();  
+
                 this.postLessonEndSessionHistory(this.reservation);
             },
-            async postLessonEndSessionHistory(reservationData) {
+            postLessonEndSessionHistory(reservationData) {
             
                 if (this.$props.is_broadcaster == false) {                       
                     alert ("Member is not allowed to end a session");
@@ -1606,8 +1599,8 @@
                 }    
 
             
-                this.currentSlide = await this.$refs['LessonSlider'].getCurrentSlide();
-                this.slidesData = await this.$refs['LessonSlider'].getAllSlideData();
+       
+                //this.slidesData = await this.$refs['LessonSlider'].getAllSlideData();
 
                 //@note: save session history
                 axios.post("/api/postLessonEndHistory?api_token=" + this.api_token,
@@ -1615,8 +1608,8 @@
                     'method'          : "POST",
                     'folder_id'       : this.$props.folder_id,
                     'currentSlide'    : this.currentSlide,
-                    'slidesData'      : this.slidesData,
-                    'totalSlides'     : this.slidesData.length,
+                    //'slidesData'      : this.slidesData,
+                    //'totalSlides'     : this.slidesData.length,
                     'consecutiveSchedules': this.consecutiveSchedules,
                     'reservation'     : reservationData,                
                     

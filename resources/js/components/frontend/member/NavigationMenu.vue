@@ -150,7 +150,7 @@
             },
 
             tiggerStartSession() {
-                alert ("start sesision")
+                
                 console.log("tigger start session")
                 this.$root.$emit('tiggerStartSession')        
             },         

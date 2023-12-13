@@ -229,8 +229,6 @@ class LessonHistoryController extends Controller
 
         if ($lessonHistory) {
 
-           
-
             return Response()->json([
                 "success"       => true,
                 "currentTime"   => $currentTime,
@@ -272,6 +270,8 @@ class LessonHistoryController extends Controller
                 'status'            => "NEW"               
             ]);
                       
+            /* removing creation of slide history to save time 
+            /*
             if ($lessonHistory) {
                 
                 foreach($slidesData as $slide) {
@@ -284,6 +284,7 @@ class LessonHistoryController extends Controller
                 }
 
             }
+            */
 
             return Response()->json([
                 "success" => true,                
