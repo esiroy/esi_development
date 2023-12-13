@@ -669,8 +669,9 @@ class Folder extends Model
 
         $lessonHistory = LessonHistory::where('member_id', $memberID)
             ->where('status', "COMPLETED")
-            ->where('status', "INCOMPLETE")
-            ->orderBy("time_ended", 'DESC')->first();        
+            ->orwhere('status', "INCOMPLETE")
+            ->orderBy("time_ended", 'DESC')->first();  
+
         if ($lessonHistory) { return $lessonHistory; } else { return false; }       
     }
 
@@ -764,7 +765,7 @@ class Folder extends Model
     public function getNextFolderID($memberID) {
 
         //$recentLessonHistory   = $this->getRecentLessonHistory($memberID, "COMPLETED");
-        
+
         $recentLessonHistory   = $this->getAllRecentLessonHistory($memberID);
 
         if (isset($recentLessonHistory->folder_id)) 

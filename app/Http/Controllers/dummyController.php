@@ -69,6 +69,15 @@ class dummyController extends Controller
 
     public function index(Request $request, Folder $folder, $memberID = 20372) {
 
+        $lessonHistory = LessonHistory::where('member_id', $memberID)
+            ->where('status', "COMPLETED")
+            ->orwhere('status', "INCOMPLETE")
+            ->orderBy("time_ended", 'DESC')->first();  
+
+        print_r($lessonHistory)    ;
+
+        
+        exit();
 
         $recentLessonHistory   = $folder->getRecentLessonHistory($memberID, "COMPLETED");
 
