@@ -763,7 +763,9 @@ class Folder extends Model
 
     public function getNextFolderID($memberID) {
 
-        $recentLessonHistory   = $this->getRecentLessonHistory($memberID, "COMPLETED");
+        //$recentLessonHistory   = $this->getRecentLessonHistory($memberID, "COMPLETED");
+        
+        $recentLessonHistory   = $this->getAllRecentLessonHistory($memberID);
 
         if (isset($recentLessonHistory->folder_id)) 
         {
