@@ -33,7 +33,8 @@ class MemberFeedbackController extends Controller {
         $memberNotes    = $request->notes;    
         $consecutiveSchedules = $request->consecutiveSchedules;
 
-
+        //next lesson slide()
+        $nextLesson     = $request->nextLessonSelected;
 
         $isReplicated = $homeWork->replicateHomework($scheduleID, $consecutiveSchedules);
 
@@ -67,8 +68,9 @@ class MemberFeedbackController extends Controller {
                     'schedule_id'       => $nextScheduleID,
                     'member_user_id'    => $memberID,
                     'tutor_user_id'     => $tutorID,
+                    'next_lesson'       => $nextLesson                    
                     'feedback'          => $feedback,
-                    'is_active'         => true,        
+                    'is_active'         => true
                 ];
         
                 $memberFeedbackCreated  = $memberFeedback->saveFeedback($feedbackData);
@@ -118,6 +120,7 @@ class MemberFeedbackController extends Controller {
                 'schedule_id'       => $scheduleID,
                 'member_user_id'    => $memberID,
                 'tutor_user_id'     => $tutorID,
+                'next_lesson'       => $nextLesson                          
                 'feedback'          => $feedback,
                 'is_active'         => true,        
             ];

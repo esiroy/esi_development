@@ -300,7 +300,16 @@
                                         <td>Subject</td>
                                         <td>:</td>
                                         <td>
-                                            {{ $latestReportCard->lesson_subject ?? '-' }}
+                                           
+
+                                            {{ $latestReportCard->lesson_subject ?? '-' }} / 
+                                            
+                                            <!-- added for incomplete lesson history -->                                            
+                                            @if ( $recentLessonHistory->status == "INCOMPLETE") 
+                                                <span class="text-danger font-weight-bold">
+                                                {{ $recentLessonHistory->status }} {{ "SLIDE "}} {{ $memberFeedback->next_lesson }}
+                                                </span>
+                                            @endif
                                         </td>
                                     </tr>
 

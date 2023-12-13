@@ -28,6 +28,10 @@ use App\Models\MemberMiniTestSetting;
 use App\Models\MemberSetting;
 use App\Models\MemberMonthlyTerm;
 
+use App\Models\MemberFeedback;
+
+
+use App\Models\Folder;
 
 use Auth, Hash, Storage;
 use Carbon\Carbon;
@@ -172,6 +176,25 @@ class MemberController extends Controller
      */
     public function show($memberID)
     {
+
+
+
+        $folder = new Folder();
+
+        //get recent history for member
+        $recentLessonHistory   = $folder->getAllRecentLessonHistory($memberID);
+
+        //get member feedback
+        $memberFeedbackModel = new memberFeedback();        
+        if (isset($recentLessonHistory->schedule_id)) {
+            $memberFeedback = $memberFeedbackModel->where('schedule_id', $recentLessonHistory->schedule_id)->first();
+        }
+       
+
+
+       
+      
+
         $memberInfo = Member::where('user_id', $memberID)->first();
 
         $agent = new Agent();   
@@ -193,8 +216,6 @@ class MemberController extends Controller
 
 
                 //report cards (time manager and purpose and past exam and cefr score ra mo merge)
-
-
                 $reportCard = new ReportCard();
                 //$latestReportCard = $reportCard->getLatest($mergedAccount->member_id);
                 $latestReportCard = $reportCard->getLatest($memberID);
@@ -276,7 +297,8 @@ class MemberController extends Controller
 
             return view('admin.modules.member.memberInfo', compact('memberInfo', 'tutorInfo', 'agentInfo', 'lessonGoals', 
                                                 'latestReportCard', 'latestWritingReport', 'purpose', 'memberLatestExamScore', 
-                                                'currentMemberlevel', 'homework', 'mergedMemberInfo', 'mergedAccount', 'mergedType', 'mergedAccounts'));
+                                                'currentMemberlevel', 'homework', 'mergedMemberInfo', 'mergedAccount', 'mergedType', 'mergedAccounts', 
+                                                'recentLessonHistory', 'memberFeedback'));
         } else {
 
             abort(404, "Member Not Found");
