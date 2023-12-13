@@ -704,7 +704,7 @@ class Folder extends Model
         @todo; Next Folder Slide 
     */
 
-
+    /*
     public function getNextFolderID_old($memberID) {
 
        // $recentLessonHistory   = $this->getRecentLessonHistory($memberID, "COMPLETED");
@@ -715,6 +715,7 @@ class Folder extends Model
 
             $recentHistoryID       = $recentLessonHistory->id;
             $recentHistoryFolderID = $recentLessonHistory->folder_id;
+            
             $nextFolder             = $this->getNextFolder($recentLessonHistory->folder_id);
 
             if ($nextFolder) {
@@ -759,7 +760,7 @@ class Folder extends Model
         return $newFolderID;    
     }
  
-
+    */
 
 
     public function getNextFolderID($memberID) {
@@ -769,13 +770,18 @@ class Folder extends Model
         $recentLessonHistory   = $this->getAllRecentLessonHistory($memberID);
 
         if (isset($recentLessonHistory->folder_id)) 
-        {
+        {            
             $currentFolder = $this->getCurrentFolder($recentLessonHistory->folder_id);
+
+            if ($currentFolder->status == "INCOMPLETE") 
+            {
+                //incomplete then we will returen the folder id
+                return $currentFolder->folder_id;
+            }
 
         } else {
 
-
-            //check if there 
+            //no folder id, ge the root
             $currentFolder = $this->getFirstRootFolder(); 
         }
 
