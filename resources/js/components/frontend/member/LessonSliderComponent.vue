@@ -1744,7 +1744,7 @@ export default {
 
 <style lang="scss" >
     .custom-toast-width {
-        width: 175px !important; 
+        width: 190px !important; 
         font-size: 12px;
     }
 </style>
