@@ -461,12 +461,18 @@ export default {
 
                         setTimeout(() => {                  
                             this.redirect('admin');
-                        }, 1000);
-                    });                    
+                        }, 1500);
+                    });      
+
                 } else {
                     alert ("Error:", response.data.message);
                 }
+
+            }).catch(error => {
+                console.error("Error:", error);
+                alert("An error occurred. Please check the console for details.");
             });
+
 
         },
         redirect(url) {

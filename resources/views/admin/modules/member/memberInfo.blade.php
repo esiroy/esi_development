@@ -314,7 +314,7 @@
                                                     Next Lesson : 
                                                 </span>
                                                 <span class="text-danger font-weight-bold">
-                                                {{ "SLIDE "}} {{ $memberFeedback->next_lesson }}
+                                                {{ "SLIDE "}} {{ $memberFeedback }}
                                                 </span>
                                             @endif
                                         </td>

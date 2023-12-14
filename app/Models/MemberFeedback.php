@@ -17,6 +17,7 @@ class MemberFeedback extends Model
             'schedule_id'       => $feedbackData['schedule_id'],
             'member_user_id'    => $feedbackData['member_user_id'],
             'tutor_user_id'     => $feedbackData['tutor_user_id'],
+            'next_lesson'       => $feedbackData['next_lesson'],
             'feedback'          => $feedbackData['feedback'],
             'is_active'         => true,
         ]);

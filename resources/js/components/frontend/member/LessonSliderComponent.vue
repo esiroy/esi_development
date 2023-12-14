@@ -317,7 +317,12 @@ export default {
 
             colorPreviewStyle:{
                 backgroundColor: "#000" 
-            }
+            },
+
+            //toast
+            toastID: null,
+            toastCounter: null,
+            slideTimer: null,
         }
     },
     created() {
@@ -351,6 +356,58 @@ export default {
         },
         updateLessonStartStatus(status) {
             this.lessonStarted = status;
+        },
+        toastMessage(message, animation = "loading") {
+            const h = this.$createElement
+
+            if (animation == "loading") {
+
+                let content = h('p', { class: ['text-center', 'mb-0', 'text-primary'] },
+                [
+                    h('b-spinner', { props: { icon: 'grow', small: true,  variant: 'primary'} }), 
+                    ` ${message} `                   
+                ]);    
+                return content;
+
+            } else if (animation == "success") {
+
+
+
+                let content = h('p', { class: ['text-center', 'mb-0', 'text-success'] },
+                [
+                    h('b-icon', { props: { icon: 'check-circle-fill', small: true, variant: 'success' } }), 
+                    ` ${message} `                   
+                ]);    
+
+                return content;
+
+            }
+
+            
+
+        },
+        toast(toaster, title, content, append = false) {
+
+            if (this.toastID) {
+                this.$bvToast.hide(this.toastID);
+            }
+
+            this.toastCounter++;
+          
+            this.toastID = `toast-${this.toastCounter}`;    
+         
+            this.$bvToast.toast(content, {
+                id: this.toastID,
+                title: `${title}`,
+                toaster: toaster,
+                variant: 'info', // Use the background color variant
+                appendToast: append,
+                solid: true,
+                noAutoHide: false,
+                noCloseButton: true,
+                noFade: true,
+                toastClass: 'custom-toast-width'
+            });
         },
         getSlideMaterials(reservation, newFolderID) {
 
@@ -389,7 +446,8 @@ export default {
                     this.$refs['TutorSlideNotes'].loadNotes(this.notes);   
                 }
 
-                if (newFolderID !== null) {
+                if (newFolderID !== null) 
+                {
                     if (response.data.files.length >= 1) {
                         //console.log("GET NEW SLIDES FROM FOLDER FILES")
                         this.getSlidesFromFiles(response.data.files);                    
@@ -1036,6 +1094,16 @@ export default {
         setPreviewColor(color) {
             this.colorPreviewStyle.backgroundColor = color;
         },
+        setBrushColor(canvasNum, color) {
+            this.brushColor = color;
+            this.activateBrush(canvasNum);
+        },
+        setBrushStroke(canvasNum, stroke) {
+            this.stroke = stroke;
+            if (this.isBrush) {
+                this.activateBrush(canvasNum);
+            }
+        },        
         activateZoomIn() { 
             this.isZoomIn = true;
             this.isZoomOut = false;    
@@ -1328,11 +1396,21 @@ export default {
 
         },
         prevSlide() {
+
+
             //the audio index needs to be reset since it is global
             this.$refs['audioPlayer'].resetAudioIndex();            
             this.$refs['audioPlayer'].stopAudio();
 
             if (this.currentSlide > 1) {
+
+                // Cancel the previous timer if it exists
+                if (this.slideTimer) {
+                    clearTimeout(this.slideTimer);
+                }
+
+
+
                 this.currentSlide--;
                 this.autoSelectTool();
                 
@@ -1340,10 +1418,18 @@ export default {
                 //this.canvasSendJSON(this.canvas[this.currentSlide], data);     
 
                 let data = {'channelid': this.channelid, 'num': this.currentSlide }
-                this.socket.emit('GOTO_SLIDE', data);
+               
+                // Set a timer to emit 'GOTO_SLIDE' after 1 second
+                this.slideTimer = setTimeout(() => {
+                    this.socket.emit('GOTO_SLIDE', data);
+                }, 200);
+
             }
         },
         nextSlide() {
+
+
+
             //the audio index needs to be reset since it is global
             this.$refs['audioPlayer'].resetAudioIndex();
             this.$refs['audioPlayer'].stopAudio();
@@ -1351,14 +1437,25 @@ export default {
 
             if (this.currentSlide < this.slides) {
 
+
+                // Cancel the previous timer if it exists
+                if (this.slideTimer) {
+                    clearTimeout(this.slideTimer);
+                }
+                                
                 this.currentSlide ++;            
                 this.autoSelectTool(); 
 
                 //let data = this.canvasGetJSON();
                 //this.canvasSendJSON(this.canvas[this.currentSlide], data); 
 
-                let data = {'channelid': this.channelid, 'num': this.currentSlide }               
-                this.socket.emit('GOTO_SLIDE', data);                
+                let data = {'channelid': this.channelid, 'num': this.currentSlide }       
+                
+                
+                // Set a timer to emit 'GOTO_SLIDE' after 1 second
+                this.slideTimer = setTimeout(() => {
+                    this.socket.emit('GOTO_SLIDE', data);
+                }, 200);            
             } 
         },
         userUploadedImage(file) {
@@ -1400,13 +1497,16 @@ export default {
         async saveAllSlides() 
         {
             //@todo: make this only for tutor
-            if (this.$props.is_broadcaster == true) {
+            if (this.$props.is_broadcaster == true) 
+            {            
 
                 for (var index = 1; index <= this.slides; index++) {
                     let canvasData  = await this.getCanvasSlideData(index);                
                     this.saveSlideHistoryData(canvasData, index);                                       
                 }
+
                 return true;
+
             } else {
                 console.log("saving is not allowed for members")
                 return false
@@ -1468,6 +1568,13 @@ export default {
             }        
         },        
         saveSlideHistoryData(canvasData, slideIndex) {
+
+          
+            let title   =  "Saving Slide " + slideIndex + " Please wait";
+            let content =  this.toastMessage("Please wait while we save your slide");     
+
+            this.toast("b-toaster-bottom-left",  title, content, true);
+
             ////console.log("saving... slide history " + slideIndex)
             axios.post("/api/saveLessonSlideHistory?api_token=" + this.api_token,
             {
@@ -1483,6 +1590,11 @@ export default {
 
                 if (response.data.success == true) {
                     //console.log(" SLIDE DATA : ", response.data);
+
+                    let title   =  "Slide successully saved";
+                    let content =  this.toastMessage("Slide successully saved", "success");  
+                    this.toast("b-toaster-bottom-left",  title, content, true);
+
                 } else {
                    // //console.log(" SLIDE DATA SAVING FAILED : ", response.data);
                 }                
@@ -1628,4 +1740,12 @@ export default {
         color: #0072ba;
     }
 
+
+    .custom-toast-width {
+        width: 220px !important; 
+        font-size: 12px;
+    }
+
+
 </style>
+
