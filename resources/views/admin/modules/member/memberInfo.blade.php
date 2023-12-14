@@ -307,7 +307,14 @@
                                             <!-- added for incomplete lesson history -->                                            
                                             @if (isset($recentLessonHistory) && $recentLessonHistory->status == "INCOMPLETE") 
                                                 <span class="text-danger font-weight-bold">
-                                                / {{ $recentLessonHistory->status }} {{ "SLIDE "}} {{ $memberFeedback->next_lesson }}
+                                                / {{ $recentLessonHistory->status }} 
+                                                </span>
+
+                                                <span class="small ml-3">
+                                                    Next Lesson : 
+                                                </span>
+                                                <span class="text-danger font-weight-bold">
+                                                {{ "SLIDE "}} {{ $memberFeedback->next_lesson }}
                                                 </span>
                                             @endif
                                         </td>
