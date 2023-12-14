@@ -302,12 +302,12 @@
                                         <td>
                                            
 
-                                            {{ $latestReportCard->lesson_subject ?? '-' }} / 
+                                            {{ $latestReportCard->lesson_subject ?? '-' }}  
                                             
                                             <!-- added for incomplete lesson history -->                                            
-                                            @if ( $recentLessonHistory->status == "INCOMPLETE") 
+                                            @if (isset($recentLessonHistory) && $recentLessonHistory->status == "INCOMPLETE") 
                                                 <span class="text-danger font-weight-bold">
-                                                {{ $recentLessonHistory->status }} {{ "SLIDE "}} {{ $memberFeedback->next_lesson }}
+                                                / {{ $recentLessonHistory->status }} {{ "SLIDE "}} {{ $memberFeedback->next_lesson }}
                                                 </span>
                                             @endif
                                         </td>
@@ -351,7 +351,7 @@
                                         </td>
                                     </tr>
 
-                                  <tr valign="top">
+                                    <tr valign="top">
                                         <td class="red">&nbsp;</td>
                                         <td>Homework</td>
                                         <td>:</td>
@@ -389,6 +389,38 @@
 
                                         </td>
                                     </tr>
+
+                                    <tr valign="top">
+                                        <td class="red">&nbsp;</td>
+                                        <td class="align-middle">Rating </td>
+                                        <td class="align-middle">:</td>
+                                        <td class="align-middle">
+
+                                            <div class="rating">
+                                                @if (isset($memberFeedbackDetails->value))
+                                                    @for ($i = 5; $i >= 1; $i--)
+                                                        @if ($i <= $memberFeedbackDetails->value )
+                                                            <label class="highlighted" for="star{{ $i }}"></label>
+                                                        @else 
+                                                            <label for="star{{ $i }}"></label>
+                                                        @endif
+                                                    @endfor
+                                                @else 
+                                                     - 
+                                                @endif
+                                            </div>
+
+                                        </td>
+                                    </td>                                    
+
+                                    <tr valign="top">
+                                        <td class="red">&nbsp;</td>
+                                        <td>Feedback</td>
+                                        <td>:</td>
+                                        <td> {!! $memberFeedback->feedback ?? '-' !!} </td>
+                                    </td>
+
+                                    
 
 
 
@@ -613,6 +645,37 @@
 
 @endsection
 
+
+@section ('styles')
+
+<style>
+
+
+.rating {
+      display: inline-block;
+      unicode-bidi: bidi-override;
+      direction: rtl;
+    }
+
+.rating label {
+    display: inline-block;
+    padding: 3px;
+    font-size: 20px;
+    color: #ccc; /* Grayed out color for non-rated stars */
+}
+
+.rating label:before {
+    content: "\2605";
+}
+
+.rating .highlighted {
+    color: #f90; /* Highlight color for rated stars */
+}
+
+
+</style>
+
+@endsection
 
 @section('scripts')
     @parent

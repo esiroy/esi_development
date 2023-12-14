@@ -29,6 +29,7 @@ use App\Models\MemberSetting;
 use App\Models\MemberMonthlyTerm;
 
 use App\Models\MemberFeedback;
+use App\Models\MemberFeedbackDetails;
 
 
 use App\Models\Folder;
@@ -177,17 +178,28 @@ class MemberController extends Controller
     public function show($memberID)
     {
 
-
-
         $folder = new Folder();
-
         //get recent history for member
         $recentLessonHistory   = $folder->getAllRecentLessonHistory($memberID);
 
-        //get member feedback
-        $memberFeedbackModel = new memberFeedback();        
-        if (isset($recentLessonHistory->schedule_id)) {
+        //initialize member feedback
+        $memberFeedbackModel = new MemberFeedback();
+        $memberFeedbackDetailsModel = new MemberFeedbackDetails();
+
+        //get recent history member feedback
+        if (isset($recentLessonHistory->schedule_id)) 
+        {
             $memberFeedback = $memberFeedbackModel->where('schedule_id', $recentLessonHistory->schedule_id)->first();
+
+            if ($memberFeedback) {
+
+                $memberFeedbackDetails = $memberFeedbackDetailsModel->getMemberFeedbackDetails($memberFeedback->id, 'student_performance_rating');
+            }
+        } else {
+
+            $recentLessonHistory    = null;
+            $memberFeedback         = null;
+            $memberFeedbackDetails  = null;
         }
        
 
@@ -298,7 +310,7 @@ class MemberController extends Controller
             return view('admin.modules.member.memberInfo', compact('memberInfo', 'tutorInfo', 'agentInfo', 'lessonGoals', 
                                                 'latestReportCard', 'latestWritingReport', 'purpose', 'memberLatestExamScore', 
                                                 'currentMemberlevel', 'homework', 'mergedMemberInfo', 'mergedAccount', 'mergedType', 'mergedAccounts', 
-                                                'recentLessonHistory', 'memberFeedback'));
+                                                'recentLessonHistory', 'memberFeedback', 'memberFeedbackDetails'));
         } else {
 
             abort(404, "Member Not Found");

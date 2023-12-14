@@ -667,10 +667,15 @@ class Folder extends Model
     
     public function getAllRecentLessonHistory($memberID) {
 
-        $lessonHistory = LessonHistory::where('member_id', $memberID)
-            ->where('status', "COMPLETED")
-            ->orwhere('status', "INCOMPLETE")
-            ->orderBy("time_ended", 'DESC')->first();  
+ 
+
+            $lessonHistory = LessonHistory::where('member_id', $memberID)
+            ->where(function ($query) {
+                $query->where('status', 'COMPLETED')
+                    ->orWhere('status', 'INCOMPLETE');
+            })
+            ->orderBy('time_ended', 'DESC')
+            ->first();            
 
         if ($lessonHistory) { return $lessonHistory; } else { return false; }       
     }

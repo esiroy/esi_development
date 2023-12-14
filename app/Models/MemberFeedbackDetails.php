@@ -22,4 +22,19 @@ class MemberFeedbackDetails extends Model
             'is_active'             => $feedbackDetailData['is_active'],
         ]);    
     }
+
+    public function getMemberFeedbackDetails($feedbackID, $name ="") 
+    {
+
+        $feedbackDetails = $this->where('member_feedback_id', $feedbackID);
+
+        if (isset($name)) {
+
+            $feedbackDetails = $feedbackDetails->where('name', $name);
+        }
+
+        $feedbackDetails = $feedbackDetails->first();
+
+        return $feedbackDetails;
+    }
 }
