@@ -68,7 +68,7 @@ class MemberFeedbackController extends Controller {
                     'schedule_id'       => $nextScheduleID,
                     'member_user_id'    => $memberID,
                     'tutor_user_id'     => $tutorID,
-                    'next_lesson'       => $nextLesson                    
+                    'next_lesson'       => $nextLesson,                  
                     'feedback'          => $feedback,
                     'is_active'         => true
                 ];
