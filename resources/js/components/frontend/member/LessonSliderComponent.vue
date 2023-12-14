@@ -1592,7 +1592,7 @@ export default {
                     //console.log(" SLIDE DATA : ", response.data);
 
                     let title   =  "Slide successully saved";
-                    let content =  this.toastMessage("Slide successully saved", "success");  
+                    let content =  this.toastMessage("Slide " + slideIndex + " successully saved", "success");  
                     this.toast("b-toaster-bottom-left",  title, content, true);
 
                 } else {
@@ -1740,12 +1740,11 @@ export default {
         color: #0072ba;
     }
 
-
-    .custom-toast-width {
-        width: 220px !important; 
-        font-size: 12px;
-    }
-
-
 </style>
 
+<style lang="scss" >
+    .custom-toast-width {
+        width: 190px !important; 
+        font-size: 12px;
+    }
+</style>
