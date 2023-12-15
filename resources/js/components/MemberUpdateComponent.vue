@@ -1153,8 +1153,10 @@
                 <div class="card-title bg-gray p-1 mt-4">
                     <div class="pl-2 font-weight-bold small">Latest Report Card</div>
                 </div>
+
                 <div class="row pt-2">
 
+                    <!--
                     <div class="col-12">
                         <div class="row">
                             <div class="col-2 small pr-0">
@@ -1171,6 +1173,44 @@
                             </div>
                         </div>
                     </div>
+                    -->
+
+                    <div class="col-12">
+                        <div class="row">
+                            <div class="col-2 small pr-0">
+                                <label for="agent" class="px-0 col-md-12 col-form-label">
+                                    Subject <div class="float-right">:</div>
+                                </label>
+                            </div>
+                            <div class="col-10">
+                                <div class="row">
+                                    <div class="col-10 pt-1">
+
+                                        <span id="latest-report-card-subject">
+                                            {{ this.latestreportcard.lesson_subject }}
+                                        </span>                                            
+
+                                        <span id="history-status" class="text-danger font-weight-bold" v-if="recenthistory?.status">  
+                                            / {{ recenthistory.status }}
+                                        </span>  
+
+                                        <span class="small ml-3" v-if="memberfeedback?.next_lesson">
+                                            Next Lesson : 
+                                        </span>
+
+                                        <span class="text-danger font-weight-bold" v-if="memberfeedback?.next_lesson">
+                                            {{ "SLIDE "}} {{ this.memberfeedback.next_lesson }}
+                                        </span>
+                                      
+
+
+
+                                    </div>
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>    
 
                     <div class="col-12">
                         <div class="row">
@@ -1206,22 +1246,7 @@
                         </div>
                     </div>
 
-                    <div class="col-12">
-                        <div class="row">
-                            <div class="col-2 small pr-0">
-                                <label for="agent" class="px-0 col-md-12 col-form-label">
-                                    Subject <div class="float-right">:</div>
-                                </label>
-                            </div>
-                            <div class="col-10">
-                                <div class="row">
-                                    <div class="col-10 pt-1">
-                                       {{ this.latestreportcard.lesson_subject }}
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>                    
+                
 
                     <div class="col-12">
                         <div class="row">
@@ -1241,6 +1266,8 @@
                     </div>  
 
                     <div class="col-12">
+
+
                         <div class="row">
                             <div class="col-2 small pr-0">
                                 <label for="agent" class="px-0 col-md-12 col-form-label">
@@ -1261,7 +1288,7 @@
                                             <div v-if="this.latestreportcard.homework.url">
                                                 <div class="small">
                                                     File: <a :href="this.latestreportcard.homework.url" 
-                                                    :download="this.latestreportcard.homework.url" >{{ this.latestreportcard.homework.url }}</a>
+                                                    :download="this.latestreportcard.homework.url" >{{ this.latestreportcard.homework.filename }}</a>
                                                 </div>
 
                                                 <div class="small">
@@ -1277,11 +1304,47 @@
                                         </td>
                                     </tr>
                                 </table> 
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-2 small pr-0">
+                                <label for="agent" class="px-0 col-md-12 col-form-label">
+                                    Rating <div class="float-right">:</div>
+                                </label>
+                            </div>
+                            <div class="col-6">
+
+                                <div v-if="memberfeedbackdetails?.value">
+                                    <b-form-rating v-model="this.memberfeedbackdetails.value" readonly  no-border inline size="lg" variant="warning" class="mb-2 pl-0"></b-form-rating>
+                                </div>
+                                <div v-else>
+                                    -
+                                </div>
 
                             </div>
-
-
                         </div>
+
+
+                        <div class="row">
+                            <div class="col-2 small pr-0">
+                                <label for="agent" class="px-0 col-md-12 col-form-label">
+                                    Feedback <div class="float-right">:</div>
+                                </label>
+                            </div>
+                            <div class="col-6">
+
+                                <div v-if="memberfeedback?.feedback">
+                                    <span v-html="this.memberfeedback.feedback"></span> 
+                                </div>  
+                                <div v-else>
+                                    -
+                                </div>                                                             
+
+                            </div>
+                        </div>
+                        
+                        
                     </div>
                                         
                 </div>
@@ -1569,6 +1632,10 @@ export default {
         MemberMiniTestViewerComponent,
     },
     props: {
+        recenthistory: Object,
+        memberfeedback: Object,
+        memberfeedbackdetails: Object,
+
         membermonthlyterm: Boolean,
         memberagreedtoterms: Boolean,
         hidemembertabs: {

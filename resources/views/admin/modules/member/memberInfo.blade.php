@@ -314,7 +314,7 @@
                                                     Next Lesson : 
                                                 </span>
                                                 <span class="text-danger font-weight-bold">
-                                                {{ "SLIDE "}} {{ $memberFeedback }}
+                                                {{ "SLIDE "}} {{ $memberFeedback->next_lesson }}
                                                 </span>
                                             @endif
                                         </td>
@@ -338,6 +338,7 @@
                                         </td>
                                     </tr>
 
+                                    <!--
                                     <tr valign="top">
                                         <td class="red">&nbsp;</td>
                                         <td>Level</td>
@@ -346,6 +347,7 @@
                                              {{ $latestReportCard->lesson_level ?? '-' }}
                                         </td>
                                     </tr>
+                                    -->
 
                                     <tr valign="top">
                                         <td class="red">&nbsp;</td>

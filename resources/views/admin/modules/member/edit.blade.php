@@ -165,7 +165,14 @@
                                 :latestreportcard="{{ json_encode($latestReportCard) }}" 
                                 :currentmemberlevel="{{ json_encode($currentMemberlevel) }}" 
                                 :hidemembertabs="{{ json_encode($hideMemberTabs)  }}" 
-                                usertype="{{ Auth::user()->user_type }}"                  
+                               
+
+                               :recenthistory="{{ json_encode($recentLessonHistory) }}"
+                               :memberfeedback="{{ json_encode($memberFeedback) }}"       
+                               :memberfeedbackdetails="{{ json_encode($memberFeedbackDetails) }}"       
+                                
+                                
+                                usertype="{{ Auth::user()->user_type }}"       
                                 api_token="{{ Auth::user()->api_token }}" 
                                 csrf_token="{{ csrf_token() }}" />
                         </div>

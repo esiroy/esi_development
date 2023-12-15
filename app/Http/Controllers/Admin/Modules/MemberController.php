@@ -178,9 +178,10 @@ class MemberController extends Controller
     public function show($memberID)
     {
 
-        $folder = new Folder();
+       
         //get recent history for member
-        $recentLessonHistory   = $folder->getAllRecentLessonHistory($memberID);
+        $folder                  = new Folder();
+        $recentLessonHistory    = $folder->getAllRecentLessonHistory($memberID);
 
         //initialize member feedback
         $memberFeedbackModel = new MemberFeedback();
@@ -491,9 +492,6 @@ class MemberController extends Controller
      */
     public function edit($memberID)
     {
-
-
-
         abort_if(Gate::denies('member_edit'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
         $memberInfo = Member::where('user_id', $memberID)->first();
@@ -502,6 +500,32 @@ class MemberController extends Controller
             //member is not found in member table
             abort(404);
         }
+
+
+        //get recent history for member
+        $folder                 = new Folder();       
+        $recentLessonHistory    = $folder->getAllRecentLessonHistory($memberID);
+
+        //initialize member feedback
+        $memberFeedbackModel = new MemberFeedback();
+        $memberFeedbackDetailsModel = new MemberFeedbackDetails();
+
+        //get recent history member feedback
+        if (isset($recentLessonHistory->schedule_id)) 
+        {
+            $memberFeedback = $memberFeedbackModel->where('schedule_id', $recentLessonHistory->schedule_id)->first();
+
+            if ($memberFeedback) {
+
+                $memberFeedbackDetails = $memberFeedbackDetailsModel->getMemberFeedbackDetails($memberFeedback->id, 'student_performance_rating');
+            }
+        } else {
+
+            $recentLessonHistory    = null;
+            $memberFeedback         = null;
+            $memberFeedbackDetails  = null;
+        }
+
 
         //get photo
         $userImageObj = new UserImage();
@@ -527,7 +551,8 @@ class MemberController extends Controller
             
                 $homeworkdata = [
                             'url'           => url( Storage::url($homework->original) ),      
-                            'instruction'   => $homework->instruction             
+                            'instruction'   => $homework->instruction,
+                            'filename'      => $homework->filename ?? '',                                         
                             ];
                 
             } else {
@@ -615,7 +640,8 @@ class MemberController extends Controller
             'userInfo', 'memberInfo', 'userImage', 'latestReportCard',
             'lessonGoals', 'lessonClasses', 'desiredSchedule', 'purpose', 'memberLatestExamScore', 'currentMemberlevel',
             'minitest', 'hideMemberTabs',
-            'memberMonthlyTerm', 'isMemberAgreedToTerms'
+            'memberMonthlyTerm', 'isMemberAgreedToTerms',
+            'recentLessonHistory', 'memberFeedback', 'memberFeedbackDetails'
             ));
 
     }
