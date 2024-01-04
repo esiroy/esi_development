@@ -1810,6 +1810,23 @@ export default {
                         Listening: 0,                        
                 },
 
+                //TOELF ITP
+                TOEFL_ITP: "",
+                TOEFL_ITP_option: {
+                        Speaking: "",
+                        Writing: "",
+                        Reading: "",
+                        Listening: "",                
+                },
+                TOEFL_ITP_targetScore:
+                {
+                        Speaking: 31,
+                        Writing: 31,
+                        Reading: 31,
+                        Listening: 31,                        
+                },   
+
+
                 /* NEW TEOFL ADDITION */
                 TOEFL_Junior: "",
                 TOEFL_Junior_option: {   listening: "", languageFormAndMeaning: "", reading: "", total: "", },

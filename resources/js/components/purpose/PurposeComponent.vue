@@ -92,7 +92,7 @@
             </div>    
 
             <div class="checkbox-options">
-                <input type="checkbox" id="TOEFL" name="TOEFL" value="TOEFL" class="main_option" @click="checkMainOption" v-model="childPurposeList.TOEFL"> TOEFL
+                <input type="checkbox" id="TOEFL" name="TOEFL" value="TOEFL" class="main_option" @click="checkMainOption" v-model="childPurposeList.TOEFL"> TOEFL IBT
                 <div class="TOEFL ml-4 sub_options">
 
                     <div class="row mt-2">
@@ -147,9 +147,64 @@
                 </div>
             </div>
 
+
+            <!-- [NEW] TOELF ITP -->
+            <div class="checkbox-options">
+                <input type="checkbox" id="TOEFL_ITP" name="TOEFL_ITP" value="TOEFL_ITP" class="main_option" @click="checkMainOption" v-model="childPurposeList.TOEFL_ITP"> TOEFL ITP
+                <div class="TOEFL_ITP ml-4 sub_options">
+
+
+                    <div class="row mt-4">
+                        <div class="TOEFL_ITP_option col-md-2">
+                            <input type="checkbox" name="TOEFL_ITP_option[]" value="Writing" v-model="childPurposeList.TOEFL_ITP_option.Writing"> 
+                            Structure and Written Expression <br/>
+                        </div>               
+                        <div class="TOEFL_ITP_option col-md-2">
+                            {{ childPurposeList.TOEFL_ITP_targetScore.Writing }}
+                        </div>
+                        <div class="TOEFL_ITP_targetScore col-md-6">                                    
+                            <vue-slider  @change="clearErrorMsg" v-model="childPurposeList.TOEFL_ITP_targetScore.Writing" :min="31" :max="68"  :interval="1" :marks="[31, 68]"></vue-slider>                                     
+                        </div>
+                    </div>
+
+                    <div class="row mt-4">
+                        <div class="TOEFL_ITP_option col-md-2">
+                            <input type="checkbox" name="TOEFL_ITP_option[]" value="Reading" v-model="childPurposeList.TOEFL_ITP_option.Reading"> Reading <br/>
+                        </div>               
+                        <div class="TOEFL_ITP_option col-md-2">
+                            {{ childPurposeList.TOEFL_ITP_targetScore.Reading }}
+                        </div>
+                        <div class="TOEFL_ITP_targetScore col-md-6">                                    
+                            <vue-slider  @change="clearErrorMsg" v-model="childPurposeList.TOEFL_ITP_targetScore.Reading" :min="31" :max="67"  :interval="1" :marks="[31, 67]"></vue-slider>                                     
+                        </div>
+                    </div>
+
+
+                    <div class="row mt-4 mb-2">
+                        <div class="IELTS_option col-md-2">
+                            <input type="checkbox" name="TOEFL_ITP_option[]" value="Listening" v-model="childPurposeList.TOEFL_ITP_option.Listening"> Listening <br/>
+                        </div>               
+                        <div class="IELTS_option col-md-2">
+                            {{ childPurposeList.TOEFL_ITP_targetScore.Listening }}
+                        </div>
+                        <div class="IELTS_targetScore col-md-6">                                    
+                            <vue-slider  @change="clearErrorMsg" v-model="childPurposeList.TOEFL_ITP_targetScore.Listening" :min="31" :max="68"  :interval="1" :marks="[31, 68]"></vue-slider>                                     
+                        </div>
+                    </div>      
+
+                </div>
+            </div>
+            <!---[END] TOELF ITP-->      
+            
+   
+               
+            
+
             <!--- [START] TOEFL IUNIOR-->
             <div class="checkbox-options">
-                <input type="checkbox" id="TOEFL_Junior" name="TOEFL_Junior" value="TOEFL_Junior" class="main_option" @click="checkMainOption" v-model="childPurposeList.TOEFL_Junior"> TOEFL Junior
+                <input type="checkbox" id="TOEFL_Junior" name="TOEFL_Junior" value="TOEFL_Junior" class="main_option" @click="checkMainOption" 
+                v-model="childPurposeList.TOEFL_Junior"> TOEFL Junior
+
                 <div class="TOEFL_Junior ml-4 sub_options">
                 
                     <div class="row mt-4">
@@ -797,6 +852,22 @@ export default {
                         Listening: 0,                        
                 },
 
+                //TOELF ITP
+                TOEFL_ITP: "",
+                TOEFL_ITP_option: {
+                        //Speaking: "",
+                        Writing: "",
+                        Reading: "",
+                        Listening: "",                
+                },
+                TOEFL_ITP_targetScore:
+                {
+                        //Speaking: 31,
+                        Writing: 31,
+                        Reading: 31,
+                        Listening: 31,                        
+                },                
+
                 /* NEW TEOFL ADDITION */
                 TOEFL_Junior: "",
                 TOEFL_Junior_option: {                    
@@ -818,9 +889,8 @@ export default {
                 TOEFL_Primary_Step_2: "",
                 TOEFL_Primary_Step_2_option: {  Listening: "",  Reading: "",},
                 TOEFL_Primary_Step_2_targetScore: { Listening: 0, Reading: 0 },  
+
                 /* NEW TEOFL ADDITION */
-
-
                 TOEIC: "",
                 TOEIC_option: {
                         Speaking: "",
@@ -828,12 +898,6 @@ export default {
                         Reading: "",
                         Listening: "",                
                 },
-
-
-
-
-
-
                 TOEIC_targetScore:
                 {
                         Speaking: 0,
@@ -1030,17 +1094,22 @@ export default {
         },
         clearErrorMsg() {
             this.errorMsg = ''
-        }        
+        },        
     },
     computed: {},
     updated: function () 
     {
         this.$parent.purposeList = this.childPurposeList;
         this.showMainMenuSubOptions();
+
+
     },
     mounted: function () 
     {
-        this.childPurposeList = this.purposeList;
+        this.childPurposeList = this.$props.purposeList;
+        console.log(this.purposeList);
+
+
     },
 };
 </script>
