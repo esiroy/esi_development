@@ -28,7 +28,7 @@
                 <select @change="getTotal" id="structure_and_written_expression" name="structure_and_written_expression" 
                     v-model="examScore.TOEFL_ITP_Level_2.structure_and_written_expression" 
                     :class="this.size.select +' form-control form-control-sm pl-0'">
-                    <option value="" class="mx-0 px-0">Select Structe and Written Expression</option>
+                    <option value="" class="mx-0 px-0">Select Structure and Written Expression</option>
                     <option :value="item + 30" :key="item + 30" class="mx-0 px-0" v-for="item in 38">{{ item + 30 }}</option>
                 </select>
             </div>
