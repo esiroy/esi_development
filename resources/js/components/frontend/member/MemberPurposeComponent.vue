@@ -18,7 +18,8 @@
         </div>
 
         <b-modal id="modalUpdatePurposeForm" title="受講目的--->最大3目的" size="xl">
-            <PurposeComponent :purposeList="this.purposeList"></PurposeComponent>
+
+            <PurposeComponent :purposeList="this.purposeList" viewer="member"></PurposeComponent>
 
             <template #modal-footer>
 
@@ -56,31 +57,48 @@ export default {
             //size select dropdown menu
             size: { leftColumn  : "col-2", rightColumn : "col-10", select      : "col-3" },  
 
-            purposeList: { },
-
-
-            //purpose List
-            
+            //purpose List            
             purposeList: 
             {
                 IELTS:  "",
                 IELTS_option:{ Speaking: "", Writing: "", Reading: "", Listening: "" },
                 IELTS_targetScore:{ Speaking: 3, Writing: 3, Reading: 3, Listening: 3 },
 
-                //TOEFL IBT
+                //TOEFL OLD
                 TOEFL: "",
                 TOEFL_option: { Speaking: "", Writing: "", Reading: "", Listening: ""},
                 TOEFL_targetScore: { Speaking: 0, Writing: 0, Reading: 0, Listening: 0 },
-
-                //TOELF ITP
-                TOEFL_ITP: "",
-                TOEFL_ITP_option: {
-                    Speaking: "", Writing: "", Reading: "", Listening: ""          
+                
+                 
+                
+                //TOELF ITP level 1
+                TOEFL_ITP_Level_1: "",
+                TOEFL_ITP_Level_1_option: {                        
+                        Listening: "",    
+                        StructureAndWrittenExpression: "",
+                        Reading: "",                                    
                 },
-                TOEFL_ITP_targetScore:
-                {
-                        Speaking: 31, Writing: 31, Reading: 31, Listening: 31
-                },                 
+                TOEFL_ITP_Level_1_targetScore:
+                {            
+                    Listening: 31,            
+                    StructureAndWrittenExpression: 31,
+                    Reading: 31           
+                },                   
+                
+                
+                //TOELF ITP level 2
+                TOEFL_ITP_Level_2: "",
+                TOEFL_ITP_Level_2_option: {                        
+                        Listening: "",    
+                        StructureAndWrittenExpression: "",
+                        Reading: "",                                    
+                },
+                TOEFL_ITP_Level_2_targetScore:
+                {            
+                    Listening: 31,            
+                    StructureAndWrittenExpression: 31,
+                    Reading: 31           
+                },                     
 
                 /* NEW TEOFL ADDITION */
                 TOEFL_Junior: "",

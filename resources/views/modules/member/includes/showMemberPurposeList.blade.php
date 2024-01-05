@@ -14,7 +14,13 @@
                     </span>
                 </div>
             @else
-                <strong>{{ $list->purpose }}</strong>
+
+                
+                <strong>
+                    {{ $list->purpose }} 
+                    @if ($list->purpose == "TOEFL") {{ " IBT" }} @endif
+                </strong>
+
                 <div class="option_value_wrapper mb-2 ml-2 mx-0 px-0">
                     @foreach ($options as $option_value) 
                         @php 

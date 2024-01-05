@@ -25,6 +25,11 @@
                                         <option value="" class="mx-0 px-0">Select Examination Type</option>
                                         <option value="IELTS" class="mx-0 px-0">IELTS</option>
                                         <option value="TOEFL">TOEFL iBT</option>
+
+                                        <option value="TOEFL_ITP_Level_1">TOEFL ITP LEVEL 1</option>
+                                        <option value="TOEFL_ITP_Level_2">TOEFL ITP LEVEL 2</option>
+
+
                                         <option value="TOEFL_Junior">TOEFL Junior</option>
                                         <option value="TOEFL_Primary_Step_1">TOEFL Primary Step 1</option>
                                         <option value="TOEFL_Primary_Step_2">TOEFL Primary Step 2</option>
@@ -66,6 +71,10 @@
                                 <!--[start] Dynamic Examination Scores -->
                                 <IELTScoreComponent :examScore="examScore" :size="this.size"></IELTScoreComponent>
                                 <ToeflScoreComponent :examScore="examScore" :size="this.size"></ToeflScoreComponent>
+
+                                <ToeflITPLevel1ScoreComponent :examScore="examScore" :size="this.size"></ToeflITPLevel1ScoreComponent>
+                                <ToeflITPLevel2ScoreComponent :examScore="examScore" :size="this.size"></ToeflITPLevel2ScoreComponent>
+
                                 <ToeflJuniorScoreComponent :examScore="examScore" :size="this.size"></ToeflJuniorScoreComponent>
                                 <ToeflPrimaryStep1ScoreComponent :examScore="examScore" :size="this.size"></ToeflPrimaryStep1ScoreComponent>
                                 <ToeflPrimaryStep2ScoreComponent :examScore="examScore" :size="this.size"></ToeflPrimaryStep2ScoreComponent>
@@ -426,6 +435,10 @@
     //Import Score Types
     import IELTScoreComponent from "../../scores/IELTScoreComponent.vue";
     import ToeflScoreComponent from "../../scores/ToeflScoreComponent.vue";
+
+    import ToeflITPLevel1ScoreComponent from "../../scores/ToeflITPLevel1ScoreComponent.vue";
+    import ToeflITPLevel2ScoreComponent from "../../scores/ToeflITPLevel2ScoreComponent.vue";
+
     import ToeflJuniorScoreComponent from "../../scores/ToeflJuniorScoreComponent.vue";
     import ToeflPrimaryStep1ScoreComponent from "../../scores/ToeflPrimaryStep1ScoreComponent.vue";
     import ToeflPrimaryStep2ScoreComponent from "../../scores/ToeflPrimaryStep2ScoreComponent.vue";
@@ -445,7 +458,8 @@
             BarChart,
             Datepicker, PurposeComponent,
             IELTScoreComponent, 
-            ToeflScoreComponent, ToeflJuniorScoreComponent,
+            ToeflScoreComponent, ToeflITPLevel1ScoreComponent, ToeflITPLevel2ScoreComponent,
+            ToeflJuniorScoreComponent,
             ToeflPrimaryStep1ScoreComponent, ToeflPrimaryStep2ScoreComponent, 
             ToeicListeningAndReadingScoreComponent, ToeicSpeakingScoreComponent, ToeicWritingScoreComponent,
             EikenScoreComponent,
@@ -516,6 +530,22 @@
                         listeningScore: "",
                         total: "",
                     },
+
+                    TOEFL_ITP_Level_1: {                        
+                        listening: "",    
+                        structureAndWrittenExpression: "",
+                        reading: "",
+                        total: "",
+                    },
+
+                    TOEFL_ITP_Level_2: {                        
+                        listening: "",    
+                        structureAndWrittenExpression: "",
+                        reading: "",
+                        total: "",                                 
+                    },
+
+
                     TOEFL_Junior: {                    
                         listening: "",
                         languageFormAndMeaning: "",
@@ -1137,57 +1167,55 @@
         },
         deleteScoreRecord(examType, id) {
         
-                axios.post("/api/deleteMemberExamScore?api_token=" + this.api_token, 
-                {
-                    method          : "POST",
-                    id              : id,
-                    examType        : examType,
-                                    
-                }).then(response => {
+            axios.post("/api/deleteMemberExamScore?api_token=" + this.api_token, 
+            {
+                method          : "POST",
+                id              : id,
+                examType        : examType,
+                                
+            }).then(response => {
 
-                    //HIDE LOADER HERE
-                    $(document).find('.modal-footer').find('div.buttons-container').show();
-                    $(document).find('.modal-footer').find('div.loading-container').hide();
-                                    
-                    if (response.data.success === true) 
-                    {    
-                        if (examType == "EIKEN") 
-                        {
-                            let currentPage = this.examScoreList[examType + '_Grade_' + this.examLevel].currentPage;
+                //HIDE LOADER HERE
+                $(document).find('.modal-footer').find('div.buttons-container').show();
+                $(document).find('.modal-footer').find('div.loading-container').hide();
+                                
+                if (response.data.success === true) 
+                {    
+                    if (examType == "EIKEN") 
+                    {
+                        let currentPage = this.examScoreList[examType + '_Grade_' + this.examLevel].currentPage;
 
-                            if (currentPage > 1) {
-                                let previous_page_eiken = parseInt(currentPage) - 1;
-                                this.getMemberExamScoreByPage(examType + '_Grade_' + this.examLevel, previous_page_eiken);
-                            } else {
-                                this.getMemberExamScoreByPage(examType, 1);    
-                            }
+                        if (currentPage > 1) {
+                            let previous_page_eiken = parseInt(currentPage) - 1;
+                            this.getMemberExamScoreByPage(examType + '_Grade_' + this.examLevel, previous_page_eiken);
                         } else {
-                            let currentPage = this.examScoreList[examType].currentPage;
-
-                            if (currentPage > 1) {
-                                let previous_page = parseInt(currentPage) - 1;
-                                this.getMemberExamScoreByPage(examType, previous_page);
-                            } else {
-                                this.getMemberExamScoreByPage(examType, 1);
-                            }
+                            this.getMemberExamScoreByPage(examType, 1);    
                         }
+                    } else {
+                        let currentPage = this.examScoreList[examType].currentPage;
 
-                        this.getMemberLatestExamScore();
-
-                    } else {                 
-                    
-                        
+                        if (currentPage > 1) {
+                            let previous_page = parseInt(currentPage) - 1;
+                            this.getMemberExamScoreByPage(examType, previous_page);
+                        } else {
+                            this.getMemberExamScoreByPage(examType, 1);
+                        }
                     }
 
-                }).catch(function(error) {
+                    this.getMemberLatestExamScore();
 
-                    //HIDE LOADER HERE
-                    $(document).find('.modal-footer').find('div.buttons-container').show();
-                    $(document).find('.modal-footer').find('div.loading-container').hide();
-                    console.log(error);
-                }); 
-                            
-           
+                } else {                 
+                
+                    
+                }
+
+            }).catch(function(error) {
+
+                //HIDE LOADER HERE
+                $(document).find('.modal-footer').find('div.buttons-container').show();
+                $(document).find('.modal-footer').find('div.loading-container').hide();
+                console.log(error);
+            }); 
 
         },                    
         handleChangeExamType(event) 
@@ -1199,8 +1227,12 @@
             let examType = this.replaceSpaceToDash(examTypeValue);
 
             this.hideClass('examScoreHolder');
+
+
             if (examType.length  > 0 ) {
                 this.showElementId('examination-score-'+ examType);
+
+                console.log('examination-score-'+ examType)
             }
             this.removeHighlightExamElement();
         },
@@ -1508,6 +1540,18 @@
                     readingScore: "",
                     listeningScore: "",
                     total: "",
+                },
+                TOEFL_ITP_Level_1: {
+                    listening: "",
+                    structure_and_written_expression: "",
+                    reading: "",
+                    total: ""
+                },                  
+                TOEFL_ITP_Level_2: {
+                    listening: "",
+                    structure_and_written_expression: "",
+                    reading: "",
+                    total: ""
                 },
                 TOEFL_Junior: {                    
                     listening: "",

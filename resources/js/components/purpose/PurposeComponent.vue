@@ -91,8 +91,9 @@
                 </div>
             </div>    
 
+            <!-- TOEFL -->
             <div class="checkbox-options">
-                <input type="checkbox" id="TOEFL" name="TOEFL" value="TOEFL" class="main_option" @click="checkMainOption" v-model="childPurposeList.TOEFL"> TOEFL IBT
+                <input type="checkbox" id="TOEFL_IBT" name="TOEFL_IBT" value="TOEFL_IBT" class="main_option" @click="checkMainOption" v-model="childPurposeList.TOEFL"> TOEFL IBT
                 <div class="TOEFL ml-4 sub_options">
 
                     <div class="row mt-2">
@@ -146,58 +147,173 @@
 
                 </div>
             </div>
+            <!-- TOEFL  -->
+            
 
-
-            <!-- [NEW] TOELF ITP -->
+            <!-- TOEFL IBT -->
+            <!--
             <div class="checkbox-options">
-                <input type="checkbox" id="TOEFL_ITP" name="TOEFL_ITP" value="TOEFL_ITP" class="main_option" @click="checkMainOption" v-model="childPurposeList.TOEFL_ITP"> TOEFL ITP
-                <div class="TOEFL_ITP ml-4 sub_options">
+                <input type="checkbox" id="TOEFL_IBT" name="TOEFL_IBT" value="TOEFL_IBT" class="main_option" @click="checkMainOption" v-model="childPurposeList.TOEFL_IBT"> TOEFL IBT
+                <div class="TOEFL_IBT ml-4 sub_options">
 
-
-                    <div class="row mt-4">
-                        <div class="TOEFL_ITP_option col-md-2">
-                            <input type="checkbox" name="TOEFL_ITP_option[]" value="Writing" v-model="childPurposeList.TOEFL_ITP_option.Writing"> 
-                            Structure and Written Expression <br/>
+                    <div class="row mt-2">
+                        <div class="TOEFL_IBT_option col-md-2">
+                            <input type="checkbox" name="TOEFL_IBT_option[]" value="Speaking" v-model="childPurposeList.TOEFL_IBT_option.Speaking"> Speaking <br/>
                         </div>               
-                        <div class="TOEFL_ITP_option col-md-2">
-                            {{ childPurposeList.TOEFL_ITP_targetScore.Writing }}
+                        <div class="TOEFL_IBT_option col-md-2">
+                            {{ childPurposeList.TOEFL_IBT_targetScore.Speaking }}
                         </div>
-                        <div class="TOEFL_ITP_targetScore col-md-6">                                    
-                            <vue-slider  @change="clearErrorMsg" v-model="childPurposeList.TOEFL_ITP_targetScore.Writing" :min="31" :max="68"  :interval="1" :marks="[31, 68]"></vue-slider>                                     
+                        <div class="TOEFL_IBT_targetScore col-md-6">                                    
+                            <vue-slider  @change="clearErrorMsg" v-model="childPurposeList.TOEFL_IBT_targetScore.Speaking" :min="0" :max="30"  :interval="1" :marks="[0, 30]"></vue-slider>                                     
                         </div>
                     </div>
 
                     <div class="row mt-4">
-                        <div class="TOEFL_ITP_option col-md-2">
-                            <input type="checkbox" name="TOEFL_ITP_option[]" value="Reading" v-model="childPurposeList.TOEFL_ITP_option.Reading"> Reading <br/>
+                        <div class="TOEFL_IBT_option col-md-2">
+                            <input type="checkbox" name="TOEFL_IBT_option[]" value="Writing" v-model="childPurposeList.TOEFL_IBT_option.Writing"> Writing <br/>
                         </div>               
-                        <div class="TOEFL_ITP_option col-md-2">
-                            {{ childPurposeList.TOEFL_ITP_targetScore.Reading }}
+                        <div class="TOEFL_IBT_option col-md-2">
+                            {{ childPurposeList.TOEFL_IBT_targetScore.Writing }}
                         </div>
-                        <div class="TOEFL_ITP_targetScore col-md-6">                                    
-                            <vue-slider  @change="clearErrorMsg" v-model="childPurposeList.TOEFL_ITP_targetScore.Reading" :min="31" :max="67"  :interval="1" :marks="[31, 67]"></vue-slider>                                     
+                        <div class="TOEFL_IBT_targetScore col-md-6">                                    
+                            <vue-slider  @change="clearErrorMsg" v-model="childPurposeList.TOEFL_IBT_targetScore.Writing" :min="0" :max="30"  :interval="1" :marks="[0, 30]"></vue-slider>                                     
+                        </div>
+                    </div>
+
+                    <div class="row mt-4">
+                        <div class="TOEFL_IBT_option col-md-2">
+                            <input type="checkbox" name="TOEFL_IBT_option[]" value="Reading" v-model="childPurposeList.TOEFL_IBT_option.Reading"> Reading <br/>
+                        </div>               
+                        <div class="TOEFL_IBT_option col-md-2">
+                            {{ childPurposeList.TOEFL_IBT_targetScore.Reading }}
+                        </div>
+                        <div class="TOEFL_IBT_targetScore col-md-6">                                    
+                            <vue-slider  @change="clearErrorMsg" v-model="childPurposeList.TOEFL_IBT_targetScore.Reading" :min="0" :max="30"  :interval="1" :marks="[0, 30]"></vue-slider>                                     
                         </div>
                     </div>
 
 
                     <div class="row mt-4 mb-2">
                         <div class="IELTS_option col-md-2">
-                            <input type="checkbox" name="TOEFL_ITP_option[]" value="Listening" v-model="childPurposeList.TOEFL_ITP_option.Listening"> Listening <br/>
+                            <input type="checkbox" name="TOEFL_IBT_option[]" value="Listening" v-model="childPurposeList.TOEFL_IBT_option.Listening"> Listening <br/>
                         </div>               
                         <div class="IELTS_option col-md-2">
-                            {{ childPurposeList.TOEFL_ITP_targetScore.Listening }}
+                            {{ childPurposeList.TOEFL_IBT_targetScore.Listening }}
                         </div>
                         <div class="IELTS_targetScore col-md-6">                                    
-                            <vue-slider  @change="clearErrorMsg" v-model="childPurposeList.TOEFL_ITP_targetScore.Listening" :min="31" :max="68"  :interval="1" :marks="[31, 68]"></vue-slider>                                     
+                            <vue-slider  @change="clearErrorMsg" v-model="childPurposeList.TOEFL_IBT_targetScore.Listening" :min="0" :max="30"  :interval="1" :marks="[0, 30]"></vue-slider>                                     
                         </div>
                     </div>      
 
                 </div>
+            </div>         
+            -->   
+            <!---[END] TOEFL IBT -->      
+
+            <!-- [NEW] TOELF ITP LEVEL 1-->
+            <div class="checkbox-options">
+                <input type="checkbox" id="TOEFL_ITP_Level_1" name="TOEFL_ITP_Level_1" value="TOEFL_ITP_Level_1" class="main_option" @click="checkMainOption" v-model="childPurposeList.TOEFL_ITP_Level_1"> TOEFL ITP Level 1
+                <div class="TOEFL_ITP_Level_1 ml-4 sub_options">
+
+                    <div class="row mt-4 mb-2">
+                        <div class="IELTS_option col-md-2">
+                            <input type="checkbox" name="TOEFL_ITP_Level_1_option[]" value="Listening" v-model="childPurposeList.TOEFL_ITP_Level_1_option.Listening"> Listening <br/>
+                        </div>               
+                        <div class="IELTS_option col-md-2">
+                            {{ childPurposeList.TOEFL_ITP_Level_1_targetScore.Listening }}
+                        </div>
+                        <div class="IELTS_targetScore col-md-6">                                    
+                            <vue-slider  @change="clearErrorMsg" v-model="childPurposeList.TOEFL_ITP_Level_1_targetScore.Listening" :min="31" :max="68"  :interval="1" :marks="[31, 68]"></vue-slider>                                     
+                        </div>
+                    </div>    
+                    
+                    
+                    <div class="row mt-4">
+                        <div class="TOEFL_ITP_Level_1_option col-md-2">
+                            <input type="checkbox" name="TOEFL_ITP_Level_1_option[]" value="StructureAndWrittenExpression" v-model="childPurposeList.TOEFL_ITP_Level_1_option.StructureAndWrittenExpression"> 
+                            Structure and Written Expression <br/>
+                        </div>               
+                        <div class="TOEFL_ITP_Level_1_option col-md-2">
+                            {{ childPurposeList.TOEFL_ITP_Level_1_targetScore.StructureAndWrittenExpression }}
+                        </div>
+                        <div class="TOEFL_ITP_Level_1_targetScore col-md-6">                                    
+                            <vue-slider  @change="clearErrorMsg" v-model="childPurposeList.TOEFL_ITP_Level_1_targetScore.StructureAndWrittenExpression" :min="31" :max="68"  :interval="1" :marks="[31, 68]"></vue-slider>                                     
+                        </div>
+                    </div>
+
+                    <div class="row mt-4">
+                        <div class="TOEFL_ITP_Level_1_option col-md-2">
+                            <input type="checkbox" name="TOEFL_ITP_Level_1_option[]" value="Reading" v-model="childPurposeList.TOEFL_ITP_Level_1_option.Reading"> Reading <br/>
+                        </div>               
+                        <div class="TOEFL_ITP_Level_1_option col-md-2">
+                            {{ childPurposeList.TOEFL_ITP_Level_1_targetScore.Reading }}
+                        </div>
+                        <div class="TOEFL_ITP_Level_1_targetScore col-md-6">                                    
+                            <vue-slider  @change="clearErrorMsg" v-model="childPurposeList.TOEFL_ITP_Level_1_targetScore.Reading" :min="31" :max="67"  :interval="1" :marks="[31, 67]"></vue-slider>                                     
+                        </div>
+                    </div>
+
+
+  
+
+                </div>
             </div>
-            <!---[END] TOELF ITP-->      
+            <!---[END] TOELF ITP LEVEL 1-->      
             
    
-               
+            <!-- [NEW] TOELF ITP LEVEL 2-->
+            <div class="checkbox-options">
+                <input type="checkbox" id="TOEFL_ITP_Level_2" name="TOEFL_ITP_Level_2" 
+                    value="TOEFL_ITP_Level_2" class="main_option" @click="checkMainOption" 
+                    v-model="childPurposeList.TOEFL_ITP_Level_2"> 
+                    TOEFL ITP Level 2
+                    
+                <div class="TOEFL_ITP_Level_2 ml-4 sub_options">
+
+                    <div class="row mt-4 mb-2">
+                        <div class="IELTS_option col-md-2">
+                            <input type="checkbox" name="TOEFL_ITP_Level_2_option[]" value="Listening" v-model="childPurposeList.TOEFL_ITP_Level_2_option.Listening"> Listening <br/>
+                        </div>               
+                        <div class="IELTS_option col-md-2">
+                            {{ childPurposeList.TOEFL_ITP_Level_2_targetScore.Listening }}
+                        </div>
+                        <div class="IELTS_targetScore col-md-6">                                    
+                            <vue-slider  @change="clearErrorMsg" v-model="childPurposeList.TOEFL_ITP_Level_2_targetScore.Listening" :min="31" :max="68"  :interval="1" :marks="[31, 68]"></vue-slider>                                     
+                        </div>
+                    </div>    
+                    
+                    
+                    <div class="row mt-4">
+                        <div class="TOEFL_ITP_Level_2_option col-md-2">
+                            <input type="checkbox" name="TOEFL_ITP_Level_2_option[]" value="StructureAndWrittenExpression" v-model="childPurposeList.TOEFL_ITP_Level_2_option.StructureAndWrittenExpression"> 
+                            Structure and Written Expression <br/>
+                        </div>               
+                        <div class="TOEFL_ITP_Level_2_option col-md-2">
+                            {{ childPurposeList.TOEFL_ITP_Level_2_targetScore.StructureAndWrittenExpression }}
+                        </div>
+                        <div class="TOEFL_ITP_Level_2_targetScore col-md-6">                                    
+                            <vue-slider  @change="clearErrorMsg" v-model="childPurposeList.TOEFL_ITP_Level_2_targetScore.StructureAndWrittenExpression" :min="31" :max="68"  :interval="1" :marks="[31, 68]"></vue-slider>                                     
+                        </div>
+                    </div>
+
+                    <div class="row mt-4">
+                        <div class="TOEFL_ITP_Level_2_option col-md-2">
+                            <input type="checkbox" name="TOEFL_ITP_Level_2_option[]" value="Reading" v-model="childPurposeList.TOEFL_ITP_Level_2_option.Reading"> Reading <br/>
+                        </div>               
+                        <div class="TOEFL_ITP_Level_2_option col-md-2">
+                            {{ childPurposeList.TOEFL_ITP_Level_2_targetScore.Reading }}
+                        </div>
+                        <div class="TOEFL_ITP_Level_2_targetScore col-md-6">                                    
+                            <vue-slider  @change="clearErrorMsg" v-model="childPurposeList.TOEFL_ITP_Level_2_targetScore.Reading" :min="31" :max="67"  :interval="1" :marks="[31, 67]"></vue-slider>                                     
+                        </div>
+                    </div>
+
+
+  
+
+                </div>
+            </div>
+            <!---[END] TOELF ITP LEVEL 1-->                    
             
 
             <!--- [START] TOEFL IUNIOR-->
@@ -851,22 +967,36 @@ export default {
                         Reading: 0,
                         Listening: 0,                        
                 },
-
-                //TOELF ITP
-                TOEFL_ITP: "",
-                TOEFL_ITP_option: {
-                        //Speaking: "",
-                        Writing: "",
-                        Reading: "",
-                        Listening: "",                
+                
+                //TOELF ITP level 1
+                TOEFL_ITP_Level_1: "",
+                TOEFL_ITP_Level_1_option: {                        
+                        Listening: "",    
+                        StructureAndWrittenExpression: "",
+                        Reading: "",                                    
                 },
-                TOEFL_ITP_targetScore:
-                {
-                        //Speaking: 31,
-                        Writing: 31,
-                        Reading: 31,
-                        Listening: 31,                        
-                },                
+                TOEFL_ITP_Level_1_targetScore:
+                {            
+                    Listening: 31,            
+                    StructureAndWrittenExpression: 31,
+                    Reading: 31           
+                },                   
+                
+
+                //TOELF ITP level 2
+                TOEFL_ITP_Level_2: "",
+                TOEFL_ITP_Level_2_option: {                        
+                        Listening: "",    
+                        StructureAndWrittenExpression: "",
+                        Reading: "",                                    
+                },
+                TOEFL_ITP_Level_2_targetScore:
+                {            
+                    Listening: 31,            
+                    StructureAndWrittenExpression: 31,
+                    Reading: 31           
+                },                       
+                
 
                 /* NEW TEOFL ADDITION */
                 TOEFL_Junior: "",

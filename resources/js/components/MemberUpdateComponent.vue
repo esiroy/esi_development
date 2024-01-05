@@ -591,7 +591,7 @@
             <!--[Start] Purpose -->
             <div id="purpose-section" class="section">
                 <div class="mb-4">
-                    <PurposeComponent :purposeList="this.purposeList"></PurposeComponent>
+                    <PurposeComponent viewer="admin" :purposeList="this.purposeList"></PurposeComponent>
                 </div>
             </div>
             <!--[End] Purpose -->
@@ -625,6 +625,10 @@
                                             <option value="" class="mx-0 px-0">Select Examination Type</option>
                                             <option value="IELTS" class="mx-0 px-0">IELTS</option>
                                             <option value="TOEFL">TOEFL iBT</option>
+
+                                            <option value="TOEFL_ITP_Level_1">TOEFL ITP LEVEL 1</option>
+                                            <option value="TOEFL_ITP_Level_2">TOEFL ITP LEVEL 2</option>
+
                                             <option value="TOEFL_Junior">TOEFL Junior</option>
                                             <option value="TOEFL_Primary_Step_1">TOEFL Primary Step 1</option>
                                             <option value="TOEFL_Primary_Step_2">TOEFL Primary Step 2</option>
@@ -664,6 +668,10 @@
                                     <!--[start] Dynamic Examination Scores -->
                                     <IELTScoreComponent :examScore="examScore" :size="this.size"></IELTScoreComponent>
                                     <ToeflScoreComponent :examScore="examScore" :size="this.size"></ToeflScoreComponent>
+
+                                    <ToeflITPLevel1ScoreComponent :examScore="examScore" :size="this.size"></ToeflITPLevel1ScoreComponent>
+                                    <ToeflITPLevel2ScoreComponent :examScore="examScore" :size="this.size"></ToeflITPLevel2ScoreComponent>
+
                                     <ToeflJuniorScoreComponent :examScore="examScore" :size="this.size"></ToeflJuniorScoreComponent>
                                     <ToeflPrimaryStep1ScoreComponent :examScore="examScore" :size="this.size"></ToeflPrimaryStep1ScoreComponent>
                                     <ToeflPrimaryStep2ScoreComponent :examScore="examScore" :size="this.size"></ToeflPrimaryStep2ScoreComponent>
@@ -1471,6 +1479,10 @@ import LineChart from './frontend/chart/lineChartComponent.vue'
 import PurposeComponent from "./purpose/PurposeComponent.vue";
 import IELTScoreComponent from "./scores/IELTScoreComponent.vue";
 import ToeflScoreComponent from "./scores/ToeflScoreComponent.vue";
+
+import ToeflITPLevel1ScoreComponent from "./scores/ToeflITPLevel1ScoreComponent.vue";
+import ToeflITPLevel2ScoreComponent from "./scores/ToeflITPLevel2ScoreComponent.vue";
+
 import ToeflJuniorScoreComponent from "./scores/ToeflJuniorScoreComponent.vue";
 import ToeflPrimaryStep1ScoreComponent from "./scores/ToeflPrimaryStep1ScoreComponent.vue";
 import ToeflPrimaryStep2ScoreComponent from "./scores/ToeflPrimaryStep2ScoreComponent.vue";
@@ -1497,7 +1509,8 @@ export default {
         LineChart,
         Datepicker, PurposeComponent,
         IELTScoreComponent, 
-        ToeflScoreComponent, ToeflJuniorScoreComponent,
+        ToeflScoreComponent, ToeflITPLevel1ScoreComponent, ToeflITPLevel2ScoreComponent,
+        ToeflJuniorScoreComponent,
         ToeflPrimaryStep1ScoreComponent, ToeflPrimaryStep2ScoreComponent, 
         ToeicListeningAndReadingScoreComponent, ToeicSpeakingScoreComponent, ToeicWritingScoreComponent, 
         EikenScoreComponent,
@@ -1707,6 +1720,19 @@ export default {
                     listeningScore: "",
                     total: "",
                 },
+                TOEFL_ITP_Level_1: {
+                    listening: "",
+                    structure_and_written_expression: "",
+                    reading: "",
+                    total: ""
+                },                  
+                TOEFL_ITP_Level_2: {
+                    listening: "",
+                    structure_and_written_expression: "",
+                    reading: "",
+                    total: ""
+                },
+
                 TOEFL_Junior: {                    
                     listening: "",
                     languageFormAndMeaning: "",
@@ -1791,10 +1817,9 @@ export default {
                         Writing: 3,
                         Reading: 3,
                         Listening: 3,                        
-                },
+                },          
 
-
-
+                //TOEFL IBT
                 TOEFL: "",
                 TOEFL_option: {
                         Speaking: "",
@@ -1810,20 +1835,35 @@ export default {
                         Listening: 0,                        
                 },
 
-                //TOELF ITP
-                TOEFL_ITP: "",
-                TOEFL_ITP_option: {
-                        Speaking: "",
-                        Writing: "",
-                        Reading: "",
-                        Listening: "",                
+                //TOELF ITP level 1
+                TOEFL_ITP_Level_1: "",
+                TOEFL_ITP_Level_1_option: {                        
+                        Listening: "",    
+                        StructureAndWrittenExpression: "",
+                        Reading: "",                                    
                 },
-                TOEFL_ITP_targetScore:
-                {
-                        Speaking: 31,
-                        Writing: 31,
-                        Reading: 31,
-                        Listening: 31,                        
+                TOEFL_ITP_Level_1_targetScore:
+                {            
+                    Listening: 31,            
+                    StructureAndWrittenExpression: 31,
+                    Reading: 31           
+                },                   
+                
+
+                //TOELF ITP level 2
+                TOEFL_ITP_Level_2: "",
+                TOEFL_ITP_Level_2_option: {                        
+                        Listening: "",    
+                        StructureAndWrittenExpression: "",
+                        Reading: "",    
+                        Writing: "",                              
+                },
+                TOEFL_ITP_Level_2_targetScore:
+                {            
+                    Listening: 31,            
+                    StructureAndWrittenExpression: 31,
+                    Reading: 31,         
+                    Writing: 31,  
                 },   
 
 
@@ -2252,7 +2292,7 @@ export default {
                    //no option
                 } else {                   
                     for (purposeOptionItem of purposeOptionItems) 
-                    {	                      
+                    {
                         let purposeOptionItemStr = purposeOptionItem.replace(/\s+/g, '_');
                         this.purposeList[mainItemStr +"_option"][purposeOptionItemStr] = purposeOptionItemStr;
                     }
@@ -2896,6 +2936,18 @@ export default {
                     listeningScore: "",
                     total: "",
                 },
+                TOEFL_ITP_Level_1: {
+                    listening: "",
+                    structure_and_written_expression: "",
+                    reading: "",
+                    total: ""
+                },                  
+                TOEFL_ITP_Level_2: {
+                    listening: "",
+                    structure_and_written_expression: "",
+                    reading: "",
+                    total: ""
+                },                
                 TOEFL_Junior: {                    
                     listening: "",
                     languageFormAndMeaning: "",

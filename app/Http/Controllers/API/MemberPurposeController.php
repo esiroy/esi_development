@@ -45,7 +45,9 @@ class MemberPurposeController extends Controller
         $target_score = array();
 
         foreach ($purposelist as $key => $list) 
-        {
+        {           
+
+
             $purpose[str_replace(' ', '_', $list->purpose)] = $list->purpose;   
 
             if ($list->purpose == "OTHERS") 
@@ -103,8 +105,11 @@ class MemberPurposeController extends Controller
             $purposeList = json_decode($request['purposeList']);
 
             $purpose = new Purpose(); 
+
             $ObjectNameArray = array("IELTS", 
-                            "TOEFL", "TOEFL_ITP", "TOEFL_Junior", "TOEFL_Primary_Step_1", "TOEFL_Primary_Step_2", 
+                            "TOEFL", 
+                            "TOEFL_IBT", "TOEFL_ITP", "TOEFL_ITP_Level_1", "TOEFL_ITP_Level_2",
+                            "TOEFL_Junior", "TOEFL_Primary_Step_1", "TOEFL_Primary_Step_2", 
                             "TOEIC", 
                             "EIKEN", "TEAP", "BUSINESS", "BUSINESS_CAREERS", "DAILY_CONVERSATION", "OTHERS");
 

@@ -606,7 +606,7 @@
                 <!--[Start] Purpose -->
                 <div id="purpose-section" class="section">
                     <div class="mb-4">
-                        <PurposeComponent :purposeList="this.purposeList"></PurposeComponent>
+                        <PurposeComponent viewer="admin" :purposeList="this.purposeList"></PurposeComponent>
                     </div>
                 </div>
                 <!--[End] Purpose -->
