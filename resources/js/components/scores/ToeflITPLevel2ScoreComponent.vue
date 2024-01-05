@@ -14,7 +14,7 @@
                     v-model="examScore.TOEFL_ITP_Level_2.listening" 
                     :class="this.size.select +' form-control form-control-sm pl-0'">
                     <option value="" class="mx-0 px-0">Select Listening Score</option>
-                    <option :value="item + 30" :key="item + 30" class="mx-0 px-0" v-for="item in 38">{{ item + 30 }}</option>
+                    <option :value="item + 30" :key="item + 30" class="mx-0 px-0" v-for="item in 20">{{ item + 30 }}</option>
                 </select>
             </div>
         </div> 
@@ -29,7 +29,7 @@
                     v-model="examScore.TOEFL_ITP_Level_2.structure_and_written_expression" 
                     :class="this.size.select +' form-control form-control-sm pl-0'">
                     <option value="" class="mx-0 px-0">Select Structure and Written Expression</option>
-                    <option :value="item + 30" :key="item + 30" class="mx-0 px-0" v-for="item in 38">{{ item + 30 }}</option>
+                    <option :value="item + 30" :key="item + 30" class="mx-0 px-0" v-for="item in 20">{{ item + 30 }}</option>
                 </select>
             </div>
         </div>
@@ -44,7 +44,7 @@
                     v-model="examScore.TOEFL_ITP_Level_2.reading" 
                     :class="this.size.select +' form-control form-control-sm pl-0'">
                     <option value="" class="mx-0 px-0">Select Reading  Score</option>
-                    <option :value="item + 30" :key="item + 30" class="mx-0 px-0" v-for="item in 37">{{ item + 30 }}</option>
+                    <option :value="item + 30" :key="item + 30" class="mx-0 px-0" v-for="item in 20">{{ item + 30 }}</option>
                 </select>
             </div>
         </div>

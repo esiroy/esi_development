@@ -278,7 +278,7 @@
                             {{ childPurposeList.TOEFL_ITP_Level_2_targetScore.Listening }}
                         </div>
                         <div class="IELTS_targetScore col-md-6">                                    
-                            <vue-slider  @change="clearErrorMsg" v-model="childPurposeList.TOEFL_ITP_Level_2_targetScore.Listening" :min="31" :max="68"  :interval="1" :marks="[31, 68]"></vue-slider>                                     
+                            <vue-slider  @change="clearErrorMsg" v-model="childPurposeList.TOEFL_ITP_Level_2_targetScore.Listening" :min="31" :max="50"  :interval="1" :marks="[31, 50]"></vue-slider>                                     
                         </div>
                     </div>    
                     
@@ -292,7 +292,7 @@
                             {{ childPurposeList.TOEFL_ITP_Level_2_targetScore.StructureAndWrittenExpression }}
                         </div>
                         <div class="TOEFL_ITP_Level_2_targetScore col-md-6">                                    
-                            <vue-slider  @change="clearErrorMsg" v-model="childPurposeList.TOEFL_ITP_Level_2_targetScore.StructureAndWrittenExpression" :min="31" :max="68"  :interval="1" :marks="[31, 68]"></vue-slider>                                     
+                            <vue-slider  @change="clearErrorMsg" v-model="childPurposeList.TOEFL_ITP_Level_2_targetScore.StructureAndWrittenExpression" :min="31" :max="50"  :interval="1" :marks="[31, 50]"></vue-slider>                                     
                         </div>
                     </div>
 
@@ -304,7 +304,7 @@
                             {{ childPurposeList.TOEFL_ITP_Level_2_targetScore.Reading }}
                         </div>
                         <div class="TOEFL_ITP_Level_2_targetScore col-md-6">                                    
-                            <vue-slider  @change="clearErrorMsg" v-model="childPurposeList.TOEFL_ITP_Level_2_targetScore.Reading" :min="31" :max="67"  :interval="1" :marks="[31, 67]"></vue-slider>                                     
+                            <vue-slider  @change="clearErrorMsg" v-model="childPurposeList.TOEFL_ITP_Level_2_targetScore.Reading" :min="31" :max="50"  :interval="1" :marks="[31, 50]"></vue-slider>                                     
                         </div>
                     </div>
 

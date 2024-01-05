@@ -925,7 +925,7 @@ export default {
                 },
 
 
-
+                //TOEFL IBT
                 TOEFL: "",
                 TOEFL_option: {
                         Speaking: "",
@@ -941,21 +941,36 @@ export default {
                         Listening: 0,                        
                 },
 
-                //TOELF ITP
-                TOEFL_ITP: "",
-                TOEFL_ITP_option: {
-                        Speaking: "",
-                        Writing: "",
-                        Reading: "",
-                        Listening: "",                
+                //TOELF ITP level 1
+                TOEFL_ITP_Level_1: "",
+                TOEFL_ITP_Level_1_option: {                        
+                        Listening: "",    
+                        StructureAndWrittenExpression: "",
+                        Reading: "",                                    
                 },
-                TOEFL_ITP_targetScore:
-                {
-                        Speaking: 31,
-                        Writing: 31,
-                        Reading: 31,
-                        Listening: 31,                        
-                },   
+                TOEFL_ITP_Level_1_targetScore:
+                {            
+                    Listening: 31,            
+                    StructureAndWrittenExpression: 31,
+                    Reading: 31           
+                },                   
+                
+
+                //TOELF ITP level 2
+                TOEFL_ITP_Level_2: "",
+                TOEFL_ITP_Level_2_option: {                        
+                        Listening: "",    
+                        StructureAndWrittenExpression: "",
+                        Reading: "",    
+                        Writing: "",                              
+                },
+                TOEFL_ITP_Level_2_targetScore:
+                {            
+                    Listening: 31,            
+                    StructureAndWrittenExpression: 31,
+                    Reading: 31,         
+                    Writing: 31,  
+                },     
                 
                 
                 /* NEW TEOFL ADDITION */
