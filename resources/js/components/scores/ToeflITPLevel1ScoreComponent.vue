@@ -94,7 +94,13 @@ export default {
         if (structure_and_written_expression !== '' && listening !== '' &&  reading !== '') 
         {
             let sum =  parseFloat(structure_and_written_expression) + parseFloat(listening) +  parseFloat(reading);
-            this.examScore.TOEFL_ITP_Level_1.total = sum
+
+            //get average and total (sum * 10)
+            let average = sum / 3; 
+            let total = average * 10; 
+            let roundedTotal = total.toFixed(2)
+
+            this.examScore.TOEFL_ITP_Level_1.total = roundedTotal
         }
 
 
