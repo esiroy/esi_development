@@ -65,21 +65,18 @@
             <!--ICON VIEW [DEFAULT PUBLIC VIEW]-->
             <div class="list-icon row px-2 py-2" v-show="(this.view == 'icon' || this.view == 'icons')"> 
                     
-                <div class="col-md-3 " :id="index" v-on:click.right="openMenu" v-for="(file, index) in files" :key="index">               
-
+                <div class="col-md-3 " :id="index" v-on:click.right="openMenu" v-for="(file, index) in files" :key="index">                            
                     <div class="card mb-2 hover-hand" v-on:click="openURL(baseURL('/file/'+file.id))">
                         <div class="filename text-center ">
-                            <a :href="'/file/'+file.id" target="_blank">
+                            <!--<a :href="'/file/'+file.id" target="_blank">-->
                                 <img @load="onImgLoad" :src="baseURL('/preview/show?url='+file.path)" class="img-responsive">
-                            </a>
+                            <!--</a>-->
                         </div>
                         <div class="filename text-secondary text-center" style="font-size:10px"> {{ file.file_name }}</div>
-                        <!--<div class="filesize">{{ file.size | formatSize }}</div>-->
+                     
+                        <!--<div class="filesize">{{ file.size | formatSize }}</div>-->                        
                     </div>
-
                 </div>
-                
-                
             </div>
 
             <ul class="right-click-menu" tabindex="-1" v-if="viewMenu" v-bind:style="{ top: this.top, left: this.left }">
@@ -213,12 +210,26 @@ export default {
     },
     methods:
     {
-        openURL(url) {
-        
-            window.open(url);
+        openURL(url) {        
+            //window.open(url);
 
-        },
+            // Create a new anchor element
+            var anchor = document.createElement('a');
 
+            // Set the href attribute to the URL
+            anchor.href = url;
+
+            // Set the target attribute to '_blank' to open in a new tab/window
+            anchor.target = '_blank';
+
+            // Simulate a click on the anchor element
+            var clickEvent = new MouseEvent('click', {
+                bubbles: true,
+                cancelable: true,
+                view: window
+            });
+            anchor.dispatchEvent(clickEvent);
+        },        
         onImgLoad() {
         
             this.loadedImageCounter ++;
