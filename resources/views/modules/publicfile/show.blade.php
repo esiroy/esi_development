@@ -29,18 +29,18 @@
                 </div>
             </div>
 
-            @if($extension == 'mp3')
+            @if(strtolower($extension) == 'mp3')
                 <div class="text-center">
                     <audio controls autoplay>
                         <source src="{{ $url }}" type="audio/mpeg">
                         Your browser does not support the audio element.
                     </audio>
                 </div>
-            @elseif ($extension == 'png' || $extension == 'jpg' || $extension == 'jpeg' || $extension == 'gif')
+            @elseif (strtolower($extension) == 'png' || strtolower($extension) == 'jpg' || strtolower($extension) == 'jpeg' || strtolower($extension) == 'gif')
                 <div class="text-center">
                     <img src="{{ $url }}" title="{{ $filename }}" alt="{{ $filename }} " width="60%"/>
                 </div>
-            @elseif ($extension == 'mp4' || $extension == 'mpeg' || $extension === 'mpeg4' || $extension == 'mpg' )
+            @elseif (strtolower($extension) == 'mp4' || strtolower($extension) == 'mpeg' || strtolower($extension) === 'mpeg4' || strtolower($extension) == 'mpg' )
                 <div class="text-center">
                     <video width="80%" height="auto" controls autoplay>
                         <source src="{{ $url }}" type="video/{{ $extension }}">
@@ -48,7 +48,7 @@
                     </video>
                 </div>
 
-            @elseif ($extension == 'pdf')
+            @elseif (strtolower($extension) == 'pdf')
                 <div id="pdfObject" style="height:100%; min-height: 650px"></div>
             @endif
         </div>
@@ -59,7 +59,7 @@
 
 @section('scripts')
 
-    @if ($extension == 'pdf')
+    @if (strtolower($extension) == 'pdf')
         <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfobject/2.1.1/pdfobject.min.js"></script>
         <script>PDFObject.embed("{{ $url }}", "#pdfObject");</script>
     @endif
