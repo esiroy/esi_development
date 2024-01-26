@@ -379,8 +379,10 @@ class MemberController extends Controller
             $thisMonth = strtoupper(date("M"));
             $thisYear = date("Y");
       
-            $schedules = $scheduleItem->getMemberScheduledLesson($memberID);
+            //$schedules = $scheduleItem->getMemberScheduledLesson($memberID);
 
+            $schedules = $scheduleItem->getMemberScheduledLessonExcludingMiniTest($memberID);
+            
             /* wrong fetch
             $memberAttribute = $memberAttribute->getCurrentMonthLessonLimit($memberID);
             $lessonLimit = $memberAttribute->lesson_limit;            

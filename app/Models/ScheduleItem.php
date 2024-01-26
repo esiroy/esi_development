@@ -915,6 +915,19 @@ class ScheduleItem extends Model
         return $lessons;
     }
 
+    //List ALL specific Member schedules without minitest
+    public function getMemberScheduledLessonExcludingMiniTest($memberID)
+    {
+        $lessons = ScheduleItem::where('member_id', $memberID)
+        //->where('schedule_item.valid', 1)    
+        ->where('schedule_item.schedule_status', '<>', 'minitest')       
+        ->orderBy('lesson_time', 'desc')
+        ->paginate(Auth::user()->items_per_page);
+
+
+        return $lessons;
+    }    
+
     public function getMemberTotalReserved($memberID, $month = null, $year = null)
     {
 
