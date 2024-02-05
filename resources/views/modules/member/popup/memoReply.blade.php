@@ -3,7 +3,8 @@
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title" id="tutorMemoLabel">
-                    <span class="small">Memo</span> - <span id="lessonTime" class="small"> test </span>
+                    <span class="small">Memo</span> 
+                    <!-- <span id="lessonTime" class="small"></span>-->
                 </h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
