@@ -705,6 +705,9 @@
 
         function getMemberInbox() 
         {
+
+            console.log("getMemberInbox");
+
             //Output this message when you have no inbox (no read, no unread)   
             let noInbox = '<div id="noInboxMessages" class="text-center small pt-3 pb-3"> No Inbox Message(s) </div>';
 
@@ -728,6 +731,11 @@
                 },               
                 success: function(data) 
                 {
+                    console.log(data);
+                    
+                    //delegate to user message list and show counter on that 
+                    delegateToMessageList(data.inbox)
+              
                     $("#total_unread_message").text("("+ data.unread + ")");
 
                     $( ".dropdown-menu" ).children().remove();                    
@@ -738,10 +746,26 @@
                         let inbox = data.inbox;
                         inbox.forEach(updateInboxList);
                     }
-
-                    
                 },
             });
+        }
+
+        function delegateToMessageList(inbox) {
+
+            inbox.forEach((item) => 
+            {
+                // Do something with each item in the inbox
+                //console.log(item.schedule_item_id);
+                //console.log(item.unreadMessageCount);
+                if (item.unreadMessageCount >= 1) 
+                {
+                    $("#message_image_"+item.schedule_item_id).addClass("blink")
+                    $("#message_counter_"+item.schedule_item_id).text(item.unreadMessageCount)
+                } else {
+                    $("#message_image_"+item.schedule_item_id).removeClass("blink")
+                    $("#message_counter_"+item.schedule_item_id).text(0)
+                }                
+            });          
         }
 
         function updateInboxList(item, index) 
@@ -853,14 +877,16 @@
             $('#tutorMemoReplyModal').on('hide.bs.modal', function (event) 
             {            
                 clearInterval(intervalId);
-            // console.log("closed heaertbeat")
+                //console.log("closed heartbeat")
             });
 
 
             //interval unread message fetching
             intervalInbox = window.setInterval(function(){
-                getMemberInbox()
-            }, 30000);
+                getMemberInbox();
+               
+            }, 5000);                
+            //}, 30000);
             
 
         });
@@ -1015,4 +1041,15 @@
     left: -230px; 
     width:400px;
 }
+
+.blink {
+  animation: blinker 1s linear infinite;
+}
+
+@keyframes blinker {
+  50% {
+    opacity: 0;
+  }
+}
+
 </style>

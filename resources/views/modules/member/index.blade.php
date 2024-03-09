@@ -191,9 +191,16 @@
                                         <td style="text-align: center;">
                                             <!--<a href="javascript:void(0)" data-toggle="modal" data-target="#tutorMemoModal" data-id="{{ $reserve->id }}">-->
 
+                                            
+
                                             <a href="javascript:void(0)" onClick="openMemo('{{ $reserve->id }}')" data-toggle="modal" data-target="tutorMemoReplyModal" data-id="{{ $reserve->id }}">
-                                                <img src="images/iEmail.jpg" border="0" align="absmiddle"> 講師への連絡
+
+                                                <img id="message_image_{{$reserve->id}}" src="images/iEmail.jpg" border="0" align="absmiddle">
+                                                <span>(</span><span id="message_counter_{{$reserve->id}}">{{"0"}}</span><span>)</span>
+                                                
+                                                <span id="message_teacher_btn"> 講師への連絡 </span>
                                             </a>
+
                                         </td>
                                         <td style="text-align: center;">
 
