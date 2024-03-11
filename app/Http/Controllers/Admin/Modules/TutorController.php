@@ -140,6 +140,10 @@ class TutorController extends Controller
             'grade' => ['required'],
             'skype_name' => ['required'],
             'skype_id' => ['required'],
+
+            'zoom_username' => ['required'],
+            'zoom_id' => ['required'],
+
             'gender' => ['required'],
             'japanese_fluency' => ['required'],
             'shift' => ['required'],
@@ -190,8 +194,13 @@ class TutorController extends Controller
                     'user_id' => $user->id,
                     'salary_rate' => $request['salary_rate'],
                     'grade' => $request['grade'],
+
                     'skype_id' => $request['skype_id'],
                     'skype_name' => $request['skype_name'],
+
+                    'zoom_id'       => $request['zoom_id'],
+                    'zoom_username' => $request['zoom_username'],
+
                     'skype_password' => '',
                     'gender' => $request['gender'],
                     'hobby' => $request['hobby'],
@@ -296,6 +305,9 @@ class TutorController extends Controller
                 'grade' => ['required'],
                 'skype_name' => ['required'],
                 'skype_id' => ['required'],
+                'zoom_username' => ['required'],
+                'zoom_id' => ['required'],
+    
                 'name_en' => ['required'],
                 'name_jp' => ['required'],
                 'gender' => ['required'],
@@ -304,7 +316,10 @@ class TutorController extends Controller
             ]);
 
         if ($validator->fails()) {
-            return redirect()->route('admin.tutor.edit')->withErrors($validator)->withInput();           
+            
+            //return redirect()->route('admin.tutor.edit')->withErrors($validator)->withInput();           
+
+            return redirect()->route('admin.tutor.edit', ['tutor' => $id])->withErrors($validator)->withInput();    
 
         } else {
             
@@ -351,6 +366,10 @@ class TutorController extends Controller
                     'skype_id' => $request['skype_id'],
                     'skype_name' => $request['skype_name'],
                     'skype_password' => '',
+
+                    'zoom_id'       => $request['zoom_id'],
+                    'zoom_username' => $request['zoom_username'],
+
                     'gender' => $request['gender'],
                     'hobby' => $request['hobby'],
                     'birthday' => date('Y-m-d', strtotime($request['birthdate'])),

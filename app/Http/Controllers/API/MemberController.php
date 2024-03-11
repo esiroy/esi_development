@@ -974,6 +974,8 @@ class MemberController extends Controller
         $userImageObj = new UserImage;
         $memberImage = $userImageObj->getMemberPhotoByID($schedule->member_id); 
 
+        
+
 
         if ($memberImage == null) {
             $memberOrignalImage = Storage::url('user_images/noimage.jpg');
@@ -986,30 +988,67 @@ class MemberController extends Controller
         $userImageObj = new UserImage;
         $tutorImage = $userImageObj->getTutorPhotoByID($schedule->tutor_id);         
 
+        $tutorObj = new Tutor;
+        $tutor = $tutorObj->getTutorDetailsByID($schedule->tutor_id);
+
         if ($tutorImage == null) {
             $tutorOrignalImage = Storage::url('user_images/noimage.jpg');
         } else {
             $tutorOrignalImage = Storage::url($tutorImage->original);
         }
 
-        if (date('H', strtotime($schedule->lesson_time)) == '00') {
+        if (date('H', strtotime($schedule->lesson_time)) == '00') {            
+
             $lessonTime = date('Y年 m月 d日 24:i', strtotime($schedule->lesson_time ." - 1 day"))  ." - " .  date('24:i', strtotime($schedule->lesson_time." + 25 minutes "));
+            $lessonStart = date('m/d/Y H:i', strtotime($schedule->lesson_time));
+            $lessonEnd   = date('m/d/Y H:i', strtotime($schedule->lesson_time." + 25 minutes "));
+
         } else {
             $lessonTime = date('Y年 m月 d日 H:i', strtotime($schedule->lesson_time)) ." - " . date('H:i', strtotime($schedule->lesson_time." + 25 minutes "));
+
+            $lessonStart = date('m/d/Y H:i', strtotime($schedule->lesson_time));
+            $lessonEnd   = date('m/d/Y H:i', strtotime($schedule->lesson_time." + 25 minutes "));
         }
-            
-        
+
+        if (Auth::user()->user_type == "MEMBER") {
+            $memberInfo = Auth::user()->memberInfo;
+            $commApp = strtolower($memberInfo->communication_app);
+        } else if (Auth::user()->user_type == "TUTOR") {
+            $user = User::where("id", $schedule->member_id)->first();
+            $memberInfo = $user->memberInfo;
+            $commApp = strtolower($memberInfo->communication_app);
+        } else {
+            //get the user for all user_type
+            $user = User::where("id", $schedule->member_id)->first();
+            $memberInfo = $user->memberInfo;
+            $memberInfo = User::find($schedule->member_id);
+        }
+
+        if (strtolower($memberInfo->communication_app) == "skype") {
+            $memberCommAppID = $memberInfo->getSkype();
+        } else if (strtolower($memberInfo->communication_app) == "zoom") {
+            $memberCommAppID = $memberInfo->getZoom();
+        } else {
+            $memberCommAppID = null;
+        }        
+
     
 
         if ($schedule) {
             return Response()->json([
                 "success" => true,
-                "memo" => $schedule->memo,
-                "lesson_time" => $lessonTime,
                 "message" => "Memo has been found",
+                "memo" => $schedule->memo,
+                "currentJapanTime"=> date('m/d/Y H:i'),
+                "lesson_time" => $lessonTime,
+                "lessonStart" => $lessonStart,
+                "lessonEnd" => $lessonEnd,                
                 "memberImage" => $memberOrignalImage,
                 "tutorImage" => $tutorOrignalImage,
-                "schedule_status" => $schedule->schedule_status
+                "tutor" => $tutor,
+                "schedule_status" => $schedule->schedule_status,
+                "commApp" => $commApp,
+                "memberCommAppID" => $memberCommAppID,
             ]);
         } else {
             return Response()->json([

@@ -466,7 +466,6 @@
         {
             $.ajax({
                 type: 'POST', 
-                //url: 'api/getMemo?api_token=' + api_token,
                 url: "{{ url('api/getMemo?api_token=') }}" + api_token,
                 data: {
                     'scheduleID': scheduleID,
@@ -477,25 +476,84 @@
                    //alert("Error Found getting memo: " + error);
                 },            
                 success: function(data) { 
+
+                    //let response = isLessonValid("03/11/2024 23:30", "03/11/2024 23:55");
+                    let response = isLessonValid(data.lessonStart, data.lessonEnd, data.currentJapanTime); 
+
+                    $("#btn_comm #img_call_tutor").addClass("blink");   
+
+                    if (response.isValid == true) {                        
+                        $('#btn_comm').show();                                            
+                    } else {                        
+                        $("#btn_comm").hide();
+                    }
+
                     $('#message').val(data.memo);
                     $('#scheduleID').val(scheduleID);
                     $('#loadingModal').modal('hide');
-
                     $('#teacherImage').attr('src', data.tutorImage)
 
                     if (data.memo) {
                         $('#tutorMemoReplyModal #scheduleID').val(scheduleID);
                         $('#tutorMemoReplyModal #message').html(data.memo);
                         $('#tutorMemoReplyModal #lessonTime').html(data.lesson_time);
-                        $('#tutorMemoReplyModal').modal('show')    
+                        $('#tutorMemoReplyModal').modal('show');
                     } else {
                         //***[old] this is where they create a new thread 
                         //$('#tutorMemoModal').modal('show')    
                         $('#tutorMemoReplyModal').modal('show')  
                     }  
+
+                    //UPDATE: 2024 (OPEN SKYPE OR ZOOM MEETING ID)
+                    if (data.commApp == "skype" ) {
+                        updateUICommApp("skype:"+ data.tutor.skype_id +"?call");
+                    } else if (data.commApp == "zoom") {
+                        //https://zoom.us/j/MEETING_ID (confirm meeting id is zoom id)
+                        updateUICommApp("https://zoom.us/j/"+data.tutor.zoom_id); 
+                    }                    
+
                 },
             });
         }
+
+        function updateUICommApp(userCommAppID) 
+        {            
+            var btnCommDiv = document.getElementById("btn_comm");
+            // Get all the anchor tags within btn_comm div
+            var anchorTags = btnCommDiv.getElementsByTagName("a");
+            // Loop through each anchor tag
+            for (var i = 0; i < anchorTags.length; i++) {                
+                anchorTags[i].href = userCommAppID;
+            }
+        }
+
+        
+
+        function isLessonValid(lessonStart, lessonEnd, currentJapanTime) {
+            // Define lesson start and end times
+            const lessonStartTime = new Date(lessonStart);
+            const lessonEndTime = new Date(lessonEnd);
+
+            // Get current date and time
+            const currentDate = new Date(currentJapanTime);
+
+            console.log(lessonStartTime, lessonEndTime, currentDate)
+
+            $('#tutorMemoReplyModal #currentJapanTime').text(currentDate);
+
+            // Check if current date and time is within the lesson range
+            if (currentDate >= lessonStartTime && currentDate <= lessonEndTime) {
+                return {
+                    isValid: true,
+                    message: "The lesson is currently ongoing and valid."
+                };
+            } else {
+                return {
+                    isValid: false,
+                    message: "The lesson is not currently ongoing."
+                };
+            }
+        }       
 
         function sendMemo(scheduleID, message) {
             $.ajax({
@@ -551,6 +609,8 @@
                 {
                     let replies = data.conversations;
                     replies.forEach(createReplyBubble);
+
+                    $("#total_unread_message").removeClass("blink");
                 },
             });
         }
@@ -706,8 +766,6 @@
         function getMemberInbox() 
         {
 
-            console.log("getMemberInbox");
-
             //Output this message when you have no inbox (no read, no unread)   
             let noInbox = '<div id="noInboxMessages" class="text-center small pt-3 pb-3"> No Inbox Message(s) </div>';
 
@@ -737,14 +795,14 @@
                     delegateToMessageList(data.inbox)
               
                     $("#total_unread_message").text("("+ data.unread + ")");
-
                     $( ".dropdown-menu" ).children().remove();                    
                     
                     if (data.inboxCount == 0){                                             
                         $( ".dropdown-menu" ).append(noInbox); 
+                        $("#total_unread_message").removeClass("blink");
                     } else {
                         let inbox = data.inbox;
-                        inbox.forEach(updateInboxList);
+                        inbox.forEach(updateInboxList);                       
                     }
                 },
             });
@@ -776,9 +834,14 @@
             if (item.unreadMessageCount >= 1)  {
                  readStatus = "message-read";
                  colorClass = "blue font-weight-bold";
+
+                 $("#total_unread_message").addClass("blink");
+
             } else {
                  readStatus = "message-unread";
                  colorClass = "text-muted font-weight-light";
+
+                 $("#total_unread_message").removeClass("blink");
             }
             
 
@@ -883,10 +946,8 @@
 
             //interval unread message fetching
             intervalInbox = window.setInterval(function(){
-                getMemberInbox();
-               
-            }, 5000);                
-            //}, 30000);
+                getMemberInbox();               
+            }, 30000);
             
 
         });

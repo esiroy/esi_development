@@ -2,10 +2,25 @@
     <div class="modal-dialog " role="document">
         <div class="modal-content">
             <div class="modal-header">
+
                 <h5 class="modal-title" id="tutorMemoLabel">
                     <span class="small">Memo</span> 
                     <!-- <span id="lessonTime" class="small"></span>-->
+                    <!--<span id="currentJapanTime"></span>-->
                 </h5>
+
+                @if (strtolower(Auth::user()->memberInfo->communication_app) == "skype")
+                    <div id="btn_comm" class="text-right w-100">
+                        <a href="#"><img src="{{ url('images/logo_skype.png') }}"></a>
+                        <a href="#"><img id="img_call_tutor" src="{{ url('images/btn_call.png') }}"></a>
+                    </div>
+                @elseif (strtolower(Auth::user()->memberInfo->communication_app) == "zoom")
+                    <div  id="btn_comm" class="text-right w-100">
+                        <a href="#"><img src="{{ url('images/logo_zoom.png') }}"></a>
+                        <a href="#"><img id="img_call_tutor" src="{{ url('images/btn_call.png') }}"></a>
+                    </div>                
+                @endif
+                
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
@@ -41,7 +56,6 @@
                             </div>
                         </div>
                         -->
-                        
 
                         <div class="row">
 

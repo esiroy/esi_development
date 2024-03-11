@@ -114,6 +114,39 @@
 
 
                         <div class="form-group row">
+                        <label for="zoom_username" class="col-md-2 pr-0 col-form-label "><span class="text-danger">* </span>{{ __('Zoom Name') }}
+                            <div class="float-right">:</div>
+                        </label>
+                        <div class="col-md-3">
+                            <input id="zoom_username" type="zoom_username" class="form-control form-control-sm @error('zoom_username') is-invalid @enderror" name="zoom_username" value="{{ old('zoom_username', isset($tutor->zoom_username ) ? $tutor->zoom_username : '') }}" required autocomplete="zoom_username">
+
+                            @error('zoom_username')
+                            <span class="invalid-feedback" role="alert">
+                                <strong>{{ $message }}</strong>
+                            </span>
+                            @enderror
+                        </div>
+                    </div>
+
+
+                    <div class="form-group row">
+                        <label for="zoom_id" class="col-md-2 pr-0 col-form-label "><span class="text-danger">* </span>{{ __('Zoom ID') }}
+                            <div class="float-right">:</div>
+                        </label>
+                        <div class="col-md-3">
+                            <input id="zoom_id" type="zoom_id" required class="form-control form-control-sm @error('zoom_id') is-invalid @enderror" name="zoom_id" value="{{ old('zoom_id', isset($tutor->zoom_id ) ? $tutor->zoom_id : '') }}" required autocomplete="zoom_id">
+
+                            @error('zoom_id')
+                            <span class="invalid-feedback" role="alert">
+                                <strong>{{ $message }}</strong>
+                            </span>
+                            @enderror
+                        </div>
+                    </div>
+
+
+
+                        <div class="form-group row">
                             <label for="name_en" class="col-md-2 pr-0 col-form-label "><span class="text-danger">* </span>{{ __('Name (English)') }}
                                 <div class="float-right">:</div>
                             </label>
