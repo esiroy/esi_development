@@ -6,6 +6,20 @@
                 <h5 class="modal-title" id="tutorMemoLabel">
                     <span class="small">Memo</span> - <span id="lessonTime" class="small"> </span>
                 </h5>
+
+        
+                <div id="btn_comm_skype" class="text-right w-100 d-none">
+                    <a href="#"><img src="{{ url('images/logo_skype.png') }}"></a>
+                    <a href="#"><img id="img_call_tutor_skype" src="{{ url('images/btn_call.png') }}"></a>
+                </div>
+        
+                <div  id="btn_comm_zoom" class="text-right w-100 d-none">
+                    <a href="#"><img src="{{ url('images/logo_zoom.png') }}"></a>
+                    <a href="#"><img id="img_call_tutor_zoom" src="{{ url('images/btn_call.png') }}"></a>
+                </div>                
+    
+                
+                
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
