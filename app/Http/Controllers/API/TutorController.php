@@ -167,7 +167,7 @@ class TutorController extends Controller
         $scheduleItems = new ScheduleItem();
         $memoReply = new MemoReply();     
 
-        $reservations = $scheduleItems->getTutorAllActiveLessons($tutorInfo);
+        $reservations = $scheduleItems->getTutorAllActiveLessons_AutoFormat($tutorInfo);
 
         $ctr = 0;
         $unread = 0;        

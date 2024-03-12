@@ -948,7 +948,9 @@
             //interval unread message fetching
             intervalInbox = window.setInterval(function(){
                 getMemberInbox();               
-            }, 30000);
+                //}, 30000);
+
+            }, 25000);
             
 
         });
