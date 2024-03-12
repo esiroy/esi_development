@@ -94,6 +94,32 @@ class ScheduleItem extends Model
         return $reserves;
     }
     
+    public function getMemberAllActiveLessons_AutoFormat($member) 
+    {
+
+        $date = date('Y-m-d H:i:s');
+        $minutes = date('i', strtotime($date));
+
+        // If minutes is more than 00 and less than 30, set them to 0
+        if ($minutes > 0 && $minutes < 30) {
+            $date = date('Y-m-d H:00:00', strtotime($date));
+        }
+        
+        // If equal or more than 30, set them to 30
+        if ($minutes >= 30) {
+            $date = date('Y-m-d H:30:00', strtotime($date));
+        }
+
+        $reserves = ScheduleItem::where('member_id', $member->user_id)->where('valid', 1)->where(function ($q) use ($member) {                
+            $q->orWhere('schedule_status', 'CLIENT_RESERVED')
+            ->orWhere('schedule_status', 'CLIENT_RESERVED_B');
+        })->where('lesson_time', ">=", $date)
+        ->orderby('lesson_time', 'ASC')
+        ->get();
+
+        return $reserves;        
+    }
+
     public function getTutorAllActiveLessons($tutor) 
     {
         $date = date('Y-m-d H:i:s');
@@ -146,7 +172,31 @@ class ScheduleItem extends Model
         return $reserves;
     }    
     
- 
+     public function getTutorAllActiveLessons_AutoFormat($tutor) 
+    {
+        $date = date('Y-m-d H:i:s');
+        $minutes = date('i', strtotime($date));
+
+        // If minutes is more than 00 and less than 30, set them to 0
+        if ($minutes > 0 && $minutes < 30) {
+            $date = date('Y-m-d H:00:00', strtotime($date));
+        }
+        
+        // If equal or more than 30, set them to 30
+        if ($minutes >= 30) {
+            $date = date('Y-m-d H:30:00', strtotime($date));
+        }        
+        $reserves = ScheduleItem::where('tutor_id', $tutor->user_id)->where('valid', 1)->where(function ($q) use ($tutor) {                
+            $q->orWhere('schedule_status', 'CLIENT_RESERVED')
+            ->orWhere('schedule_status', 'CLIENT_RESERVED_B');
+        })->where('lesson_time', ">=", $date)
+        ->orderby('lesson_time', 'ASC')
+        ->get();
+        
+        return $reserves;
+    } 
+
+    
     public function getMemberActiveLessons($member) 
     {
         $date_now = date('Y-m-d H:i:s');

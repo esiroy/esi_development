@@ -1219,7 +1219,7 @@ class MemberController extends Controller
         $scheduleItems = new ScheduleItem();
         $memoReply = new MemoReply();     
 
-        $reservations = $scheduleItems->getMemberAllActiveLessons($memberInfo);
+        $reservations = $scheduleItems->getMemberAllActiveLessons_AutoFormat($memberInfo);
 
         $ctr = 0;
         $unread = 0;        

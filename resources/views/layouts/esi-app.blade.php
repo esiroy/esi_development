@@ -506,24 +506,29 @@
 
                     //UPDATE: 2024 (OPEN SKYPE OR ZOOM MEETING ID)
                     if (data.commApp == "skype" ) {
-                        updateUICommApp("skype:"+ data.tutor.skype_id +"?call");
+                        updateUICommApp("skype:"+ data.tutor.skype_id +"?call", "_self");
                     } else if (data.commApp == "zoom") {
                         //https://zoom.us/j/MEETING_ID (confirm meeting id is zoom id)
-                        updateUICommApp("https://zoom.us/j/"+data.tutor.zoom_id); 
-                    }                    
+                        //updateUICommApp("https://zoom.us/j/"+data.tutor.zoom_id); 
+                        updateUICommApp(data.tutor.zoom_id, "_blank"); 
+                    }                
 
                 },
             });
         }
 
-        function updateUICommApp(userCommAppID) 
+        function updateUICommApp(userCommAppID, target) 
         {            
             var btnCommDiv = document.getElementById("btn_comm");
             // Get all the anchor tags within btn_comm div
             var anchorTags = btnCommDiv.getElementsByTagName("a");
             // Loop through each anchor tag
             for (var i = 0; i < anchorTags.length; i++) {                
-                anchorTags[i].href = userCommAppID;
+                anchorTags[i].href = userCommAppID;         
+
+                if (target == "_blank") {
+                    anchorTags[i].target = target;  //"_blank"; // Open link in a new tab
+                }                
             }
         }
 
