@@ -130,7 +130,7 @@
 
 
                     <div class="form-group row">
-                        <label for="zoom_id" class="col-md-2 pr-0 col-form-label "><span class="text-danger">* </span>{{ __('Zoom ID') }}
+                        <label for="zoom_id" class="col-md-2 pr-0 col-form-label "><span class="text-danger">* </span>{{ __('Zoom Link') }}
                             <div class="float-right">:</div>
                         </label>
                         <div class="col-md-3">

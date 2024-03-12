@@ -509,7 +509,8 @@
                         updateUICommApp("skype:"+ data.tutor.skype_id +"?call");
                     } else if (data.commApp == "zoom") {
                         //https://zoom.us/j/MEETING_ID (confirm meeting id is zoom id)
-                        updateUICommApp("https://zoom.us/j/"+data.tutor.zoom_id); 
+                        //updateUICommApp("https://zoom.us/j/"+data.tutor.zoom_id); 
+                        updateUICommApp(data.tutor.zoom_id); 
                     }                    
 
                 },
