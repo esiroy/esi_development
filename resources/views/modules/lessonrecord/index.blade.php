@@ -44,26 +44,27 @@
                                         <th class="small text-center bg-light text-dark font-weight-bold">View</th>
                                     </tr>
                                     @foreach ($scheduleItems as $scheduleItem)
-                                    <tr>
+                                    <tr id="schedule-{{$scheduleItem->id}}">
+
                                         <td class="text-center">
-
                                            {{ ESIDateFormat($scheduleItem->lesson_time) }} {{ ESILessonTimeRange($scheduleItem->lesson_time) }}
-                                           
-
                                         </td>
 
-                                        <td class="text-center">
-                                            <!-- Tutor -->                                            
-                                            @php                                             
-                                                $tutor =  \App\Models\Tutor::where('user_id', $scheduleItem->tutor_id)->first();                                                                                            
-                                            @endphp
+                                        <td class="text-center" id="schedule-tutor-details-{{$scheduleItem->tutor_id}}">
 
+                                            <!-- Tutor --> 
 
-                                            @if (isset($tutor->user->japanese_firstname)) 
-                                                {{ $tutor->user->japanese_firstname ?? '' }} {{ $member->tutor->japanese_lastname ?? '' }}
-                                            @else 
-                                                {{ $tutor->user->firstname ?? '' }} {{ $member->tutor->lastname ?? '' }}
-                                            @endif
+                                            <div id="tutor-{{$scheduleItem->tutor_id}}">
+                                                @php                                             
+                                                    $tutor =  \App\Models\Tutor::where('user_id', $scheduleItem->tutor_id)->first();                                                                                            
+                                                @endphp
+
+                                                @if (isset($tutor->user->japanese_firstname) || isset($tutor->user->japanese_firstname)) 
+                                                    {{ $tutor->user->japanese_firstname ?? '' }} {{ $member->tutor->japanese_lastname ?? '' }}
+                                                @else 
+                                                    {{ $tutor->user->firstname ?? '' }} {{ $member->tutor->lastname ?? '' }}
+                                                @endif
+                                            </div>
 
                                         </td>
                                         <td class="text-center">

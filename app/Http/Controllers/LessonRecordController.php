@@ -82,6 +82,8 @@ class LessonRecordController extends Controller
 
                 $scheduleItems = ScheduleItem::where('member_id',  $member->user_id)
                                 ->where('schedule_status', '!=', 'TUTOR_CANCELLED')
+                                ->where('schedule_status', '!=', 'MINITEST')
+                                ->where('schedule_status', '!=', 'WRITING')
                                 //->where('valid', true)
                                 ->orderBy('lesson_time', 'DESC')                                
                                 ->paginate(Auth::user()->items_per_page, ['*'], 'reportcards');   
