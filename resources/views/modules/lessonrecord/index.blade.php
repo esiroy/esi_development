@@ -25,7 +25,7 @@
 
                     <div class="card esi-card">
                         <div class="card-header esi-card-header">
-                            受講履歴
+                            受講履歴 test
                         </div>
 
                         <div class="card-body">
@@ -73,10 +73,24 @@
                                                 $gradedReportcard = $reportcard->where('schedule_item_id', $scheduleItem->id)->first();
                                             @endphp
 
-                                            @if ($gradedReportcard)                                                
-                                                <a href="reportcard/{{$gradedReportcard->id}}">» 評価</a>                                                
+
+
+                                            @if ($gradedReportcard)                        
+                                               
+                                                @if ($scheduleItem->schedule_status  == "CLIENT_NOT_AVAILABLE" ) 
+                                                    » 欠席 
+                                                @else 
+                                                    <a href="reportcard/{{$gradedReportcard->id}}">» 評価</a>
+                                                @endif
+
                                             @else 
-                                                » 評価
+
+                                                @if ($scheduleItem->schedule_status  == "CLIENT_NOT_AVAILABLE" ) 
+                                                    » 欠席 
+                                                @else 
+                                                    » 評価
+                                                @endif
+                                                
                                             @endif
                                         </td>
                                     </tr>
