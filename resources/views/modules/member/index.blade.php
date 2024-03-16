@@ -145,7 +145,7 @@
                             初めての講師の場合、講師からSkype(ZOOM)コンタクトリクエストがあります。 レッスン時間の15分前にSkype(ZOOM)を立ち上げ承認してコールをお待ちください。
 
                             <br/>
-                            講師からコールがない場合は、<a href="JavaScript:PopupCenter('https://www.mytutor-jpn.com/info/2021/0717162035.html','講師への連絡　チャット」とは',900,820);">「講師への連絡」</a>からご連絡ください。
+                            講師からコールがない場合は、<a href="JavaScript:PopupCenter('https://www.mytutor-jpn.com/info/2024/0313221750.html','講師への連絡　チャット」とは',900,820);">「講師への連絡」</a>からご連絡ください。
 
                             <br>
                             <a href="JavaScript:PopupCenter('https://www.mytutor-jpn.com/info/2022/1004131925.html','講師都合のキャンセルー代行について',900,820);">
@@ -157,7 +157,7 @@
                                         <th style="text-align: center;">Date</th>
                                         <th style="text-align: center;" colspan="2">Tutor</th>
                                         <th style="text-align: center;">
-                                            <a href="JavaScript:PopupCenter('https://www.mytutor-jpn.com/info/2021/0717162035.html','講師への連絡　チャット」とは',900,820);">講師への連絡</a>
+                                            <a href="JavaScript:PopupCenter('https://www.mytutor-jpn.com/info/2024/0313221750.html','講師への連絡　チャット」とは',900,820);">講師への連絡</a>
                                         </th>
                                         <th style="text-align: center;">
                                             
