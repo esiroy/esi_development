@@ -1142,7 +1142,9 @@ export default {
     .member-message-container {    
         position: relative;
         float:right;
-        max-width: inherit;
+        max-width: max-content;
+        width: 100%;
+        text-align: left;
     }
 
    .member-message {
@@ -1155,7 +1157,7 @@ export default {
         display: block;
         margin-top: 5px;
         padding: 7px 25px 7px;
-        width: min-content;
+        width: 100%;
   }
 
 
