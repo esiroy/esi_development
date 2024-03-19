@@ -1121,7 +1121,8 @@ export default {
         width: fit-content;
         display: block;
         margin-top: 5px;
-        padding: 7px 25px 7px;     
+        padding: 7px 25px 7px;  
+        text-align: left;   
     }
 
     .chat-support-message:after {
@@ -1137,6 +1138,7 @@ export default {
         border-top: 0;
         margin-top: -12px;
         margin-left: -18px;
+       
     }    
 
     .member-message-container {    
