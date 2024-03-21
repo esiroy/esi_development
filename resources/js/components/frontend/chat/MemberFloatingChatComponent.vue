@@ -69,13 +69,15 @@
                 
                     <div class="card">
 
-                       
+                       <!-- Float Customer Support (Front end )-->
                         <div class="card-header rounded-top bg-blue text-white" style="padding: 4px 10px 0px;">
                             <div class="small float-left font-weight-bold">Customer Support</div>
                             <span class="float-right">
                                 <a href="" @click.prevent="closeChatBox"><i class="fas fa-times-circle text-white"></i></a>
                             </span>
                         </div>
+                        <!--[end] Float Customer Support (Front end )-->
+
                         <div class="card-body bg-white pb-4" style="min-height:250px;">
 
                             <div id="user-chatlog" class="user-chatlog border rounded text-center">
@@ -88,9 +90,6 @@
                                 <button v-show="historyNotifier == true && isFetching == true"  id="floating-history-btn" class="btn btn-xs btn-primary">
                                     <i class="fas fa-sync fa-spin"></i>  Loading
                                 </button>
-
-
-                             
 
                                 <div class="chatlog-wrapper">
 
@@ -172,15 +171,20 @@
 
 
                                 <div class="col-9 pr-0 mr-0">
-                                    <input id="message" 
-                                        v-on:keyup.13="sendMessage(chatbox, index)"  
-                                        type="text" 
+
+                                    <TextareaAutosize
+                                        id="message"
+                                        ref="messageTextarea"
+                                        :min-height="25"
+                                        :max-height="50"
                                         autocomplete="off"
-                                        class="form-control form-control-sm mb-1" 
+                                        class="form-control form-control-sm auto-expand"
                                         v-model="message[index]" 
                                         placeholder="Type a message" 
-                                        aria-label="Type a message"
-                                    >
+                                        aria-label="Type a message"                                        
+                                        />
+
+                                                 
                                 </div>
                                 <div class="col-3 px-1">
                                     <div id="attach-button" class="input-group-append d-inline-block float-left">
@@ -190,7 +194,7 @@
                                     </div>
 
                                     <div id="send-button" class="input-group-append d-inline-block float-left">
-                                        <button type="button"  @click.prevent="$refs.upload.active = false; sendMessage(chatbox, index); " class="btn btn-sm btn-primary">
+                                        <button id="btn-send-message" type="button"  @click.prevent="$refs.upload.active = false; sendMessage(chatbox, index); " class="btn btn-sm btn-primary">
                                             <i class="fa fa-paper-plane" aria-hidden="true"></i>
                                         </button>
                                     </div>     
@@ -224,13 +228,15 @@
 <script>
 import io from "socket.io-client";
 import FileUpload from 'vue-upload-component'
+import TextareaAutosize from 'vue-textarea-autosize'
+Vue.use(TextareaAutosize)
 
 var socket = null;
 
 export default {
   name: "member-floating-chat-component",
   components: {
-    FileUpload,
+    FileUpload
   },    
   data() {
     return {            
@@ -863,12 +869,17 @@ export default {
             }
 
            
-        });    
-        
+        });
     },
-    sendMessage: function(chatbox, index) 
-    {
 
+    convertNewlineToBr(inputString) {
+        return inputString.replace(/\n/g, '<br>');
+    },
+    handleShiftEnterKey: function(chatbox, index) {       
+        this.message[index] += '\n';
+        this.$forceUpdate();
+    },
+    sendMessage: function(chatbox, index) {        
      
         //files is empty and message is empty, stop sending message
         if (this.files.length == 0 && (this.message[index] === "" || this.message[index] === undefined)) 
@@ -879,11 +890,8 @@ export default {
         document.getElementById("startUpload").click();
 
         if (this.message[index] === "" || this.message[index] === undefined) {
-
             //No message just upload
-
         } else {
-
 
             var currentTime = new Date();    
 
@@ -906,7 +914,7 @@ export default {
                 'userid': this.userid,
                 'username': this.username,        
                 'nickname': this.nickname,
-                'message': this.message[index],
+                'message': this.convertNewlineToBr(this.message[index]),
                 'user_image': this.user_image,  
                 'type': "MEMBER"
             };
@@ -938,7 +946,7 @@ export default {
                 'userid': chatbox.userid,
                 'nickname': chatbox.nickname,
                 'username': chatbox.username,          
-                'message': this.message[index],
+                'message': this.convertNewlineToBr(this.message[index]),
                 'user_image': chatbox.user_image, //@todo: make this for customer support 
                 'type': "MEMBER"
             };
@@ -946,7 +954,7 @@ export default {
             //console.log("own message", broadcast_sender);
             socket.emit("SEND_OWNER_MESSAGE", { id, time, broadcast_recipient, broadcast_sender });              
 
-            let userMessage = this.message[index];
+            let userMessage = this.convertNewlineToBr(this.message[index]);
 
             //scroll to end then save to table
             this.$nextTick(() => {  
@@ -1021,6 +1029,23 @@ export default {
 
     //This will get all the message from the customer support
     this.getUnreadMemberMessages(this.userid);
+
+
+    $(document).on('keydown', '#message', function(event) {        
+        if (event.which === 13 && event.shiftKey) {
+            //event.preventDefault();            
+            console.log("Shift + Enter pressed!");
+        } else if (event.which === 13) {
+            const sendButton = document.getElementById('btn-send-message');            
+            if (sendButton) {            
+                sendButton.click();
+            } else {
+                console.error('Send button not found!');
+            }
+            event.preventDefault();
+        }
+  });
+  
 
   },
 };
@@ -1176,6 +1201,15 @@ export default {
         border-top: 0;
         margin-top: -12px;
         margin-right: -16px;
+    }
+
+
+    .auto-expand {
+        resize: none;
+        min-height: 25px;
+        padding: 5px 5px 0px;
+        height: 30px;
+        line-height: 15px;        
     }
 
 </style>

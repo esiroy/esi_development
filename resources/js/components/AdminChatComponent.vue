@@ -147,28 +147,32 @@
                                         </div>
 
 
-                                        <div class="d-inline-block" style="width:90%">
-                                            <input type="text"  
-                                                v-on:keyup.13="sendMessage"
-                                                autocomplete="off" 
+                                        <div class="d-inline-block text-message-container">
+                                            <TextareaAutosize
+                                                id="message"
+                                                ref="messageTextarea"                                            
+                                                :min-height="30"
+                                                :max-height="55"
+                                                autocomplete="off"
+                                                class="form-control form-control-sm auto-expand"
                                                 v-model="message" 
                                                 placeholder="Type a message" 
-                                                class="form-control form-control-sm mb-1" 
-                                                aria-label="Type a message"/>
+                                                aria-label="Type a message"                                        
+                                            />
                                         </div>
 
                                         <div class="d-inline-block">
                                         
                                         
                                             <div id="attach-button" class="input-group-append d-inline-block">
-                                                <label id="file-select-button" for="file" class="btn btn-primary btn-sm mb-0">
-                                                    <i class="fas fa-paperclip"></i>
+                                                <label id="file-select-button" for="file" class="icon-label-container btn btn-primary btn-sm mb-0">
+                                                    <i class="fas fa-paperclip icon-label-btn"></i>
                                                 </label>
                                             </div>                                            
 
                                             <div id="send-button" class="input-group-append d-inline-block">
-                                                <label :id="'btn_'+ current_user.userid" class="btn btn-primary mr-1 btn-sm mb-0" @click.prevent="$refs.upload.active = false; sendMessage(); ">                                                    
-                                                    <i class="fa fa-paper-plane" aria-hidden="true"></i>
+                                                <label :id="'btn_'+ current_user.userid" class="icon-label-container btn btn-primary mr-1 btn-sm mb-0" @click.prevent="$refs.upload.active = false; sendMessage(); ">                                                    
+                                                    <i class="fa fa-paper-plane icon-label-btn" aria-hidden="true"></i>
                                                 </label>
                                             </div>
 
@@ -309,6 +313,8 @@
 import io from "socket.io-client";
 import FileUpload from 'vue-upload-component'
 import Multiselect from 'vue-multiselect'
+import TextareaAutosize from 'vue-textarea-autosize'
+Vue.use(TextareaAutosize)
 
 var socket = null;
 
@@ -434,7 +440,9 @@ export default {
             //currentUser.unreadMsg = 0;
             this.$forceUpdate();
         },
-
+        convertNewlineToBr(inputString) {
+            return inputString.replace(/\n/g, '<br>');
+        },
         sendMessage() {
 
             clearInterval(this.scrollInterval)
@@ -471,8 +479,8 @@ export default {
                     'msgCtr': 0,
                     'userid': this.userid,
                     'nickname': this.nickname,
-                    'username': this.username,          
-                    'message': this.message,
+                    'username': this.username,                              
+                    'message': this.convertNewlineToBr(this.message),
                     'user_image': this.user_image, //@todo: make this for customer support 
                     'type': "CHAT_SUPPORT"
                 };
@@ -496,8 +504,8 @@ export default {
                     {
                         method              : "POST",
                         sender_id           : this.userid,
-                        recipient_id        : this.current_user.userid,
-                        message             : userMessage,
+                        recipient_id        : this.current_user.userid,                        
+                        message             : this.convertNewlineToBr(userMessage),
                         is_read             : false,
                         valid               : true,
                         message_type        : "CHAT_SUPPORT",
@@ -549,8 +557,8 @@ export default {
                     'msgCtr': 0,
                     'userid': this.current_user.userid,
                     'nickname': this.current_user.nickname,
-                    'username': this.current_user.username,          
-                    'message': this.message,
+                    'username': this.current_user.username,                              
+                    'message': this.convertNewlineToBr(this.message),
                     'user_image': this.current_user.user_image, //@todo: make this for customer support 
                     'type': "CHAT_SUPPORT"
                 };
@@ -1417,6 +1425,16 @@ export default {
 
 
        
+        $(document).on('keydown', '#message', (event) => {        
+            if (event.which === 13 && event.shiftKey) {
+                //event.preventDefault();            
+                //console.log("Shift + Enter pressed!");
+            } else if (event.which === 13) {
+                this.sendMessage();
+                event.preventDefault();
+            }
+        });
+          
 
           
     },
@@ -1606,7 +1624,7 @@ Vue.component("chatsupport-info-component", {
 </style>
 
 
-<style >
+<style>
 .floating-history-fetcher {
     position: absolute;
     top: 65px;
@@ -1779,5 +1797,32 @@ Vue.component("chatsupport-info-component", {
 }
 
 
- 
+.text-message-container {
+    float: left;
+    width: 85%;
+    margin: 0px 10px 10px 0px;    
+}
+
+.auto-expand {
+    resize: none;
+    min-height: 25px;
+    padding: 5px 5px 0px;
+    height: 30px;
+    line-height: 15px;        
+}
+</style>
+
+<style scoped>
+.icon-label-container {
+    display: block;
+    width: 35px;
+    height: 35px;    
+}
+
+.icon-label-btn {
+    font-size: 18px;
+    position: absolute;
+    left: 23.5%;
+    top: 20%;    
+}
 </style>
