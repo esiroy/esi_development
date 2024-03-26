@@ -136,10 +136,9 @@
             const audioPlayer = document.getElementById('myAudio');
             const urlParams = new URLSearchParams(window.location.search);
 
-            const end = urlParams.get('e');
-          
+            const end = urlParams.get('e');         
 
-            console.log("timer: " + audioPlayer.currentTime + "  >=  " + end + " ???");
+            //console.log("timer: " + audioPlayer.currentTime + "  >=  " + end + " ???");
 
             if (end !== null) {
                 if (audioPlayer.currentTime >= end) { // Stop audio after 60 seconds (1 minute)
