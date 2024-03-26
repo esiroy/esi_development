@@ -147,6 +147,8 @@
                     clearInterval(timer);
                     console.log("Audio stopped after " + end + " seconds.");
                 }
+            } else {
+                clearInterval(timer);
             }
 
             //check e
