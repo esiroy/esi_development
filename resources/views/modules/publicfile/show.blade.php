@@ -135,7 +135,9 @@
 
             const audioPlayer = document.getElementById('myAudio');
             const urlParams = new URLSearchParams(window.location.search);
-            const end = urlParams.get('end');
+
+            const end = urlParams.get('e');
+          
 
             console.log("timer: " + audioPlayer.currentTime + "  >=  " + end + " ???");
 
@@ -146,6 +148,8 @@
                     console.log("Audio stopped after " + end + " seconds.");
                 }
             }
+
+            //check e
         }        
 
         document.addEventListener("DOMContentLoaded", function () 
