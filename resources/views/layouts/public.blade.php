@@ -17,9 +17,11 @@
     <!-- Styles -->
     <link rel="preload" href="{{ asset('css/app.css') }}" as="style">
     <link rel="stylesheet" href="{{ asset('css/app.css') }}">
+    <script src="https://kit.fontawesome.com/15cdd6c191.js" crossorigin="anonymous"></script>
     <noscript>
         <link rel="stylesheet" type="text/css" href="">
     </noscript>
+    @yield('styles')
 </head>
 <body>
     <div id="app">

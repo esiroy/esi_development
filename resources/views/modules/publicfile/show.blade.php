@@ -30,8 +30,12 @@
             </div>
 
             @if(strtolower($extension) == 'mp3')
-                <div class="text-center">
-                    <audio controls autoplay>
+                <div id="playBtnContainer" class="text-center" style="display:none">
+                    <div id="btn-playAudio" class="btn-circle btn-custom-lg rounded-circle fa-regular fa-circle-play blinking-icon"></div>
+                </div>
+
+                <div id="audioContainer" class="text-center">
+                    <audio id="myAudio" controls autoplay>
                         <source src="{{ $url }}" type="audio/mpeg">
                         Your browser does not support the audio element.
                     </audio>
@@ -70,6 +74,7 @@
             textToClipboard (link)
             return false;
         }
+
         function textToClipboard (text) {
             let dummy = document.createElement("textarea");
             document.body.appendChild(dummy);
@@ -78,5 +83,107 @@
             document.execCommand("copy");
             document.body.removeChild(dummy);
         }
+
+        function toggleVisibility(elementID) {
+            var element = document.getElementById(elementID);
+            if (element.style.display === 'none') {
+                element.style.display = 'block'; // or 'inline', 'inline-block', etc. depending on the element type
+            } else {
+                element.style.display = 'none';
+            }
+        }
+
+        function showElement(elementID) {
+            var element = document.getElementById(elementID);
+            element.style.display = 'block'; // or 'inline', 'inline-block', etc. depending on the element type
+          
+        }
+
+        function hideElement(elementID) {
+            var element = document.getElementById(elementID);
+            element.style.display = 'none';
+        }
+
+        function checkPlayButton() 
+        {
+            var promise =  document.getElementById("myAudio").play();
+
+            if (promise !== undefined) {
+                promise.then(_ => {
+                    // Autoplay started!
+                    console.log("Autoplay started");
+                    hideElement("playBtnContainer");
+
+                }).catch(error => {
+                    console.log("Autoplay prevented");                   
+                    
+                    showElement("playBtnContainer");
+                    toggleVisibility("audioContainer");
+                    // Autoplay was prevented.
+                    // Show a "Play" button so that user can start playback.
+                });
+            }
+        }
+
+        document.addEventListener("DOMContentLoaded", function () 
+        {
+            checkPlayButton();
+      
+            const playAudioBtn = document.getElementById('btn-playAudio');
+            const audioPlayer = document.getElementById('myAudio');
+
+            const urlParams = new URLSearchParams(window.location.search);
+            const startTime = urlParams.get('t');
+            
+            if (startTime !== null) {
+                audioPlayer.currentTime = parseInt(startTime, 10);
+            }
+
+            // Add click event listener to the button
+            playAudioBtn.addEventListener('click', function () {
+                
+                if (audioPlayer.paused) {
+                    // If audio is paused, play it
+                    audioPlayer.play();
+
+                    toggleVisibility("audioContainer");
+                    toggleVisibility("btn-playAudio");
+                     //playAudioBtn.textContent = 'Pause Audio';
+
+                } else {
+                    // If audio is playing, pause it
+                    audioPlayer.pause();
+                    let elementID = "myAudio";
+                    toggleVisibility("myAudio");
+                    toggleVisibility("btn-playAudio");     
+                    //playAudioBtn.textContent = 'Play Audio';
+                }
+            }); 
+        });
+
+
     </script>
+@endsection
+
+@section('styles')
+<style>
+    .btn-custom-lg {
+        font-size: 365px;
+    }
+
+    .btn-circle:hover {
+        cursor: pointer;
+    }        
+
+
+    .blinking-icon {
+        animation: blink-animation 1s infinite;
+    }
+
+    @keyframes blink-animation {
+        0% { opacity: 1; }
+        50% { opacity: 0; }
+        100% { opacity: 1; }
+    }
+</style>
 @endsection
