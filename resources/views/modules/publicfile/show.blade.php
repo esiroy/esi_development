@@ -71,7 +71,7 @@
     <script>
 
         var timer;            
-        var audioPlayer = document.getElementById("myAudio");
+       
 
         function copy() {
             let link = document.getElementById('copy').href;
@@ -132,6 +132,8 @@
         }
 
         function checkAudioTime() {
+
+            const audioPlayer = document.getElementById('myAudio');
             const urlParams = new URLSearchParams(window.location.search);
             const end = urlParams.get('end');
 
@@ -153,7 +155,7 @@
 
             
             const playAudioBtn = document.getElementById('btn-playAudio');
-            //const audioPlayer = document.getElementById('myAudio');
+            const audioPlayer = document.getElementById('myAudio');
 
             const urlParams = new URLSearchParams(window.location.search);
             const startTime = urlParams.get('t');
