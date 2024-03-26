@@ -69,6 +69,10 @@
     @endif
 
     <script>
+
+        var timer;            
+        var audioPlayer = document.getElementById("myAudio");
+
         function copy() {
             let link = document.getElementById('copy').href;
             textToClipboard (link)
@@ -114,6 +118,8 @@
                     console.log("Autoplay started");
                     hideElement("playBtnContainer");
 
+                    timer = setInterval(checkAudioTime, 500); // Check time every second
+
                 }).catch(error => {
                     console.log("Autoplay prevented");                   
                     
@@ -125,26 +131,47 @@
             }
         }
 
+        function checkAudioTime() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const end = urlParams.get('end');
+
+            console.log("timer: " + audioPlayer.currentTime + "  >=  " + end + " ???");
+
+            if (end !== null) {
+                if (audioPlayer.currentTime >= end) { // Stop audio after 60 seconds (1 minute)
+                    audioPlayer.pause();
+                    clearInterval(timer);
+                    console.log("Audio stopped after " + end + " seconds.");
+                }
+            }
+        }        
+
         document.addEventListener("DOMContentLoaded", function () 
         {
             checkPlayButton();
-      
+            checkAudioTime();
+
+            
             const playAudioBtn = document.getElementById('btn-playAudio');
-            const audioPlayer = document.getElementById('myAudio');
+            //const audioPlayer = document.getElementById('myAudio');
 
             const urlParams = new URLSearchParams(window.location.search);
             const startTime = urlParams.get('t');
-            
+           
+
             if (startTime !== null) {
                 audioPlayer.currentTime = parseInt(startTime, 10);
             }
 
+            
             // Add click event listener to the button
             playAudioBtn.addEventListener('click', function () {
                 
                 if (audioPlayer.paused) {
                     // If audio is paused, play it
-                    audioPlayer.play();
+                    audioPlayer.play();                    
+
+                    timer = setInterval(checkAudioTime, 1000); // Check time every second
 
                     toggleVisibility("audioContainer");
                     toggleVisibility("btn-playAudio");
@@ -159,6 +186,8 @@
                     //playAudioBtn.textContent = 'Play Audio';
                 }
             }); 
+
+
         });
 
 
