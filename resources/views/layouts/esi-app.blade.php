@@ -18,8 +18,8 @@
     
     <!-- Scripts -->
     <script src="{{ asset('js/app.js') .'?id=version_6_0_1'  }}" defer ></script>
-    <script src='{{ env("APP_CHATSERVER_URL") }}socket.io/socket.io.js'></script>
-
+    <script src='{{ env("APP_MESSENGER_URL") }}/socket.io/socket.io.js'></script>
+    
 
     <!-- Fonts -->
     <link rel="dns-prefetch" href="//fonts.gstatic.com" />
@@ -36,7 +36,7 @@
 <body class="bg-gray">
     <div id="app">
         @if(request()->query('debug') == 'true')
-            {{ env('APP_CHATSERVER_URL') }}
+            {{ env('APP_MESSENGER_URL') }}
         @endif
 
         <nav class="navbar navbar-expand-md navbar-light bg-white shadow-sm">
@@ -290,7 +290,7 @@
                 $member =  $memberObj->where('user_id', Auth::user()->id)->first();
                 $nickname = $member->nickname;
                 
-                $chatserver_url = env('APP_CHATSERVER_URL', 'https://chatserver.mytutor-jpn.info:30001');
+                $chatserver_url = env('APP_MESSENGER_URL', 'https://chatserver.mytutor-jpn.info:30001');
             @endphp 
 
            
