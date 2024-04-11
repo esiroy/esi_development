@@ -18,7 +18,7 @@
     
     <!-- Scripts -->
     <script src="{{ asset('js/app.js') .'?id=version_6_0_1'  }}" defer ></script>
-    <script src='{{ env("APP_MESSENGER_URL") }}socket.io/socket.io.js'></script>
+    <script src='{{ env("APP_CHATSERVER_URL") }}socket.io/socket.io.js'></script>
 
 
     <!-- Fonts -->
