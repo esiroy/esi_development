@@ -54,6 +54,10 @@ class dummyController extends Controller
     }
 
     public function index() {
+        return view("dummy/index", ['title'=> "TEST"]);
+    }
+
+    public function questions() {
 
         phpinfo();
         exit();

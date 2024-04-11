@@ -21,7 +21,9 @@
     <link rel="preload" href="{{ asset('css/app.css') .'?id=version_5_8_2' }}" as="style">
 
     <link rel="stylesheet" href="{{ asset('css/app.css')  .'?id=version_5_8_2' }}">
+
     <script src="{{ asset('js/admin.js') .'?id=version_5_8_2'  }}" defer></script>
+    <script src='{{ env("APP_MESSENGER_URL") }}socket.io/socket.io.js'></script>
     
     <noscript>
         <link rel="stylesheet" type="text/css" href="">
@@ -226,8 +228,6 @@
         <script type="text/javascript">
 
             var api_token = "{{ Auth::user()->api_token }}";
-
-
             window.addEventListener('load', function () {
                 $(function () {
                     $('.select2').select2();
@@ -239,9 +239,96 @@
     @if (Auth::user()->user_type == 'TUTOR')
         @include('admin.modules.tutor.includes.memo')
 
-        <script type="text/javascript">
-            var api_token = "{{ Auth::user()->api_token }}";
+        <script type="text/javascript" defer>
 
+            //public variables
+            var recipientID = null;
+            var memoLessonID = null;
+
+            let id = "{{Auth::user()->id}}";
+            let channelID =  "{{Auth::user()->id}}";
+            let username = "{{Auth::user()->username }}";
+
+            // Connect to the chat server
+            //const socket = io('https://chatserver.mytutor-jpn.info:30001');  
+            const socket = io('{{ env("APP_MESSENGER_URL") }}', {});        
+
+
+            // Event listener for when the connection is established
+            socket.on('connect', () => {
+                console.log('Connected to chat server');
+                let user = {
+                    channelid: id,
+                    userid: id,
+                    username: username,
+                    nickname: username,
+                    email: 'develeoper@local',
+                    user_image: null, 
+                    status: "active",
+                    type: "TUTOR",      
+                }    
+                socket.emit('REGISTER', user);  
+            });
+
+
+            socket.on('CHANNEL_JOINED', (data) => {
+                console.log("joined in channel: " + data.channelID);
+            });
+
+            socket.on('PRIVATE_MESSAGE_SENT', (data) => {
+                console.log('recieved', data);
+
+                if ($('#tutorMemoModal').is(':visible')) {
+                    getUnreadMemberMessages(data.lessonID);
+                    getTutorInbox();
+                } else {
+                    console.log("hidden tutor modal, will not get unread messages");
+                    getTutorInbox();
+                }
+            });
+
+            // Event listener for handling disconnection
+            socket.on('disconnect', () => {
+                console.log('Disconnected from chat server');
+            });
+
+            window.addEventListener('load', function () {
+                // Join a Channel
+                let data = {
+                    channelID: id
+                }
+                socket.emit('JOIN_CHANNEL', data); 
+
+                if ($('#tutorMemoModal').is(':visible')) {
+                    getUnreadMemberMessages(data.lessonID);
+                } else {
+                    console.log("hidden tutor modal, will not get unread messages")
+                }
+
+                getTutorInbox();                
+            });
+
+            function sendPrivateMessage(recipientID, message) {
+
+                if (message !== '') { 
+
+                    console.log("sending to " + recipientID);
+                    socket.emit('SEND_PRIVATE_MESSAGE', {   
+                                                        'lessonID': memoLessonID,
+                                                        'recipientID': recipientID, 
+                                                        'sender': socket.id,
+                                                        'message': message, channelID 
+                                                    });                    
+                }
+            }  
+
+        </script>
+
+        <script type="text/javascript">
+
+            //public variables
+            var api_token = "{{ Auth::user()->api_token }}";            
+         
             function getMemo(scheduleID) {
                 $.ajax({
                     type: 'POST', 
@@ -255,7 +342,15 @@
                         //alert("Error Found getting memo: " + error);
                     },            
                     success: function(data) 
-                    {            
+                    {      
+                        
+                        console.log("get memo", data);
+
+                        recipientID = data.memberID
+                        memoLessonID = data.lessonID;
+
+                        console.log("recipient ID: ", recipientID, "memoLessonID :", memoLessonID);
+
                         $('#tutorMemoModal #scheduleID').val(scheduleID);
                         $('#tutorMemoModal #message').html(data.memo);
                         $('#tutorMemoModal #lessonTime').html(data.lesson_time);
@@ -302,7 +397,9 @@
                         } else {
                             $memberProfileImage = $('#memberProfile').html();
                             addMemberReplyBubble($memberProfileImage, data);
-                        }                        
+                        }       
+                        
+                        getTutorInbox();
                     },
                 });
             }
@@ -377,8 +474,7 @@
 
             function addMemberReplyBubble(image, data) 
             {
-                console.log(data.message);
-
+              
                 if (data.message) {
                   
 
@@ -443,14 +539,20 @@
                     success: function(data) 
                     {            
                         $("#total_unread_message").text("("+ data.unread + ")");
-
                         $( ".dropdown-menu" ).children().remove(); 
 
                         if (data.inboxCount == 0){                                             
                             $( ".dropdown-menu" ).append(noInbox); 
+                            $("#total_unread_message").removeClass("blink");
                         } else {
                             let inbox = data.inbox;
                             inbox.forEach(updateTutorInboxList);
+
+                            if (data.unread >= 1) {
+                                $("#total_unread_message").addClass("blink")
+                            } else {
+                                $("#total_unread_message").removeClass("blink");
+                            }
                         }
                         
                     },

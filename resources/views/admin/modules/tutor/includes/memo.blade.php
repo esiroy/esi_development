@@ -133,6 +133,7 @@
                     {
                         addTeacherReplyBubble(teacherProfileImage, data) 
                     
+                        sendPrivateMessage(recipientID, message);
                     }
                 });
             }

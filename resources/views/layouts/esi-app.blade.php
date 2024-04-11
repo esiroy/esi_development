@@ -18,7 +18,7 @@
     
     <!-- Scripts -->
     <script src="{{ asset('js/app.js') .'?id=version_6_0_1'  }}" defer ></script>
-
+    <script src='{{ env("APP_MESSENGER_URL") }}socket.io/socket.io.js'></script>
 
 
     <!-- Fonts -->
@@ -35,6 +35,10 @@
 </head>
 <body class="bg-gray">
     <div id="app">
+        @if(request()->query('debug') == 'true')
+            {{ env('APP_CHATSERVER_URL') }}
+        @endif
+
         <nav class="navbar navbar-expand-md navbar-light bg-white shadow-sm">
             <div class="container">
 
@@ -316,7 +320,100 @@
 
     </div>
 
+  
+
+    <script type="text/javascript" defer>
+
+        //public variables
+        var recipientID = null;
+        var memoLessonID = null;
+
+        let id = "{{Auth::user()->id}}";
+        let channelID =  "{{Auth::user()->id}}";
+        let username = "{{Auth::user()->username }}";
+
+        // Connect to the chat server
+        //const socket = io('https://chatserver.mytutor-jpn.info:30001');  
+        const socket = io('{{ env("APP_MESSENGER_URL") }}', {});        
+
+
+        // Event listener for when the connection is established
+        socket.on('connect', () => {
+            console.log('Connected to chat server');
+            let user = {
+                channelid: id,
+                userid: id,
+                username: username,
+                nickname: username,
+                email: 'develeoper@local',
+                user_image: null, 
+                status: "active",
+                type: "MEMBER",      
+            }    
+            socket.emit('REGISTER', user);  
+        });
+
+
+        socket.on('CHANNEL_JOINED', (data) => {
+            console.log("joined in channel: " + data.channelID);
+        });
+
+        socket.on('PRIVATE_MESSAGE_SENT', (data) => {
+            console.log('recieved', data);
+            
+            if ($('#tutorMemoReplyModal').is(':visible')) {
+                getUnreadTeacherMessages(data.lessonID);
+                getMemberInbox(); 
+            } else {
+                console.log("hidden member reply modal, will not get unread messages");
+                getMemberInbox();      
+            }
+
+                          
+        });
+
+        // Event listener for handling disconnection
+        socket.on('disconnect', () => {
+            console.log('Disconnected from chat server');
+        });
+
+        window.addEventListener('load', function () {
+            // Join a Channel
+            let data = {
+                channelID: id
+            }
+            socket.emit('JOIN_CHANNEL', data); 
+
+            if ($('#tutorMemoReplyModal').is(':visible')) {
+                getUnreadTeacherMessages(data.lessonID);
+            } else {
+                console.log("hidden member reply modal, will not get unread messages")
+            }
+
+            getMemberInbox();   
+                        
+        });
+
+        function sendPrivateMessage(recipientID, message) {
+
+            if (message !== '') 
+            {
+                console.log("sending to " + recipientID);
+                socket.emit('SEND_PRIVATE_MESSAGE', {   
+                                                        'lessonID': memoLessonID,
+                                                        'recipientID': recipientID, 
+                                                        'sender': socket.id,
+                                                        'message': message, channelID 
+                                                    });
+            }
+        }
+            
+
+    </script>
+
+
     <script type="text/javascript">
+            
         window.addEventListener('load', function () 
         {            
             //Inbox
@@ -477,6 +574,14 @@
                 },            
                 success: function(data) { 
 
+                    console.log("get memo", data);
+
+                    recipientID = data.tutor.user_id;
+                    memoLessonID = data.lessonID;
+
+                    console.log("recipient ID: ", recipientID, "memoLessonID :", memoLessonID);
+                    
+
                     //let response = isLessonValid("03/11/2024 23:30", "03/11/2024 23:55");
                     let response = isLessonValid(data.lessonStart, data.lessonEnd, data.currentJapanTime); 
 
@@ -542,7 +647,7 @@
             // Get current date and time
             const currentDate = new Date(currentJapanTime);
 
-            console.log(lessonStartTime, lessonEndTime, currentDate)
+            //console.log(lessonStartTime, lessonEndTime, currentDate)
 
             $('#tutorMemoReplyModal #currentJapanTime').text(currentDate);
 
@@ -616,6 +721,8 @@
                     replies.forEach(createReplyBubble);
 
                     $("#total_unread_message").removeClass("blink");
+
+                    getMemberInbox();
                 },
             });
         }
@@ -704,8 +811,6 @@
 
         function sendMemberReply(scheduleID, message) 
         {
-            console.log(scheduleID, message);
-
             $.ajax({         
                 type: 'POST',
                 dataType: 'json',
@@ -729,10 +834,11 @@
                 success: function(data) 
                 {
                     let teacherProfileImage = $('#memberProfile').html();
-                    let date = data.date;
-                    console.log(date);
+                  
 
-                    addMemberReplyBubble(teacherProfileImage, data) 
+                    addMemberReplyBubble(teacherProfileImage, data);
+
+                    sendPrivateMessage(recipientID, message);
                 },
             });
                     
@@ -808,6 +914,12 @@
                     } else {
                         let inbox = data.inbox;
                         inbox.forEach(updateInboxList);                       
+
+                        if (data.unread >= 1) {                        
+                            $("#total_unread_message").addClass("blink")
+                        } else {
+                            $("#total_unread_message").removeClass("blink");
+                        }
                     }
                 },
             });
@@ -822,10 +934,14 @@
                 //console.log(item.unreadMessageCount);
                 if (item.unreadMessageCount >= 1) 
                 {
-                    $("#message_image_"+item.schedule_item_id).addClass("blink")
+                    $("#message_image_"+item.schedule_item_id).addClass("blink");
+                    $("#total_unread_message").addClass("blink")
+
                     $("#message_counter_"+item.schedule_item_id).text(item.unreadMessageCount)
                 } else {
                     $("#message_image_"+item.schedule_item_id).removeClass("blink")
+                    $("#total_unread_message").removeClass("blink")
+
                     $("#message_counter_"+item.schedule_item_id).text(0)
                 }                
             });          
