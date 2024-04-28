@@ -39,194 +39,249 @@
             {{ env('APP_MESSENGER_URL') }}
         @endif
 
-        <nav class="navbar navbar-expand-md navbar-light bg-white shadow-sm">
+     
+        
+        <div class="bg-white shadow-sm">
             <div class="container">
+                <nav class="navbar navbar-light navbar-expand-md">
+                    <a class="navbar-brand" href="{{ url('/') }}">
+                    <img src="{{ url("images/title_full.png") }}" alt="{{ config('app.name', 'My Tutor') }}" alt="{{ config('app.name', 'My Tutor') }} administratrion panel">
+                    </a>
 
-                <a class="navbar-brand" href="{{ url('/') }}">
-                   <img src="{{ url("images/title_full.png") }}" alt="{{ config('app.name', 'My Tutor') }}" alt="{{ config('app.name', 'My Tutor') }} administratrion panel">
-                </a>
+                    <button class="navbar-toggler" type="button" data-toggle="collapse"
+                        data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false"
+                        aria-label="{{ __('Toggle navigation') }}">
+                        <span class="navbar-toggler-icon"></span>
+                    </button>
 
-                <button class="navbar-toggler" type="button" data-toggle="collapse"
-                    data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false"
-                    aria-label="{{ __('Toggle navigation') }}">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
+                    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                        <!-- Left Side Of Navbar -->
+                        <ul class="navbar-nav mr-auto">
 
-                <div class="collapse navbar-collapse" id="navbarSupportedContent">
-                    <!-- Left Side Of Navbar -->
-                    <ul class="navbar-nav mr-auto">
+                        </ul>
 
-                    </ul>
-
-                    <!-- Right Side Of Navbar -->
-                    <ul class="navbar-nav ml-auto">
-                        <!-- Authentication Links -->
-                        @guest
-                            <!--
-                            <li class="nav-item">
-                                <a class="nav-link" href="{{ route('login') }}">{{ __('Login') }}</a>
-                            </li>
-                            @if(Route::has('register'))
+                        <!-- Right Side Of Navbar -->
+                        <ul class="navbar-nav ml-auto">
+                            <!-- Authentication Links -->
+                            @guest
+                                <!--
                                 <li class="nav-item">
-                                    <a class="nav-link" href="{{ route('register') }}">{{ __('Register') }}</a>
+                                    <a class="nav-link" href="{{ route('login') }}">{{ __('Login') }}</a>
                                 </li>
-                            @endif
-                            -->
-                        @else
+                                @if(Route::has('register'))
+                                    <li class="nav-item">
+                                        <a class="nav-link" href="{{ route('register') }}">{{ __('Register') }}</a>
+                                    </li>
+                                @endif
+                                -->
+                            @else
 
-                        <!--
-                            <li class="nav-item dropdown">
-                                <a id="navbarDropdown" class="nav-link dropdown-toggle" href="#" role="button"
-                                    data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" v-pre>
-                                    {{ ucfirst(Auth::user()->first_name) }} <span class="caret"></span>
-                                </a>
-
-                                <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdown">
-                                    <a class="dropdown-item" href="{{ route('logout_member') }}" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
-                                        {{ __('Logout') }}
+                            <!--
+                                <li class="nav-item dropdown">
+                                    <a id="navbarDropdown" class="nav-link dropdown-toggle" href="#" role="button"
+                                        data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" v-pre>
+                                        {{ ucfirst(Auth::user()->first_name) }} <span class="caret"></span>
                                     </a>
+
+                                    <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdown">
+                                        <a class="dropdown-item" href="{{ route('logout_member') }}" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
+                                            {{ __('Logout') }}
+                                        </a>
+
+                                        <form id="logout-form" action="{{ route('logout_member') }}"
+                                            method="POST" style="display: none;">
+                                            @csrf
+                                        </form>
+                                    </div>
+                                </li>
+                                -->
+
+                                
+                                    @php 
+                                        $member = App\Models\Member::where('user_id', Auth::user()->id )->first();
+                                        $agentTransaction = new App\Models\AgentTransaction();
+                                        $credits = $agentTransaction->getCredits($member->user_id)
+                                    @endphp
+                                
+                                    <span><a class="blue" href="{{ url('/user/?id='. Auth::user()->id)}}"><strong>ユーザ名 {{ $member->nickname }}</strong></a></span>                                
+
+                                    @if ($member->isMemberCreditExpired(Auth::user()->id))
+                                        <span id="total_credits" class="text-danger">(0)</span>
+                                        <span class="px-2 text-success">|</span>
+                                    @else
+                                        <span id="total_credits" class="text-success">({{ number_format($credits, 2) }})</span>
+                                        <span class="px-2 text-success">|</span>
+                                    @endif
+
+                                    <!--<span><a id="inbox" class="blue" href="{{ url('#inbox') }}">受信トレイ</a></span>
+                                    
+                                    <span class="px-2 tuser_idext-success">|</span>-->
+
+                                    <span><a class="blue" href="{{ url('/settings') }}">設定</a></span>
+
+                                    <span class="px-2 text-success">|</span>
+
+                                    @php
+                                        $ctr = 0;
+                                        $undreadMessages = 0;
+                                        $scheduleItems = new \App\Models\ScheduleItem;
+                                        $reservations = $scheduleItems->getMemberAllActiveLessons($member);
+                                    @endphp
+                                    
+                                    <div class="member-inbox">
+                                        <div class="dropdown">
+                                            <a href="#" class="dropdown-toggle blue" data-toggle="dropdown">{{ "受信トレイ" }}
+                                            <span id="total_unread_message" class="text-success">({{ $undreadMessages }})</span></a>
+
+                                            <div class="dropdown-menu dropdown-menu-custom">
+                                                @php                                             
+                                                    $latestReplyCount = 0;
+                                                @endphp
+
+                                                @foreach ($reservations as $reserve)
+                                                    @php      
+                                                        $ctr++;
+                                                        $userImageObj = new \App\Models\UserImage;
+                                                        $memoReply = new \App\Models\MemoReply;
+                                                        $userImage = $userImageObj->getTutorPhotobyID($reserve->tutor_id); 
+                                                        $latestReplyCount = $memoReply->where('schedule_item_id', $reserve->id)->where('is_read', false)->where('message_type', "TUTOR")->count();   
+                                                        $latestReply = $memoReply->where('schedule_item_id', $reserve->id)->orderBy('created_at', 'DESC')->first(); 
+
+                                                        if ($latestReplyCount >= 1)
+                                                        {
+                                                            $readStatus = "message-read";
+                                                            $colorClass = "blue font-weight-bold";
+                                                            $undreadMessages =  $undreadMessages + $latestReplyCount;
+                                                        }
+                                                        else {
+                                                            $readStatus = "message-unread";
+                                                            $colorClass = "text-muted font-weight-light";
+                                                        }
+                                                        
+                                                    @endphp
+                                                    
+                                                    <div id="inbox-{{$reserve->id }}" class="row px-0 mx-0 {{$readStatus}} {{$colorClass}}">
+                                                        <div class="col-md-3">                                               
+                                                            <a href="#" class="dropdown-item small p-0 {{$colorClass}}">                                                        
+                                                                @if ($userImage == null)                                                                
+                                                                    <img src="{{ Storage::url('user_images/noimage.jpg') }}" class="img-fluid border" alt="no photo uploaded" style="width:100%">
+                                                                @else 
+                                                                    <img src="{{ Storage::url("$userImage->original") }}" class="img-fluid border" alt="profile photo"  style="width:100%">
+                                                                @endif
+                                                            </a>
+                                                        </div>
+                                                        <div class="col-md-9">
+                                                            <span id="inbox-message-{{ $reserve->id }}">
+                                                                <a href="javascript:void(0)" class="{{$colorClass}}" onClick="openMemo('{{ $reserve->id }}')" data-toggle="modal" data-target="tutorMemoReplyModal" data-id="{{ $reserve->id }}">
+                                                                    @if (date('H', strtotime($reserve->lesson_time)) == '00') 
+                                                                        {{  date('Y年 m月 d日 24:i', strtotime($reserve->lesson_time ." - 1 day")) }} - {{  date('24:i', strtotime($reserve->lesson_time." + 25 minutes ")) }}
+                                                                    @else 
+                                                                        {{  date('Y年 m月 d日 H:i', strtotime($reserve->lesson_time)) }} - {{  date('H:i', strtotime($reserve->lesson_time." + 25 minutes ")) }}
+                                                                    @endif                                                                
+                                                                </a>
+                                                                <br>
+                                                                <span class="message small">                                                               
+                                                                    @if (isset($latestReply->message)) 
+                                                                        {{ limit($latestReply->message, 120) }}
+                                                                    @endif                                                                    
+                                                                </span>
+                                                            </span>
+                                                        </div>
+                                                    </div>
+                                                    
+                                                @endforeach
+
+                                                @php
+                                                    if ($ctr == 0)
+                                                        $display = "block";
+                                                    else
+                                                    $display = "none";                                                
+                                                @endphp
+
+                                                
+
+                                                <div id="noInboxMessages" class="text-center small pt-3 pb-3" style="display:{{$display}}"> 
+                                                    No New Inbox Message(s) 
+                                                </div>
+
+                                            </div>
+
+                                            
+
+                                        </div>
+                                    </div>    
+
+                                    <span class="px-2 text-success">|</span>
+                                
+
+                                    <span>
+                                        <a class="red" href="{{ route('logout_member') }}" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
+                                        ログアウト</a>
+                                    </span>
 
                                     <form id="logout-form" action="{{ route('logout_member') }}"
                                         method="POST" style="display: none;">
                                         @csrf
                                     </form>
-                                </div>
-                            </li>
-                            -->
 
+                            @endguest
+                        </ul>
+                    </div>
+                </nav>
+
+                @php 
+                    $multiAccounts = new App\Models\MemberMultiAccountAlias;
+
+                    $memberAccounts = $multiAccounts->getMemberSelectedAccounts(Auth::user()->id);
+
+                    //Determine Session
+                    $sessionMultiAccountID = Session::get('accountID');
+
+                    if (isset($sessionMultiAccountID)) {
+
+                        $sessionAccount = $multiAccounts->getMemberAccountInfo(Auth::user()->id, $sessionMultiAccountID);
+
+                        if (!$sessionAccount)  {                          
+                            Session::forget('accountID');                         
+                            echo "<script>location.href='". url('home') ."';</script>"; 
+                            exit();
                             
-                                @php 
-                                    $member = App\Models\Member::where('user_id', Auth::user()->id )->first();
-                                    $agentTransaction = new App\Models\AgentTransaction();
-                                    $credits = $agentTransaction->getCredits($member->user_id)
-                                @endphp
-                            
-                                <span><a class="blue" href="{{ url('/user/?id='. Auth::user()->id)}}"><strong>ユーザ名 {{ $member->nickname }}</strong></a></span>                                
+                        } else {
 
-                                @if ($member->isMemberCreditExpired(Auth::user()->id))
-                                    <span id="total_credits" class="text-danger">(0)</span>
-                                    <span class="px-2 text-success">|</span>
-                                @else
-                                    <span id="total_credits" class="text-success">({{ number_format($credits, 2) }})</span>
-                                    <span class="px-2 text-success">|</span>
-                                @endif
+                            $activeAccount = $sessionAccount;
+                        }
+                      
+                    } else {
+                        $activeAccount = $multiAccounts->getMemberDefaultAccount(Auth::user()->id);
+                    }
 
-                                <!--<span><a id="inbox" class="blue" href="{{ url('#inbox') }}">受信トレイ</a></span>
-                                
-                                <span class="px-2 tuser_idext-success">|</span>-->
+                    
+                @endphp
 
-                                <span><a class="blue" href="{{ url('/settings') }}">設定</a></span>
+                <div class="changeAccountWrapper">
+                    @if ( count($memberAccounts) >= 1 )
 
-                                <span class="px-2 text-success">|</span>
+                    <div class="dropdown">
+                        <a href="#" class="dropdown-toggle blue" id="dropdownMultiAccountMenu" data-toggle="dropdown">
+                            {{ $activeAccount->name }}
+                        </a>
+                        <div class="dropdown-menu" aria-labelledby="dropdownMultiAccountMenu">
+                            @foreach($memberAccounts as $account)
+                                <div class="dropdown-item  @if ($account->member_multi_account_id == $activeAccount->member_multi_account_id) {{ 'active text-white' }} @endif">
+                                    <a href="{{ url('home/?accountID='.$account->member_multi_account_id) }}">
+                                        <span class="@if ($account->member_multi_account_id == $activeAccount->member_multi_account_id) {{ 'text-white' }} @else {{ 'text-secondary' }} @endif">{{$account->name}} </span>
+                                    </a>
+                                </div>         
+                            @endforeach
+                        </div>
+                    </div>
 
-                                @php
-                                    $ctr = 0;
-                                    $undreadMessages = 0;
-                                    $scheduleItems = new \App\Models\ScheduleItem;
-                                    $reservations = $scheduleItems->getMemberAllActiveLessons($member);
-                                @endphp
-                                
-                                <div class="member-inbox">
-                                    <div class="dropdown">
-                                        <a href="#" class="dropdown-toggle blue" data-toggle="dropdown">{{ "受信トレイ" }}
-                                        <span id="total_unread_message" class="text-success">({{ $undreadMessages }})</span></a>
 
-                                        <div class="dropdown-menu dropdown-menu-custom">
-                                            @php                                             
-                                                $latestReplyCount = 0;
-                                            @endphp
-
-                                            @foreach ($reservations as $reserve)
-                                                @php      
-                                                    $ctr++;
-                                                    $userImageObj = new \App\Models\UserImage;
-                                                    $memoReply = new \App\Models\MemoReply;
-                                                    $userImage = $userImageObj->getTutorPhotobyID($reserve->tutor_id); 
-                                                    $latestReplyCount = $memoReply->where('schedule_item_id', $reserve->id)->where('is_read', false)->where('message_type', "TUTOR")->count();   
-                                                    $latestReply = $memoReply->where('schedule_item_id', $reserve->id)->orderBy('created_at', 'DESC')->first(); 
-
-                                                    if ($latestReplyCount >= 1)
-                                                    {
-                                                        $readStatus = "message-read";
-                                                        $colorClass = "blue font-weight-bold";
-                                                        $undreadMessages =  $undreadMessages + $latestReplyCount;
-                                                    }
-                                                    else {
-                                                        $readStatus = "message-unread";
-                                                        $colorClass = "text-muted font-weight-light";
-                                                    }
-                                                    
-                                                @endphp
-                                                
-                                                <div id="inbox-{{$reserve->id }}" class="row px-0 mx-0 {{$readStatus}} {{$colorClass}}">
-                                                    <div class="col-md-3">                                               
-                                                        <a href="#" class="dropdown-item small p-0 {{$colorClass}}">                                                        
-                                                            @if ($userImage == null)                                                                
-                                                                <img src="{{ Storage::url('user_images/noimage.jpg') }}" class="img-fluid border" alt="no photo uploaded" style="width:100%">
-                                                            @else 
-                                                                <img src="{{ Storage::url("$userImage->original") }}" class="img-fluid border" alt="profile photo"  style="width:100%">
-                                                            @endif
-                                                        </a>
-                                                    </div>
-                                                    <div class="col-md-9">
-                                                        <span id="inbox-message-{{ $reserve->id }}">
-                                                            <a href="javascript:void(0)" class="{{$colorClass}}" onClick="openMemo('{{ $reserve->id }}')" data-toggle="modal" data-target="tutorMemoReplyModal" data-id="{{ $reserve->id }}">
-                                                                @if (date('H', strtotime($reserve->lesson_time)) == '00') 
-                                                                    {{  date('Y年 m月 d日 24:i', strtotime($reserve->lesson_time ." - 1 day")) }} - {{  date('24:i', strtotime($reserve->lesson_time." + 25 minutes ")) }}
-                                                                @else 
-                                                                    {{  date('Y年 m月 d日 H:i', strtotime($reserve->lesson_time)) }} - {{  date('H:i', strtotime($reserve->lesson_time." + 25 minutes ")) }}
-                                                                @endif                                                                
-                                                            </a>
-                                                            <br>
-                                                            <span class="message small">                                                               
-                                                                @if (isset($latestReply->message)) 
-                                                                    {{ limit($latestReply->message, 120) }}
-                                                                @endif                                                                    
-                                                            </span>
-                                                        </span>
-                                                    </div>
-                                                </div>
-                                                
-                                            @endforeach
-
-                                            @php
-                                                if ($ctr == 0)
-                                                    $display = "block";
-                                                else
-                                                   $display = "none";                                                
-                                            @endphp
-
-                                             
-
-                                            <div id="noInboxMessages" class="text-center small pt-3 pb-3" style="display:{{$display}}"> 
-                                                No New Inbox Message(s) 
-                                            </div>
-
-                                        </div>
-
-                                        
-
-                                    </div>
-                                </div>    
-
-                                <span class="px-2 text-success">|</span>
-                            
-
-                                <span>
-                                    <a class="red" href="{{ route('logout_member') }}" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
-                                    ログアウト</a>
-                                </span>
-
-                                <form id="logout-form" action="{{ route('logout_member') }}"
-                                    method="POST" style="display: none;">
-                                    @csrf
-                                </form>
-
-                        @endguest
-                    </ul>
+                    @endif
                 </div>
             </div>
-        </nav>
+       </div>
+        
 
         @php 
 
@@ -906,10 +961,10 @@
                     delegateToMessageList(data.inbox)
               
                     $("#total_unread_message").text("("+ data.unread + ")");
-                    $( ".dropdown-menu" ).children().remove();                    
+                    $( ".dropdown-menu-custom" ).children().remove();                    
                     
                     if (data.inboxCount == 0){                                             
-                        $( ".dropdown-menu" ).append(noInbox); 
+                        $( ".dropdown-menu-custom" ).append(noInbox); 
                         $("#total_unread_message").removeClass("blink");
                     } else {
                         let inbox = data.inbox;
@@ -985,7 +1040,7 @@
 
             let rowend = "</div>";                    
 
-            $( ".dropdown-menu" ).append(row + col1 + col2 + rowend); 
+            $( ".dropdown-menu-custom" ).append(row + col1 + col2 + rowend); 
             
         }
 
@@ -1010,7 +1065,7 @@
                     col2 += '<span class="message small">'+ item.latestReply + '</span></span>';
                     col2 += '</div>';
 
-                $( ".dropdown-menu" ).append(col1 + col2);       
+                $( ".dropdown-menu-custom" ).append(col1 + col2);       
             }
 
             //update message
@@ -1146,6 +1201,13 @@
 
 
 <style>
+.changeAccountWrapper {
+    float: right;
+    top: -30px;
+    right: 25px;
+    position: relative;
+}   
+
 .member-speech-bubble {
 	position: relative;
 	background: #00ff91;

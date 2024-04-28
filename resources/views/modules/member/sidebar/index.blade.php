@@ -31,6 +31,8 @@
 
 <div class="col-md-3">
     <div>@include('modules.member.sidebar.profile')</div>
+
+    <div class="mt-3">@include('modules.member.sidebar.multiaccount')</div>
     <div class="mt-3">@include('modules.member.sidebar.customerchatsupport')</div>
     <div class="mt-3">@include('modules.member.sidebar.memberlevel')</div>    
     <div class="mt-3">@include('modules.member.sidebar.reports')</div>

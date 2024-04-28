@@ -251,3 +251,9 @@ Route::middleware('auth:api')->post('/deleteMemberMiniTestResult/{id}', 'API\Mem
 
 //Monthly Terms Agreements
 Route::middleware('auth:api')->post('/memberAgreeMonthlyTerms', 'API\MemberMonthlyTerms@agree')->name('APIMemberAgreeMonthlyTerms');
+
+
+//Member ulti Account 
+Route::middleware('auth:api')->post('/getMemberMultiAccount', 'API\MemberMultiAccountController@getMemberMultiAccount')->name('getMemberMultiAccount');
+Route::middleware('auth:api')->post('/saveMemberMultiAccount', 'API\MemberMultiAccountController@saveMemberMultiAccount')->name('saveMemberMultiAccount');
+Route::middleware('auth:api')->post('/listMemberMultiAccount', 'API\MemberMultiAccountController@listMemberMultiAccount')->name('listMemberMultiAccount');

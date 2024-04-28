@@ -75,6 +75,7 @@ if (url[1] === 'admin') {
 
     //Vue.component('simple-uploader-component', require('./components/SimpleUploaderComponent.vue').default);
 
+    Vue.component('member-mutliaccount-component', require('./components/frontend/member/MemberMultiAccountComponent.vue').default)
 
     //front end 
     switch (url[1]) {

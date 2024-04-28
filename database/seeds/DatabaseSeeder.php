@@ -19,6 +19,7 @@ class DatabaseSeeder extends Seeder
             UsersTableSeeder::class,
             RoleUserTableSeeder::class,
             ShiftsTableSeeder::class,
+            MemberMultiAccountSeeder::class,
         ]);
     }
 }
