@@ -760,9 +760,6 @@ export default {
             //console.log(value.id);
             try {                
                 this.currentSelectedID = value.id;
-
-                alert(this.currentSelectedID);
-
                 this.showMultiAccountField();
             }   
             catch(err) { 

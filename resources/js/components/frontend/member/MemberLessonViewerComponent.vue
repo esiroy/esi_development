@@ -94,7 +94,8 @@
                                 <tr>
                                     <td> Lesson Date </td>
                                     <td>
-                                        {{  dateFormatter(item.lesson_date) }}
+                                       {{ dateFormatter(item.lesson_time) }}
+                                       
                                     </td>
                                 </tr>
                                 <tr>
@@ -315,7 +316,10 @@ export default {
         },
         dateFormatter(date) 
         {
-            let fdate = Moment(date).format('YYYY年 MM月 D日');                      
+
+            let fdate = Moment(date, "YYYY-MM-DD HH:mm:ss").format("YYYY年 MM月 D日 HH:mm");
+
+            //let fdate = Moment(date).format('YYYY年 MM月 D日');                      
             return fdate;            
         },  
     

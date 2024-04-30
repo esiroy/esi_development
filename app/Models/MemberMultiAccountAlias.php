@@ -40,4 +40,18 @@ class MemberMultiAccountAlias extends Model
             ->where('valid', true)
             ->orderBy('sequence_number', 'ASC')->get();
     }
+
+    public function getAlias($userID, $member_multi_account_id) {
+
+        $info =  $this->where('user_id', $userID)
+                ->where('member_multi_account_id', $member_multi_account_id)                
+                ->first(); 
+                
+        if ($info) {
+            return $info->name;       
+        } else{
+            return null;
+        }
+        
+    }
 }

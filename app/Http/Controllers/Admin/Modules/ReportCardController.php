@@ -14,6 +14,7 @@ use App\Models\Agent;
 use App\Models\Tutor;
 use App\Models\UploadFile; 
 use App\Models\Homework; 
+use App\Models\MemberMultiAccountAlias; 
 
 class ReportCardController extends Controller
 {   
@@ -23,14 +24,16 @@ class ReportCardController extends Controller
     */
     public function index(Request $request) 
     {   
-
+       
         $scheduleitemid = $request->scheduleitemid;
 
         $scheduleItem = ScheduleItem::find($scheduleitemid);
         
         //get member details        
-        $memberInfo = Member::where('user_id',$scheduleItem->member_id)->first();       
-        
+        $memberInfo = Member::where('user_id',$scheduleItem->member_id)->first(); 
+
+        $multiAccountAliasObj = new MemberMultiAccountAlias;
+        $multiAccountAlias = $multiAccountAliasObj->getAlias($scheduleItem->member_id, $scheduleItem->member_multi_account_id);
 
         //get photo
         $userImageObj = new UserImage();
@@ -57,7 +60,10 @@ class ReportCardController extends Controller
         //(get  list of home work )
         $homework = Homework::where('schedule_item_id', $scheduleitemid)->first();
 
-        return view('admin.modules.member.reportcard', compact('scheduleitemid', 'userImage', 'scheduleItem', 'reportCard', 'latestReportCard', 'memberInfo', 'tutorInfo' , 'homework'));
+        return view('admin.modules.member.reportcard', compact('multiAccountAlias',
+                                        'scheduleitemid', 'userImage', 
+                                        'scheduleItem', 
+                                        'reportCard', 'latestReportCard', 'memberInfo', 'tutorInfo' , 'homework'));
     }
 
 
