@@ -28,11 +28,16 @@ class MemberMultiAccountAlias extends Model
     
     //all alias accounts
     public function getMemberAliasAccounts($userID) {
-        return $this->where('user_id', $userID)->where('valid', true)->orderBy('sequence_number', 'ASC')->get();
+        return $this->where('user_id', $userID)
+                    ->where('valid', true)
+                    ->orderBy('sequence_number', 'ASC')->get();
     }
 
     //only selected accounts will appear (for dropdowns)
     public function getMemberSelectedAccounts($userID) {
-        return $this->where('user_id', $userID)->where('selected', true)->where('valid', true)->orderBy('sequence_number', 'ASC')->get();
+        return $this->where('user_id', $userID)
+            ->where('selected', true)
+            ->where('valid', true)
+            ->orderBy('sequence_number', 'ASC')->get();
     }
 }

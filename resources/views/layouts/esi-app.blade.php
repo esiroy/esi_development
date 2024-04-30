@@ -12,7 +12,7 @@
     <link rel="preconnect" href="//fonts.googleapis.com"  crossorigin />
     <link rel="preconnect" href="//cdn.datatables.net" rel="preconnect" crossorigin/>
 
-   <!-- Styles -->
+    <!-- Styles -->
     <link rel="preload" href="{{ asset('css/app.css') .'?id=version_6_0_1'  }}" as="style">
     <link rel="stylesheet" href="{{ asset('css/app.css') .'?id=version_6_0_1'  }}">
     
@@ -27,6 +27,7 @@
     <link rel="preconnect" href="//fonts.googleapis.com"  crossorigin />
     
  
+
     @yield('styles')
 
     <noscript>
@@ -231,21 +232,33 @@
 
                 @php 
                     $multiAccounts = new App\Models\MemberMultiAccountAlias;
-
                     $memberAccounts = $multiAccounts->getMemberSelectedAccounts(Auth::user()->id);
 
                     //Determine Session
-                    $sessionMultiAccountID = Session::get('accountID');
+                    $sessionMultiAccountID = Session::get('accountID');                    
+               
 
                     if (isset($sessionMultiAccountID)) {
 
                         $sessionAccount = $multiAccounts->getMemberAccountInfo(Auth::user()->id, $sessionMultiAccountID);
+                       
+                        if (!$sessionAccount)  { 
+                            //there is no multi accounts recorded, need to forget and refresh
 
-                        if (!$sessionAccount)  {                          
-                            Session::forget('accountID');                         
-                            echo "<script>location.href='". url('home') ."';</script>"; 
-                            exit();
-                            
+                            Session::forget('accountID');
+                            $sessionMultiAccountID = Session::get('accountID');            
+
+                            if (isset($sessionMultiAccountID)) {
+                                
+                                echo "<script>location.href='". url('home') ."';</script>"; 
+                                exit();
+
+                            } else if (Request::get('accountID')) {
+                                
+                                echo "<script>location.href='". url('home') ."';</script>"; 
+                                exit();                                
+                            }
+
                         } else {
 
                             $activeAccount = $sessionAccount;
@@ -259,26 +272,26 @@
                 @endphp
 
                 <div class="changeAccountWrapper">
-                    @if ( count($memberAccounts) >= 1 )
+                    @if ( count($memberAccounts) >= 1)
 
-                    <div class="dropdown">
-                        <a href="#" class="dropdown-toggle blue" id="dropdownMultiAccountMenu" data-toggle="dropdown">
-                            {{ $activeAccount->name }}
-                        </a>
-                        <div class="dropdown-menu" aria-labelledby="dropdownMultiAccountMenu">
-                            @foreach($memberAccounts as $account)
-                                <div class="dropdown-item  @if ($account->member_multi_account_id == $activeAccount->member_multi_account_id) {{ 'active text-white' }} @endif">
-                                    <a href="{{ url('home/?accountID='.$account->member_multi_account_id) }}">
-                                        <span class="@if ($account->member_multi_account_id == $activeAccount->member_multi_account_id) {{ 'text-white' }} @else {{ 'text-secondary' }} @endif">{{$account->name}} </span>
-                                    </a>
-                                </div>         
-                            @endforeach
+                        <div class="dropdown">
+                            <a href="#" class="dropdown-toggle blue" id="dropdownMultiAccountMenu" data-toggle="dropdown">
+                                {{ $activeAccount->name }}
+                            </a>
+                            <div class="dropdown-menu" aria-labelledby="dropdownMultiAccountMenu">
+                                @foreach($memberAccounts as $account)
+                                    <div class="dropdown-item  @if ($account->member_multi_account_id == $activeAccount->member_multi_account_id) {{ 'active text-white' }} @endif">
+                                        <a href="{{ url('home/?accountID='.$account->member_multi_account_id) }}">
+                                            <span class="@if ($account->member_multi_account_id == $activeAccount->member_multi_account_id) {{ 'text-white' }} @else {{ 'text-secondary' }} @endif">{{$account->name}} </span>
+                                        </a>
+                                    </div>         
+                                @endforeach
+                            </div>
                         </div>
-                    </div>
-
 
                     @endif
                 </div>
+
             </div>
        </div>
         

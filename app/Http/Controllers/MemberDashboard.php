@@ -24,6 +24,7 @@ class MemberDashboard extends Controller
      */
     public function index(ScheduleItem $scheduleItems, ReportCard $reportcards, MemberDesiredSchedule $memberDesiredSchedules,  Announcement $announcements) 
     {
+        
         $member = Member::where('user_id', Auth::user()->id)->first();
         
 

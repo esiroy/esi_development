@@ -34,8 +34,15 @@
 
     <div class="mt-3">@include('modules.member.sidebar.multiaccount')</div>
     <div class="mt-3">@include('modules.member.sidebar.customerchatsupport')</div>
-    <div class="mt-3">@include('modules.member.sidebar.memberlevel')</div>    
+    <div class="mt-3">@include('modules.member.sidebar.memberlevel')</div>   
+
+    <div class="mt-3">@include('modules.member.sidebar.alllessonviewer')</div>
+
+    @php 
+    /*
     <div class="mt-3">@include('modules.member.sidebar.reports')</div>
+    */
+    @endphp 
     <div class="mt-3">@include('modules.member.sidebar.membertestscores')</div>    
     <div class="mt-3">@include('modules.member.sidebar.memberpurpose')</div>
     <div class="mt-3">@include('modules.member.sidebar.timemanager')</div>

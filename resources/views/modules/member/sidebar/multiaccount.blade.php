@@ -19,6 +19,7 @@
 </member-mutliaccount-component>
 @else 
 
+
 <member-mutliaccount-component
 :memberinfo="{{  json_encode($memberInfo )  }}" 
 api_token="{{ Auth::user()->api_token }}" 

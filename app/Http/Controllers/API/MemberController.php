@@ -329,7 +329,7 @@ class MemberController extends Controller
         $memberID = $request->memberID;
         $schedule_status = 'CLIENT_RESERVED';
         $schedule_status_b = 'CLIENT_RESERVED_B';
-
+        $memberMultiAccountID = $request->memberMultiAccountID;
         
         $memberInfo = Member::where('user_id',  $memberID)->first();
 
@@ -568,6 +568,7 @@ class MemberController extends Controller
                 $reservation_type = $schedule_status_b;      
                 $data = [
                     'member_id' => $memberID,
+                    'member_multi_account_id' => $memberMultiAccountID,
                     'schedule_status' => $reservation_type,
                 ];
                 $schedule->update($data);
@@ -576,6 +577,7 @@ class MemberController extends Controller
                 $reservation_type = $schedule_status;
                 $data = [
                     'member_id' => $memberID,
+                    'member_multi_account_id' => $memberMultiAccountID,
                     'schedule_status' => $reservation_type,
                 ];
                 $schedule->update($data);
@@ -587,6 +589,7 @@ class MemberController extends Controller
 
             $data = [
                 'member_id' => $memberID,
+                'member_multi_account_id' => $memberMultiAccountID,
                 'schedule_status' => $reservation_type,
             ];
             $schedule->update($data);            

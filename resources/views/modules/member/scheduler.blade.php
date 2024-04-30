@@ -1,6 +1,9 @@
 @extends('layouts.esi-app')
 @section('content')
 
+
+@include('modules.member.popup.confirmSchedule')
+
 <div class="container bg-light">
     <div class="esi-box mb-5 pb-4">
 
@@ -673,7 +676,6 @@
                 $('#loadingModal').modal('hide');
                 $('#loadingModal').hide(); 
 
-            
                 if (data.success == true && data.memberReservedActive == false) 
                 {                
                     //default
@@ -684,20 +686,80 @@
                     }, 100);
 
                 } else {
+
                     //With reserved limiter
-                    if (data.success == true) 
-                    {
+                    if (data.success == true) {
+                        setTimeout(() => {
+
+                            if (data.totalMemberReserved >= 15) 
+                            {
+                                $('#confirmScheduleModal').modal('show');
+                                $('#confirmScheduleModalLabel').text('予約数が上限に達したため予約できません')                               
+                            } else if (data.totalTutorDailyReserved < 2) {
+                                
+                                $('#confirmScheduleModal').modal('show');
+                                $('#confirmScheduleModalLabel').text('予約してもいいですか？')
+
+                                $("#btn-confirm-schedule").on("click", function() { 
+
+                                    let memberMultiAccountID = $('#accounts').val();
+                                   
+                                    
+                                    $('#confirmScheduleModal').modal('hide');
+                                    setTimeout(() => {                                    
+                                        SaveMemberSchedule(scheduleID, memberID, tutorID, memberMultiAccountID)
+                                    }, 100);
+                                    $(this).off("click");  
+                                });
+
+                                $("#btn-cancel-schedule").on("click", function() { 
+                                    $('#btn-confirm-schedule').off("click");    
+                                    $(this).off("click");  
+                                });
+
+                            } else {
+
+                                $('#confirmScheduleModal').modal('show');
+                                $('#confirmScheduleModalLabel').text('同日、同講師の予約上限2コマを超えています。こちらの予約はキャンセルができませんがよろしいでしょうか？')
+
+                                $("#btn-confirm-schedule").on("click", function() { 
+                                 
+                                    let memberMultiAccountID = $('#accounts').val();
+                                   
+                                    $('#confirmScheduleModal').modal('hide');
+                                    setTimeout(() => {                                    
+                                        SaveMemberSchedule(scheduleID, memberID, tutorID, memberMultiAccountID)
+                                    }, 100);         
+                                    $(this).off("click");                           
+                                });
+
+                                $("#btn-cancel-schedule").on("click", function() { 
+
+                                    $('#btn-confirm-schedule').off("click");  
+                                    $(this).off("click");  
+                                });
+                            }
+
+                        }, 100);
+                        
+
+                       
+                        /*
+                        
                         setTimeout(() => {
                             if (data.totalMemberReserved >= 15) 
                             {
                                 $('#msgboxModal').modal('show');
                                 $('#msgboxMessage').text(" 予約数が上限に達したため予約できません");
+
                             } else if (data.totalTutorDailyReserved < 2) {
+
                                 setTimeout(() => {
                                     if (confirm('予約してもいいですか？')) {
                                         SaveMemberSchedule(scheduleID, memberID, tutorID)
                                     }
                                 }, 100); 
+
                             } else {
                                 setTimeout(() => {
                                     if (confirm('同日、同講師の予約上限2コマを超えています。こちらの予約はキャンセルができませんがよろしいでしょうか？')) {
@@ -706,6 +768,10 @@
                                 }, 100);
                             }
                         }, 100);
+                        */
+                        
+                        
+
                     } else {
                         $('#msgboxModal').modal('show');
                         $('#msgboxMessage').text(data.message);
@@ -726,7 +792,7 @@
     }*/
 
 
-    function SaveMemberSchedule(scheduleID, memberID, tutorID) 
+    function SaveMemberSchedule(scheduleID, memberID, tutorID, memberMultiAccountID) 
     {
         let response = "";
         $.ajax({
@@ -735,7 +801,8 @@
             data: {
                 scheduleID: scheduleID,
                 memberID: memberID,
-                tutorID: tutorID
+                tutorID: tutorID,
+                memberMultiAccountID: memberMultiAccountID
             },
             headers: {
                 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')

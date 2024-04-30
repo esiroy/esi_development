@@ -27,6 +27,18 @@ class ReportCard extends Model
         return $latestReportCard;
     }
 
+    public function getLatestbyMultiID($memberID, $accountID) {
+
+        $latestReportCard = ReportCard::select('report_card.*', 'schedule_item.lesson_time', 'schedule_item.member_multi_account_id')
+            ->join('schedule_item', 'report_card.schedule_item_id', '=', 'schedule_item.id')
+            ->where('report_card.member_id', $memberID)
+            ->where('schedule_item.member_multi_account_id', $accountID)
+            ->orderBy('schedule_item.lesson_time', 'DESC')            
+            ->first();
+
+        return $latestReportCard;            
+    }
+
 
     public function getReportbyScheduleItemID($schedule_item_id) {
         return ReportCard::where('schedule_item_id', $schedule_item_id)->first();

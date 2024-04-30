@@ -83,6 +83,20 @@
                 </div>
             </div> 
   
+            <div class="row mt-2">
+                <div class="col-md-3">Member Account:</div>  
+                <div class="col-md-9">   
+                    <div id="multi-account-field-wrapper">
+                        <select id="multi-account-field" class="form-control form-control-sm hidden" >
+                            <option val="1">Account 1</option>
+                            <option val="2">Account 2</option>
+                            <option val="3">Account 3</option>
+                            <option val="4">Account 4</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
             <!--#Email Type-->
             <div class="row mt-2" v-show="this.status === 'CLIENT_RESERVED' || this.status === 'CLIENT_RESERVED_B'">
                 <div class="col-md-3">Email Type:</div>
@@ -737,11 +751,19 @@ export default {
         checkBookedScheduleLimit() {
 
         },
+        showMultiAccountField() {
+            //@check if there is
+            $('#multi-account-field').show();
+        },
         onChange (value) {
             //changing modal selection
             //console.log(value.id);
             try {                
                 this.currentSelectedID = value.id;
+
+                alert(this.currentSelectedID);
+
+                this.showMultiAccountField();
             }   
             catch(err) { 
                 //console.log("no value");

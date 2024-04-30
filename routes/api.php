@@ -257,3 +257,9 @@ Route::middleware('auth:api')->post('/memberAgreeMonthlyTerms', 'API\MemberMonth
 Route::middleware('auth:api')->post('/getMemberMultiAccount', 'API\MemberMultiAccountController@getMemberMultiAccount')->name('getMemberMultiAccount');
 Route::middleware('auth:api')->post('/saveMemberMultiAccount', 'API\MemberMultiAccountController@saveMemberMultiAccount')->name('saveMemberMultiAccount');
 Route::middleware('auth:api')->post('/listMemberMultiAccount', 'API\MemberMultiAccountController@listMemberMultiAccount')->name('listMemberMultiAccount');
+
+//Recent Lesson (Report Card with multi Accounts)
+Route::middleware('auth:api')->post('/getRecentLessonScore', 'API\RecentLessonController@getRecentLessonScore')->name('getRecentLessonScore');
+Route::middleware('auth:api')->post('/getRecentLessonScoreByMultiID', 'API\RecentLessonController@getRecentLessonScoreByMultiID')->name('getRecentLessonScoreByMultiID');
+//// (All)
+Route::middleware('auth:api')->post('/getRecentAllLessonByMultiID', 'API\RecentLessonController@getRecentAllLessonByMultiID')->name('getRecentAllLessonByMultiID');
