@@ -63,24 +63,25 @@
                                
                     <div id="multiAccountWrapper" class="col-12">
                         <div class="row">
-                            <div class="col-3" v-for="(accounts,i) in this.accounts" :key="i">
+                            <div class="col-3" v-for="(account,i) in accounts" :key="i">
 
                                 <input type="checkbox" name="memberMultiAccount" 
-                                    :value="accounts.id" v-model="accounts.selected"
+                                    :value="account.id" v-model="account.selected"
                                     :disabled="(i==0)? true: false"
                                 >
-                                <span class="font-weight-bold">{{ accounts.name }} </span>
+                                <span class="font-weight-bold">{{ account.name }} </span>
                             
 
-                                <div :id="'alias_container_'+i" v-show="accounts.selected">
+                                <div :id="'alias_container_'+i" v-show="account.selected">
                                     <span class="small">Name your account </span>
-                                    <input type="text" :id="'accountAlias-'+i" maxlength="30" name="accountAlias" v-model="accounts.name" placeholder="Account Name" class="form-control form-control-sm">                           
+                                    <input type="text" :id="'accountAlias-'+i" maxlength="30" name="accountAlias" v-model="account.name" 
+                                        placeholder="Account Name" class="form-control form-control-sm">                           
                                     <span :id="'accountAlias-error-'+i" class="text-danger small" style="display: none;"></span>
 
                                     <div class="row small mt-2">
                                         <div class="col-12 tex-left">
                                             <input type="checkbox" name="defaultAccount" 
-                                                :value="accounts.id" v-model="accounts.is_default" 
+                                                :value="account.id" v-model="account.is_default" 
                                                 @click="updateDefaultAccount(i)"
                                                 >
                                             <span class="small">Set default account</span>
