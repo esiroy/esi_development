@@ -266,7 +266,7 @@ export default {
 
                     this.listAccounts();
 
-                    //this.hideTimeOut = setTimeout(this.hideMultiAccountModal, 3000);
+                    this.hideTimeOut = setTimeout(this.hideMultiAccountModal, 3000);
 
                 } else {
                    //show alert
@@ -276,10 +276,9 @@ export default {
         hideMultiAccountModal() {
             this.refresh();
             this.$bvModal.hide('memberMultiAccountModal');
-
             clearTimeout(this.hideTimeOut);
-
-            //window.location.href = "home";
+            
+            window.location.href = "home";
         },
 		showAddMultiAccountsModal() {
 
