@@ -65,12 +65,12 @@
                         <div class="row">
 
                             <div class="col-3" v-for="(account,i) in accounts" :key="i">
-
-                                <input type="checkbox" name="memberMultiAccount" 
-                                    :value="account.id" v-model="accounts[i].selected"
-                                    :disabled="(i==0)? true: false"
-                                >
-                                <span class="font-weight-bold">{{ account.name }} </span>
+                            
+                                <input type="checkbox" name="memberMultiAccount" :value="account.id" v-model="account.selected" :disabled="(i == 0) ? true : false">
+                                <span class="font-weight-bold">{{ account.name }}</span>
+                            
+                                                                
+                              
                             
 
                                 <div :id="'alias_container_'+i" v-show="account.selected">
@@ -182,8 +182,6 @@ export default {
                     if (response.data.isAliasAccount == true) {
                         
                         this.isAliasAccount = true;
-                        this.accounts = response.data.accounts;    
-                        
                         this.accountLists = response.data.accounts;                        
                         this.$forceUpdate();  
 
@@ -303,12 +301,17 @@ export default {
                     this.isAliasAccount = response.data.isAliasAccount;
 
                     for (let i = 0; i < this.accounts.length; i++) {
-
                         if (this.accounts[i].is_default == true) {
                             this.accounts[i].is_default = true;
                         } else {
                             this.accounts[i].is_default = false;
                         }
+
+                        if (this.accounts[i].selected == true) {
+                            this.accounts[i].selected = true;
+                        } else {
+                            this.accounts[i].selected = false;
+                        }                        
                     }    
 
                 } else {
