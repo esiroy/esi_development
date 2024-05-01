@@ -67,7 +67,7 @@
                             <div class="col-3" v-for="(account,i) in accounts" :key="i">
 
                                 <input type="checkbox" name="memberMultiAccount" 
-                                    :value="account.id" v-model="account.selected"
+                                    :value="account.id" v-model="accounts[i].selected"
                                     :disabled="(i==0)? true: false"
                                 >
                                 <span class="font-weight-bold">{{ account.name }} </span>
@@ -278,7 +278,7 @@ export default {
             this.$bvModal.hide('memberMultiAccountModal');
 
             clearTimeout(this.hideTimeOut);
-            
+
             //window.location.href = "home";
         },
 		showAddMultiAccountsModal() {
