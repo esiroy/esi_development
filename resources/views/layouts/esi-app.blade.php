@@ -36,7 +36,10 @@
 <body class="bg-gray">
     <div id="app">
         @if(request()->query('debug') == 'true')
-            {{ env('APP_MESSENGER_URL') }}
+            {{ getenv('APP_MESSENGER_URL') }}
+            {{ getenv('APP_NAME') }}
+
+           
         @endif
 
         <nav class="navbar navbar-expand-md navbar-light bg-white shadow-sm">
@@ -1049,6 +1052,7 @@
                 let scheduleID =  $('#scheduleID').val();               
                 //clear teacher replies 
                 $( "#teacherReplies" ).text(""); 
+
                 //get all memo replies
                 getMemoConversations(scheduleID);
 
@@ -1064,12 +1068,12 @@
                 //console.log("closed heartbeat")
             });
 
-
+            /*
             //interval unread message fetching
             intervalInbox = window.setInterval(function(){
                 getMemberInbox();               
             }, 30000);
-            
+            */
 
         });
     </script>

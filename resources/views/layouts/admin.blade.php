@@ -694,11 +694,9 @@
 
                     getMemo(scheduleID)
 
-                    setTimeout(() => {  
-                        
+                    setTimeout(() => {                          
                         getMemoConversations(scheduleID);
-
-                    }, 200);                
+                    }, 10000);                
                     
 
                     //interval unread message fetching
@@ -721,9 +719,11 @@
                 });
 
                 //interval unread message fetching
+                /*
                 intervalInbox = window.setInterval(function(){
                     getTutorInbox()
                 }, 30000);
+                */
                 
                 
 
