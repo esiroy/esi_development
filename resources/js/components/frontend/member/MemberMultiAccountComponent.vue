@@ -182,7 +182,9 @@ export default {
                     if (response.data.isAliasAccount == true) {
                         
                         this.isAliasAccount = true;
-                        this.accountLists = response.data.accounts;                         
+                        this.accounts = response.data.accounts;    
+                        
+                        this.accountLists = response.data.accounts;                        
                         this.$forceUpdate();  
 
                     } else {
@@ -266,7 +268,7 @@ export default {
 
                     this.listAccounts();
 
-                   this.hideTimeOut = setTimeout(this.hideMultiAccountModal, 3000);
+                    //this.hideTimeOut = setTimeout(this.hideMultiAccountModal, 3000);
 
                 } else {
                    //show alert
