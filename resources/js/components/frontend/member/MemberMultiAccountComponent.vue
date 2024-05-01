@@ -212,6 +212,7 @@ export default {
             
             let isDefaultCtr = 0;
             let isAliasError = 0;
+            
 
             for (let i = 0; i < this.accounts.length; i++) 
             {
@@ -275,7 +276,10 @@ export default {
         hideMultiAccountModal() {
             this.refresh();
             this.$bvModal.hide('memberMultiAccountModal');
-            window.location.href = "home";
+
+            clearTimeout(this.hideTimeOut);
+            
+            //window.location.href = "home";
         },
 		showAddMultiAccountsModal() {
 

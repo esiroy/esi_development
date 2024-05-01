@@ -17,8 +17,9 @@
     <link rel="stylesheet" href="{{ asset('css/app.css') .'?id=version_6_0_1'  }}">
     
     <!-- Scripts -->
+    
     <script src="{{ asset('js/app.js') .'?id=version_6_0_1'  }}" defer ></script>
-    <script src='{{ env("APP_MESSENGER_URL") }}/socket.io/socket.io.js'></script>
+    <script src="{{ env('APP_MESSENGER_URL', 'https://messenger.mytutor-jpn.info:40009') }}/socket.io/socket.io.js"></script>
     
 
     <!-- Fonts -->
@@ -358,7 +359,7 @@
                 $member =  $memberObj->where('user_id', Auth::user()->id)->first();
                 $nickname = $member->nickname;
                 
-                $chatserver_url = env('APP_MESSENGER_URL', 'https://chatserver.mytutor-jpn.info:30001');
+                $chatserver_url = env('APP_CHATSERVER_URL', 'https://chatserver.mytutor-jpn.info:30001');
             @endphp 
 
            
@@ -402,7 +403,7 @@
 
         // Connect to the chat server
         //const socket = io('https://chatserver.mytutor-jpn.info:30001');  
-        const socket = io('{{ env("APP_MESSENGER_URL") }}', {});        
+        const socket = io('{{ env("APP_MESSENGER_URL", "https://messenger.mytutor-jpn.info:40009") }}', {});        
 
 
         // Event listener for when the connection is established

@@ -251,7 +251,7 @@
 
             // Connect to the chat server
             //const socket = io('https://chatserver.mytutor-jpn.info:30001');  
-            const socket = io('{{ env("APP_MESSENGER_URL") }}', {});        
+            const socket = io('{{ env("APP_MESSENGER_URL", "https://messenger.mytutor-jpn.info:40009") }}', {});        
 
 
             // Event listener for when the connection is established
