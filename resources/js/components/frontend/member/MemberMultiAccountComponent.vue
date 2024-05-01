@@ -297,7 +297,8 @@ export default {
                     this.isAliasAccount = response.data.isAliasAccount;
 
                     for (let i = 0; i < this.accounts.length; i++) {
-                        if (this.accounts[i].is_default) {
+
+                        if (this.accounts[i].is_default == true) {
                             this.accounts[i].is_default = true;
                         } else {
                             this.accounts[i].is_default = false;
