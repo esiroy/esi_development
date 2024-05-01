@@ -195,4 +195,14 @@ class Member extends Model
         }
     }
 
+    public function getNickname($memberID) {
+         $memberInfo = Member::where('user_id', $memberID)->first();
+         if (isset($memberInfo->nickname)) {
+            return $memberInfo->nickname;
+         } else {
+            return null;
+         }
+         
+    }
+
 }

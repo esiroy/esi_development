@@ -86,7 +86,7 @@
             <div class="row mt-2">
                 <div class="col-md-3">Member Account:</div>  
                 <div class="col-md-9">   
-                    <div id="multi-account-field-wrapper">
+                    <div id="multi-account-field-wrapper d-none">
                         <select id="multi-account-field" class="form-control form-control-sm hidden" >
                             <option val="1">Account 1</option>
                             <option val="2">Account 2</option>
@@ -164,7 +164,8 @@
                                 <div :id="'btnAdd-' + tutor.user_id + '-' + time.startTime"
                                     class="addSchedule SCHEDULE_ITEM" 
                                     v-show="checkButton({'tutorID':tutor.id, 'tutorUserID': tutor.user_id, 'startTime':time.startTime, 'endTime': time.endTime })">
-                                    <input type="button" value="" class="btnAdd" v-b-modal.addScheduleModal @click="openSchedule({'tutorID':tutor.id, 'tutorUserID': tutor.user_id, 'startTime': time.startTime, 'endTime': time.endTime })"/>
+                                    <input type="button" value="" class="btnAdd" v-b-modal.addScheduleModal 
+                                    @click="openSchedule({'tutorID':tutor.id, 'tutorUserID': tutor.user_id, 'startTime': time.startTime, 'endTime': time.endTime })"/>
                                 </div>
 
                                 <div :id="tutor.user_id + '-' + time.startTime"
@@ -191,7 +192,10 @@
                                         </div>
 
                                         
-                                        <div class="iEdit"><a href="javascript:void(0);" @click="editSchedule({'tutorID':tutor.id, 'tutorUserID': tutor.user_id, 'startTime': time.startTime, 'endTime': time.endTime})"><img src="/images/iEdit.gif"></a></div>
+                                        <div class="iEdit"><a href="javascript:void(0);" 
+                                            @click="editSchedule({'tutorID':tutor.id, 'tutorUserID': tutor.user_id, 'startTime': time.startTime, 'endTime': time.endTime})">
+                                            <img src="/images/iEdit.gif"></a>
+                                        </div>
                                         <div class="iDelete"><a href="javascript:void(0);" @click="confirmDelete({'tutorID':tutor.id, 'tutorUserID': tutor.user_id, 'startTime': time.startTime, 'endTime': time.endTime})"><img src="/images/iDelete.gif"></a></div>
                                     </div>
                                 </div>
@@ -307,12 +311,13 @@ export default {
         };
     },
     created() {
-        this.getMemberList();
+        //this.getMemberList();
     },
     async beforeMount() {
         this.shiftDuration  = this.duration;
         this.nextDay  = this.schedule_next_day;
         this.fromDay = this.scheduled_at;    
+        
         this.setMemberListLock(); //disabler of additoinal options 
     },
     async mounted() 
@@ -558,10 +563,13 @@ export default {
                 //23:00 - will be 1 hour advance in japan (00:00) is the time will midnight.
                 //23:30 - will be 1 hour advance in japan (00:30) is the time will midnight and a half :D
                 if (data.startTime == '23:00' || data.startTime == '23:30') {
+
                     let lessonData = this.lessonsData[data.tutorUserID][this.nextDay][data.startTime];
                     //return lessonData.status_checker;
 
-                    let nickname = this.memberDataList[lessonData.member_id].nickname;
+                    //let nickname = this.memberDataList[lessonData.member_id].nickname;
+
+                    let nickname = lessonData.nickname;
                   
                     //return "<a id='"+lessonData.id+"' href='#' onclick='openMemberTab("+lessonData.member_id+")'>"+ lessonData.nickname +"</a>";
 
@@ -569,7 +577,8 @@ export default {
 
                 } else {
                     let lessonData = this.lessonsData[data.tutorUserID][this.scheduled_at][data.startTime];
-                    let nickname = this.memberDataList[lessonData.member_id].nickname;
+
+                    let nickname = lessonData.nickname;
 
                     //return "<a id='"+lessonData.id+"' href='#' onclick='openMemberTab("+lessonData.member_id+")'>"+ lessonData.nickname +"</a>";
 
@@ -753,11 +762,21 @@ export default {
         },
         showMultiAccountField() {
             //@check if there is
-            $('#multi-account-field').show();
+            //$('#multi-account-field').show();
+            axios.post("/api/listMemberMultiAccount?api_token=" + this.api_token, 
+            {
+                method            : "POST",
+                scheduleID          : memoData.id,
+            })
+            .then(response => 
+            { 
+                
+            });
         },
         onChange (value) {
             //changing modal selection
-            //console.log(value.id);
+            console.log("on change user:  " + value.id);
+
             try {                
                 this.currentSelectedID = value.id;
                 this.showMultiAccountField();
@@ -810,12 +829,15 @@ export default {
         },
         editSchedule(scheduleData) 
         {
+
             //show the modal first and update the values below             
             this.$bvModal.show("schedulesModal");            
             this.modalType = "edit";
 
             //get current schedule data
             this.currentScheduledData = this.getScheduleData(scheduleData);
+
+            console.log(this.currentScheduledData);
 
             this.tutorData = scheduleData;
             this.status = this.currentScheduledData.status;
