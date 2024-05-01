@@ -186,8 +186,11 @@ export default {
                         this.$forceUpdate();  
 
                     } else {
+
                         this.isAliasAccount = false;
                         this.$forceUpdate();                          
+
+
                     }
                 }                
             });
@@ -292,6 +295,14 @@ export default {
                 { 
                     this.accounts = response.data.accounts; 
                     this.isAliasAccount = response.data.isAliasAccount;
+
+                    for (let i = 0; i < this.accounts.length; i++) {
+                        if (this.accounts[i].is_default) {
+                            this.accounts[i].is_default = true;
+                        } else {
+                            this.accounts[i].is_default = false;
+                        }
+                    }    
 
                 } else {
                     //set null since it has not submitted
