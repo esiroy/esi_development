@@ -443,6 +443,8 @@ class TutorScheduleController extends Controller
         $duration = $request['shiftDuration'];
         $tutor = $request['tutorData'];
         $member = $request['memberData'];
+        $multiAccountID = $request['multiAccountID'];
+
 
         if (isset($member['id'])) {
             $memberID = $member['id'];
@@ -505,6 +507,7 @@ class TutorScheduleController extends Controller
                 'lesson_shift_id' => $shift->id,
                 'valid' => 1,
                 'memo' => "",
+                'member_multi_account_id' => $multiAccountID
             ];
 
             /****************************************************
@@ -673,6 +676,7 @@ class TutorScheduleController extends Controller
                 "scheduleItemID" => $scheduleItem->id,
                 "tutorData" => $request['tutorData'],
                 "memberData" => $memberData,
+                "maid" => $selectedSchedule->member_multi_account_id,
                 //'tutorLessonsData' => $tutorLessonsData, //@todo: replace this MEMOMY HUGGER WITH ID JS
             ]);
 

@@ -7,7 +7,8 @@
     <div id="scheduleItemModal">
 
 
-        <b-modal id="memberMemoModal" ref="memberMemoModal"  v-bind:title="'Member Memo - ' + this.selectedlessonTime"  @show="retrieveMemo()" ok-only ok-variant="secondary" ok-title="Close" no-fade class="small">
+        <b-modal id="memberMemoModal" ref="memberMemoModal"  v-bind:title="'Member Memo - ' + this.selectedlessonTime"  
+        @show="retrieveMemo()" ok-only ok-variant="secondary" ok-title="Close" no-fade class="small">
             <div id="user-chatlog" ref="userChatlog" style="height: 420px;overflow-y: scroll;overflow-x: hidden;">
                 <p class="my-2 " v-html="memberMemo"></p>
             </div>
@@ -83,17 +84,15 @@
                 </div>
             </div> 
   
-            <div class="row mt-2">
+            <div id="multi-account-field-wrapper" class="row mt-2" style="display: none;">
                 <div class="col-md-3">Member Account:</div>  
-                <div class="col-md-9">   
-                    <div id="multi-account-field-wrapper d-none">
-                        <select id="multi-account-field" class="form-control form-control-sm hidden" >
-                            <option val="1">Account 1</option>
-                            <option val="2">Account 2</option>
-                            <option val="3">Account 3</option>
-                            <option val="4">Account 4</option>
-                        </select>
-                    </div>
+                <div class="col-md-9">
+                    <select id="multi-account-field" class="form-control form-control-sm" v-model="multiAccountID">
+                        <option v-for="account in accounts" :key="'account-' + account.member_multi_account_id"                            
+                            :value="account.member_multi_account_id">
+                            AC{{ account.member_multi_account_id }} - {{ account.name }}
+                        </option>
+                    </select>                    
                 </div>
             </div>
 
@@ -133,12 +132,12 @@
                         <tr>
                             <th class="schedTime static">
                                 <div class="bordered">
-                                    <div class="class-schedule-container"></div>
+                                    <div class="class-schedule-container "></div>
                                 </div>
                             </th>
                             <td class="schedTime" v-for="time in timeList" :key="time.id">
                                 <div class="bordered">
-                                    <div class="class-schedule-container">
+                                    <div class="class-schedule-container ">
                                         <span class="flag-ph"></span>
                                         <span class="class-schedule class-schedule-start">{{time.startTime}}</span>
                                     </div>
@@ -171,9 +170,13 @@
                                 <div :id="tutor.user_id + '-' + time.startTime"
                                     v-show="checkStatus({'tutorID':tutor.id, 'tutorUserID': tutor.user_id, 'startTime':time.startTime, 'endTime': time.endTime })" 
                                     :class="getStatus({'tutorID':tutor.id, 'tutorUserID': tutor.user_id, 'startTime':  time.startTime, 'endTime': time.endTime }) + ' SCHEDULE_ITEM' ">
-                                    <div class="client">
+
+                                    <!--- [START] NAME OF STUDENT-->
+                                    <div class="client">                                        
                                         <div v-html="getMember({'tutorID':tutor.id, 'tutorUserID': tutor.user_id, 'startTime':time.startTime, 'endTime': time.endTime })"></div>                                   
                                     </div>
+                                    <!--- [END]NAME OF STUDENT-->
+
                                     <div class="btn-container">
 
                                         <div class="iReportCard2" v-show="hasQuestionnaire({'tutorID':tutor.id, 'tutorUserID': tutor.user_id, 'startTime': time.startTime, 'endTime': time.endTime})">
@@ -197,6 +200,8 @@
                                             <img src="/images/iEdit.gif"></a>
                                         </div>
                                         <div class="iDelete"><a href="javascript:void(0);" @click="confirmDelete({'tutorID':tutor.id, 'tutorUserID': tutor.user_id, 'startTime': time.startTime, 'endTime': time.endTime})"><img src="/images/iDelete.gif"></a></div>
+
+                                        <div class="badge badge-pill badge-info" v-html="getAccountTag({'tutorUserID': tutor.user_id, 'startTime':time.startTime, 'endTime': time.endTime })"></div>                                                                           
                                     </div>
                                 </div>
                             </td>
@@ -243,6 +248,9 @@ export default {
     },
     data() {
         return {
+            accounts: [], //multi account id
+            multiAccountID: null, //select model
+
             scrollInterval: false,
 
             showModal: false,
@@ -556,7 +564,55 @@ export default {
 
             this.memberMemo += content;
      
-        },            
+        },
+        getMultiAccountTag(data) {
+            return 1;
+        },  
+        getAccountTag(data) 
+        {
+            let tag = null;
+
+            try {
+                if (data.startTime !== '23:00' || data.startTime !== '23:30') {
+
+                    if (typeof this.lessonsData[data.tutorUserID] !== 'undefined' &&
+                        typeof this.lessonsData[data.tutorUserID][this.scheduled_at] !== 'undefined' &&
+                        typeof this.lessonsData[data.tutorUserID][this.scheduled_at][data.startTime] !== 'undefined') 
+                    {
+                        let lessonData = this.lessonsData[data.tutorUserID][this.scheduled_at][data.startTime];
+                        if (lessonData.maid !== null) {
+                            tag = "AC"+lessonData.maid;
+                            
+                        }                          
+                        
+                    } else {
+                        // Code to handle when the value is undefined
+                    }
+
+                } else {
+
+                    if (typeof this.lessonsData[data.tutorUserID] !== 'undefined' &&
+                        typeof this.lessonsData[data.tutorUserID][this.nextDay] !== 'undefined' &&
+                        typeof this.lessonsData[data.tutorUserID][this.nextDay][data.startTime] !== 'undefined') 
+                    {
+
+                        
+                        let lessonData = this.lessonsData[data.tutorUserID][this.nextDay][data.startTime];
+                        if (lessonData.maid !== null) {
+                            tag = "AC"+lessonData.maid;
+                        }                        
+                        
+                    } else {
+                        // Code to handle when the value is undefined
+                    }
+
+
+                }
+
+                return "<span class='small'>"+ tag +"</span>";
+
+            } catch(err) { console.log(err) }
+        },
         getMember(data) 
         {          
             try {
@@ -565,24 +621,27 @@ export default {
                 if (data.startTime == '23:00' || data.startTime == '23:30') {
 
                     let lessonData = this.lessonsData[data.tutorUserID][this.nextDay][data.startTime];
-                    //return lessonData.status_checker;
 
+                    //return lessonData.status_checker;
                     //let nickname = this.memberDataList[lessonData.member_id].nickname;
 
                     let nickname = lessonData.nickname;
                   
                     //return "<a id='"+lessonData.id+"' href='#' onclick='openMemberTab("+lessonData.member_id+")'>"+ lessonData.nickname +"</a>";
 
-                    return "<a id='"+lessonData.id+"' href='#' onclick='openMemberTab("+lessonData.member_id+")'>"+ nickname +"</a>";
+                    if (nickname) {
+                        return "<a id='"+lessonData.id+"' href='#' onclick='openMemberTab("+lessonData.member_id+")'>"+ nickname +"</a>";
+                    }
+                    
 
                 } else {
                     let lessonData = this.lessonsData[data.tutorUserID][this.scheduled_at][data.startTime];
-
                     let nickname = lessonData.nickname;
 
                     //return "<a id='"+lessonData.id+"' href='#' onclick='openMemberTab("+lessonData.member_id+")'>"+ lessonData.nickname +"</a>";
-
-                    return "<a id='"+lessonData.id+"' href='#' onclick='openMemberTab("+lessonData.member_id+")'>"+ nickname +"</a>";
+                    if (nickname) {
+                        return "<a id='"+lessonData.id+"' href='#' onclick='openMemberTab("+lessonData.member_id+")'>"+ nickname +"</a>";
+                    }
                 }
                 //console.log(this.lessonsData[data.tutorUserID][this.scheduled_at][data.startTime])
             }
@@ -760,26 +819,39 @@ export default {
         checkBookedScheduleLimit() {
 
         },
-        showMultiAccountField() {
+        showMultiAccountField(memberID) {
             //@check if there is
-            //$('#multi-account-field').show();
-            axios.post("/api/listMemberMultiAccount?api_token=" + this.api_token, 
+            $('#multi-account-field-wrapper').show();
+         
+
+            axios.post("/api/getMultiAccountOptions?api_token=" + this.api_token, 
             {
                 method            : "POST",
-                scheduleID          : memoData.id,
+                memberID          : memberID,
             })
             .then(response => 
             { 
-                
+                this.accounts = response.data.accounts;
+                console.log(response.data.accounts);
+
+                // Find the default account and set its ID as the initial value
+                const defaultAccount = this.accounts.find(account => account.is_default);
+                if (defaultAccount) {
+                    this.multiAccountID = defaultAccount.member_multi_account_id;
+                }
+
             });
         },
         onChange (value) {
+            this.multiAccountID = null;
+            this.showMultiAccountField(value.id);
+
             //changing modal selection
             console.log("on change user:  " + value.id);
 
             try {                
                 this.currentSelectedID = value.id;
-                this.showMultiAccountField();
+               
             }   
             catch(err) { 
                 //console.log("no value");
@@ -908,6 +980,7 @@ export default {
                 status              : this.status,
                 reservationType     : this.reservationType,
                 cancelationType     : this.cancelationType,
+                multiAccountID      : this.multiAccountID
             })
             .then(response => 
             {
@@ -948,11 +1021,21 @@ export default {
 
                         console.log(response.data.memberData.id);
 
-                        if (response.data.memberData.id !== '') {                            
-                            nickname = memberData.nickname;
-                            firstname = memberData.firstname;
-                            lastname = memberData.lastname;                            
-                        }         
+                       
+                        if (response.data.memberData.id !== '') {      
+                            
+                            /*
+                           // nickname = memberData.nickname;
+                            //firstname = memberData.firstname;
+                            //lastname = memberData.lastname;
+                            */                            
+
+                            nickname = response.data.memberData.nickname;
+                            firstname = response.data.firstname;
+                            lastname = response.data.lastname;                                                        
+                        } 
+                                     
+                        
 
                         this.lessonsData[tutorUserID][scheduled_at][startTime] = {
                             'id': response.data.scheduleItemID,
@@ -963,6 +1046,7 @@ export default {
                             'lastname':  lastname,
                             'nickname':  nickname,
                             'member_memo': null,
+                            'maid': response.data.maid
                         }
 
                         //set the schedule to display
@@ -982,7 +1066,7 @@ export default {
                         preloaderText.textContent  = "refreshing schedules"; 
 
                         //this is repitive but this will allow the user to see updated from other admin??
-                        this.getSchedules(this.scheduled_at, this.shiftDuration);
+                       // this.getSchedules(this.scheduled_at, this.shiftDuration);
                         this.$forceUpdate();
                     });
       

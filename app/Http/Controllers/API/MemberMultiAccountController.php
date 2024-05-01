@@ -130,4 +130,19 @@ class MemberMultiAccountController extends Controller
 
         return $result;
     }
+
+    public function getMultiAccountOptions(Request $request,  MemberMultiAccountAlias $memberMultiAccountAlias) {
+        $userID = $request->memberID; 
+
+
+        $accounts = $memberMultiAccountAlias->select('id','selected','member_multi_account_id', 'name','is_default')->where('user_id', $userID)            
+            ->where('valid', true)
+            ->where('selected', true)
+            ->orderBy('sequence_number', 'ASC')->get();
+
+            return Response()->json([
+                "success" => true,
+                "accounts" => $accounts
+            ]);               
+    }
 }

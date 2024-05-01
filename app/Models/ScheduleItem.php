@@ -935,8 +935,7 @@ class ScheduleItem extends Model
                     'member_memo' => $userMemoValid,
                     'hasReportCard' => $hasReportCard,
                     'hasQuestionnaire' => $hasQuestionnaire,
-                    "testField" => "i am a test field",
-                    //'questionnaire' => $questionnaire,
+                    "maid" => $item->member_multi_account_id , //multi accountid
                 ];
             }
 
