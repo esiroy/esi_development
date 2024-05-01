@@ -80,8 +80,10 @@
 
                                     <div class="row small mt-2">
                                         <div class="col-12 tex-left">
+                                            {{ account.is_default }}
+
                                             <input type="checkbox" name="defaultAccount" 
-                                                :value="account.id" v-model="account.is_default" 
+                                                :value="account.id" v-model="account.is_default"                                              
                                                 @click="updateDefaultAccount(i)"
                                                 >
                                             <span class="small">Set default account</span>
