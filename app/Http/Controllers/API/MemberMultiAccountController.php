@@ -104,6 +104,12 @@ class MemberMultiAccountController extends Controller
        
         foreach($accounts as $account) {
 
+            if ( $account['selected'] == true ||  $account['selected'] == 1) {
+                $isSelected = true;
+            } else {
+                $isSelected = false;
+            }
+
             $user = MemberMultiAccountAlias::updateOrCreate(
                 [
                     'user_id'           => $userID,
@@ -111,7 +117,7 @@ class MemberMultiAccountController extends Controller
                  ],
                  [
                     'name' => $account['name'],
-                    'selected' => $account['selected'],
+                    'selected' =>  $isSelected,
                     'sequence_number'=> $account['sequence_number'],                  
                     'is_default' => $account['is_default'],
                     //'valid' => $account['selected'],
