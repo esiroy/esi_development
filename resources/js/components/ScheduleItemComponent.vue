@@ -820,6 +820,8 @@ export default {
 
         },
         showMultiAccountField(memberID) {
+
+            console.log("multi-account-field-wrapper", memberID)
             //@check if there is
             $('#multi-account-field-wrapper').show();
          
@@ -835,12 +837,19 @@ export default {
                 console.log(response.data.accounts);
 
                 // Find the default account and set its ID as the initial value
-                const defaultAccount = this.accounts.find(account => account.is_default);
+                if (this.modalType !== 'edit')  {
+
+                    const defaultAccount = this.accounts.find(account => account.is_default);
                 if (defaultAccount) {
                     this.multiAccountID = defaultAccount.member_multi_account_id;
+                }                    
                 }
 
+
+                $('#multi-account-field-wrapper').show();
             });
+
+
         },
         onChange (value) {
             this.multiAccountID = null;
@@ -906,10 +915,19 @@ export default {
             this.$bvModal.show("schedulesModal");            
             this.modalType = "edit";
 
+            $('#multi-account-field-wrapper').show();
+           
+
             //get current schedule data
             this.currentScheduledData = this.getScheduleData(scheduleData);
+           
 
-            console.log(this.currentScheduledData);
+            console.log("currentScheduledData", this.currentScheduledData);
+
+            //dropdown multi account field(show)            
+            this.multiAccountID = this.currentScheduledData.maid;
+            this.showMultiAccountField(this.currentScheduledData.member_id);
+            
 
             this.tutorData = scheduleData;
             this.status = this.currentScheduledData.status;
@@ -1123,6 +1141,7 @@ export default {
                 status              : this.status,
                 reservationType     : this.reservationType,
                 cancelationType     : this.cancelationType,
+                multiAccountID      : this.multiAccountID
             })
             .then(response => 
             {
@@ -1160,6 +1179,7 @@ export default {
                         'lastname': response.data.memberData.lastname,
                         'nickname': response.data.memberData.nickname,
                         'member_memo': response.data.member_memo,
+                        'maid': response.data.maid
                     }
 
                     //set the schedule to display
