@@ -18,7 +18,7 @@
     
     <!-- Scripts -->
     <script src="{{ asset('js/app.js') .'?id=version_6_0_1'  }}" defer ></script>
-    <script src='{{ env("APP_MESSENGER_URL") }}/socket.io/socket.io.js'></script>
+    <script src="{{ env('APP_MESSENGER_URL', 'https://messenger.mytutor-jpn.info:40009') }}/socket.io/socket.io.js" ></script>
     
 
     <!-- Fonts -->
@@ -336,8 +336,8 @@
         let username = "{{Auth::user()->username }}";
 
         // Connect to the chat server
-        //const socket = io('https://chatserver.mytutor-jpn.info:30001');  
-        const socket = io('{{ env("APP_MESSENGER_URL") }}', {});        
+        //const socket = io('https://chatserver.mytutor-jpn.info:30001'); (previous server)             
+        const socket = io("{{ env('APP_MESSENGER_URL', 'https://messenger.mytutor-jpn.info:40009') }}", {});        
 
 
         // Event listener for when the connection is established

@@ -314,7 +314,10 @@ export default {
     },
     formatMessage(message) 
     {
-       return this.urlify(message);
+       if  (message !== null) {
+        return this.urlify(message);
+       }
+       
     },
     linkify_v1(str) {
        return str.replace(/((http(s)?(\:\/\/))?(www\.)?([\w\-\.\/])*(\.[a-zA-Z]{2,3}\/?))(?!(.*a>)|(\'|\"))/g, '<a href="$1"  target="_blank" >$1</a>');    
