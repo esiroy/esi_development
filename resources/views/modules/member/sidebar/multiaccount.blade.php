@@ -6,7 +6,16 @@
     } 
 
     $accountID = Session::get('accountID');
-    
+  
+    if ($accountID == null) 
+    {
+        $accountAliasModel = new \App\Models\MemberMultiAccountAlias();
+        $accountAlias = $accountAliasModel->getMemberDefaultAccount(Auth::user()->id);
+
+        if ($accountAlias) {
+            $accountID = $accountAlias->member_multi_account_id;
+        }
+    }    
 ?>
 
 @if (isset($accountID)) 
