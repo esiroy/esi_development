@@ -176,6 +176,7 @@ Route::resource('updateMemberExpirty', 'TableUserExpiryUpdaterController');
 
 /*** MEMBERS */
 Route::get('/home', 'MemberDashboard@index')->name('home');
+Route::get('/debugmode', 'DebugController@index')->name('home');
 
 //Time Manager
 Route::resource('time-manager', 'MemberTimeManagerController');

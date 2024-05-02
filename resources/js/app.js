@@ -89,7 +89,7 @@ if (url[1] === 'admin') {
     }
 }
 
-
+Vue.component('debug-chat-component', require('./components/frontend/chat/debugChatComponent.vue').default)
 
 
 /**

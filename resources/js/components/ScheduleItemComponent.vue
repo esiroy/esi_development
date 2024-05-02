@@ -84,7 +84,7 @@
                 </div>
             </div> 
   
-            <div id="multi-account-field-wrapper" class="row mt-2" style="display: none;">
+            <div id="multi-account-field-wrapper" class="row mt-2" v-show="showMultiAccountDropdown">
                 <div class="col-md-3">Member Account:</div>  
                 <div class="col-md-9">
                     <select id="multi-account-field" class="form-control form-control-sm" v-model="multiAccountID">
@@ -250,6 +250,7 @@ export default {
         return {
             accounts: [], //multi account id
             multiAccountID: null, //select model
+            showMultiAccountDropdown: false,
 
             scrollInterval: false,
 
@@ -819,38 +820,7 @@ export default {
         checkBookedScheduleLimit() {
 
         },
-        showMultiAccountField(memberID) {
 
-            console.log("multi-account-field-wrapper", memberID)
-            //@check if there is
-            $('#multi-account-field-wrapper').show();
-         
-
-            axios.post("/api/getMultiAccountOptions?api_token=" + this.api_token, 
-            {
-                method            : "POST",
-                memberID          : memberID,
-            })
-            .then(response => 
-            { 
-                this.accounts = response.data.accounts;
-                console.log(response.data.accounts);
-
-                // Find the default account and set its ID as the initial value
-                if (this.modalType !== 'edit')  {
-
-                    const defaultAccount = this.accounts.find(account => account.is_default);
-                if (defaultAccount) {
-                    this.multiAccountID = defaultAccount.member_multi_account_id;
-                }                    
-                }
-
-
-                $('#multi-account-field-wrapper').show();
-            });
-
-
-        },
         onChange (value) {
             this.multiAccountID = null;
             this.showMultiAccountField(value.id);
@@ -859,10 +829,8 @@ export default {
             console.log("on change user:  " + value.id);
 
             try {                
-                this.currentSelectedID = value.id;
-               
-            }   
-            catch(err) { 
+                this.currentSelectedID = value.id;               
+            }   catch(err) { 
                 //console.log("no value");
                 this.currentSelectedID = null; 
             }            
@@ -908,6 +876,37 @@ export default {
             }
          
         },
+        showMultiAccountField(memberID) {
+
+            console.log("multi-account-field-wrapper", memberID)
+            this.showMultiAccountDropdown = false;
+
+            axios.post("/api/getMultiAccountOptions?api_token=" + this.api_token, 
+            {
+                method            : "POST",
+                memberID          : memberID,
+            })
+            .then(response => {
+                
+                this.accounts = response.data.accounts;
+                console.log(this.accounts.length);
+
+                if (this.accounts.length > 0) {
+                    this.showMultiAccountDropdown = true;                    
+                }
+
+                // Find the default account and set its ID as the initial value
+                if (this.modalType !== 'edit')  {
+                    const defaultAccount = this.accounts.find(account => account.is_default);
+                    if (defaultAccount) {
+                        this.multiAccountID = defaultAccount.member_multi_account_id;
+                    }         
+                        
+                }               
+            });
+
+
+        },        
         editSchedule(scheduleData) 
         {
 
@@ -915,15 +914,9 @@ export default {
             this.$bvModal.show("schedulesModal");            
             this.modalType = "edit";
 
-            $('#multi-account-field-wrapper').show();
-           
-
             //get current schedule data
             this.currentScheduledData = this.getScheduleData(scheduleData);
-           
-
-            console.log("currentScheduledData", this.currentScheduledData);
-
+      
             //dropdown multi account field(show)            
             this.multiAccountID = this.currentScheduledData.maid;
             this.showMultiAccountField(this.currentScheduledData.member_id);

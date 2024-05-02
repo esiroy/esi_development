@@ -17,7 +17,6 @@
     <link rel="stylesheet" href="{{ asset('css/app.css') .'?id=1_0_0'  }}">
     
     <!-- Scripts -->
-    <script src="https://chatserver.mytutor-jpn.info:30001/socket.io/socket.io.js"></script>
     <script src="{{ asset('js/app.js') .'?id=1_0_0'  }}" defer ></script>
     <!-- Fonts -->
     
