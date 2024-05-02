@@ -696,7 +696,7 @@
 
                     setTimeout(() => {                          
                         getMemoConversations(scheduleID);
-                    }, 10000);                
+                    }, 500);                
                     
 
                     //interval unread message fetching
