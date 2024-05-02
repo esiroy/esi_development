@@ -34,6 +34,8 @@ if (url[1] === 'admin') {
             if (url[4] === 'edit') {
                 console.log("load edit member!")
                 Vue.component('member-update-component', require('./components/MemberUpdateComponent.vue').default);
+                Vue.component('member-multiaccount-update', require('./components/backend/member/MemberMultiAccountUpdateComponent.vue').default);
+                
             } else {
 
                 Vue.component('member-create-component', require('./components/MemberCreateComponent.vue').default);
