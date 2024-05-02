@@ -23,7 +23,7 @@
     <link rel="stylesheet" href="{{ asset('css/app.css')  .'?id=version_5_8_2' }}">
 
     <script src="{{ asset('js/admin.js') .'?id=version_5_8_2'  }}" defer></script>
-    <script src="{{ env('APP_MESSENGER_URL', 'https://messenger.mytutor-jpn.info:40009') }}/socket.io/socket.io.js" defer></script>
+    <script src="{{ env('APP_MESSENGER_URL', 'https://messenger.mytutor-jpn.info:40009') }}/socket.io/socket.io.js"></script>
     
     <noscript>
         <link rel="stylesheet" type="text/css" href="">
