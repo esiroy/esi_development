@@ -310,7 +310,6 @@
                                                         $accountID = $accountAlias->member_multi_account_id;
                                                     }                                                    
                                                 }
-
                                             @endphp
 
                                             @if (isset($accountID)) 

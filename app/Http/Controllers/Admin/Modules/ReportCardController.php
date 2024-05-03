@@ -15,6 +15,7 @@ use App\Models\Tutor;
 use App\Models\UploadFile; 
 use App\Models\Homework; 
 use App\Models\MemberMultiAccountAlias; 
+use Auth;
 
 class ReportCardController extends Controller
 {   
@@ -68,7 +69,7 @@ class ReportCardController extends Controller
 
 
 
-    public function reportcardlist($memberID, Request $request) 
+    public function reportcardlist($memberID, Request $request, ReportCard $reportCard) 
     {
 
         $memberInfo         = Member::where('user_id',$memberID)->first();
@@ -81,13 +82,30 @@ class ReportCardController extends Controller
             $tutorInfo       = Tutor::where('user_id', $memberInfo->tutor_id)->first(); 
 
             //report cards
+            /*
             $reportcards = ReportCard::select('report_card.*', 'schedule_item.lesson_time')
                                         ->join('schedule_item', 'report_card.schedule_item_id', '=', 'schedule_item.id')
                                         ->where('report_card.member_id', $member->id)
                                         ->orderBy('schedule_item.lesson_time', 'DESC')
                                         ->paginate(30);
+            */            
+            
+            
+            $accountID = $request->get('accountID');
+            $accountAliasModel = new \App\Models\MemberMultiAccountAlias();
 
-            return view('admin.modules.member.reportcardlist', compact('reportcards', 'agentInfo' ,'tutorInfo', 'member', 'memberInfo'));
+
+            if ($accountID == null) {
+
+                $accountID = $accountAliasModel->getMemberDefaultAccount($memberID)->member_multi_account_id;
+            }
+        
+
+            $perPage = 30;         
+            $reportcards = $reportCard->getAllLatestByMultiID($memberID, $accountID, $perPage);                                    
+            $accounts = $accountAliasModel->getMemberSelectedAccounts($memberID);
+
+            return view('admin.modules.member.reportcardlist', compact('accountID', 'accounts','reportcards', 'agentInfo' ,'tutorInfo', 'member', 'memberInfo'));
 
         } else {
 

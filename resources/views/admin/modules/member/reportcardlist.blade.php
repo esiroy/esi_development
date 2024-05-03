@@ -12,6 +12,23 @@
                 
                 <div class="card-body">
 
+                    <div class="row">
+                       
+                        <div class="col-12">
+                            <div class="float-right w-25">
+                                <select name="accounts" id="accounts" class="form-control form-control-sm" onChange="onChangeAccountViewer(event)">
+                                    @foreach($accounts as $account)
+                                        <option value="{{ $account->member_multi_account_id }}" class="small" @if ($accountID == $account->member_multi_account_id) {{ "selected" }} @endif>
+                                            {{ $account->name }} @if ($account->is_default == true) {{ "(default)" }} @endif
+                                        </option>                        
+                                    @endforeach
+                                </select>
+                            </div>
+                            <div class="float-right px-3 small pt-2  text-muted">Member Account</div>
+                        </div>
+
+                    </div>
+
                     <div class="member mt-3">
                         <div class="container">
                             <div class="row">
@@ -122,4 +139,26 @@
         </div>
     </div>
 </div>
+@endsection
+
+
+@section('scripts')
+<script>
+    function onChangeAccountViewer(event) 
+    {
+        let accountID = event.target.value
+
+        let currentUrl = window.location.href;
+
+        let baseUrl = window.location.origin + window.location.pathname;
+
+        // Add a parameter to the URL
+        let parameterName = 'accountID';
+        let parameterValue = accountID;
+        let newURL = baseUrl + '?' + parameterName + '=' + parameterValue;
+
+        // Redirect the user to the new URL
+        window.location.href = newURL;                
+    }
+</script>
 @endsection

@@ -45,8 +45,6 @@ class ReportCard extends Model
 
         } else {
             
-            echo "Test";
-            
             $reportCards = ReportCard::select('report_card.*', 'schedule_item.lesson_time', 'schedule_item.member_multi_account_id')
             ->join('schedule_item', 'report_card.schedule_item_id', '=', 'schedule_item.id')
             ->where('report_card.member_id', $memberID)
