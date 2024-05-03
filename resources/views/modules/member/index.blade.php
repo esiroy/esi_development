@@ -97,11 +97,16 @@
                                     @foreach($desiredSchedules as $schedule)
                                    
                                     <tr class="border-bottom">
+
                                         <td class="text-center font-weight-normal">
                                             <div>{{ $schedule->day ?? '' }}</div>
+
+                                            @if ($schedule->member_multi_account_id)
                                             <div class="badge badge-primary small">
-                                                AC{{ $schedule->member_multi_account_id}}
+                                                AC{{$schedule->member_multi_account_id}}
                                             </div>
+                                            @endif
+
                                         </td>
                                         <td class="text-center font-weight-normal">
                                             @if (date('H', strtotime($schedule->desired_time)) == 00)
@@ -177,7 +182,10 @@
                                     <tr class="row_reserve_{{$reserve->id}} reserved_items">
                                         <td style="text-align: center;">
                                             
+                                            @if(isset($reserve->member_multi_account_id))
                                             <span class="badge badge-primary small">{{"AC".$reserve->member_multi_account_id}}</span>
+                                            @endif
+
                                             <span class="mx-1">
                                                 @if (date('H', strtotime($reserve->lesson_time)) == '00')                                                 
                                                     {{  date('Y年 m月 d日 24:i', strtotime($reserve->lesson_time ." - 1 day")) }} - {{  date('24:i', strtotime($reserve->lesson_time." + 25 minutes ")) }}                                                    

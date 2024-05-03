@@ -31,9 +31,6 @@ class MemberDashboard extends Controller
         if (isset($member)) {
 
             $reserves = $scheduleItems->getMemberActiveLessons($member);
-
-           
-
             $latestReportCard = $reportcards->getLatest($member->user_id);
 
 
