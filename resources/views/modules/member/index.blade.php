@@ -176,12 +176,15 @@
 
                                     <tr class="row_reserve_{{$reserve->id}} reserved_items">
                                         <td style="text-align: center;">
-
-                                            @if (date('H', strtotime($reserve->lesson_time)) == '00') 
-                                                {{  date('Y年 m月 d日 24:i', strtotime($reserve->lesson_time ." - 1 day")) }} - {{  date('24:i', strtotime($reserve->lesson_time." + 25 minutes ")) }}
-                                            @else 
-                                                {{  date('Y年 m月 d日 H:i', strtotime($reserve->lesson_time)) }} - {{  date('H:i', strtotime($reserve->lesson_time." + 25 minutes ")) }}
-                                            @endif
+                                            
+                                            <span class="badge badge-primary small">{{"AC".$reserve->member_multi_account_id}}</span>
+                                            <span class="mx-1">
+                                                @if (date('H', strtotime($reserve->lesson_time)) == '00')                                                 
+                                                    {{  date('Y年 m月 d日 24:i', strtotime($reserve->lesson_time ." - 1 day")) }} - {{  date('24:i', strtotime($reserve->lesson_time." + 25 minutes ")) }}                                                    
+                                                @else
+                                                    {{  date('Y年 m月 d日 H:i', strtotime($reserve->lesson_time)) }} - {{  date('H:i', strtotime($reserve->lesson_time." + 25 minutes ")) }}                                                    
+                                                @endif
+                                            </span>
                                             
                                         </td>
                                         <td style="text-align: center;" colspan="2">                                            
