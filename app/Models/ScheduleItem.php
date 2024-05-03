@@ -711,7 +711,8 @@ class ScheduleItem extends Model
                 'member_id' => $item->member_id,
                 'nickname' => $nickname,
                 'firstname' => preg_replace('/[^A-Za-z0-9]/', ' ', $firstname),
-                'lastname' => preg_replace('/[^A-Za-z0-9]/', ' ', $lastname)
+                'lastname' => preg_replace('/[^A-Za-z0-9]/', ' ', $lastname),
+                'maid' => $item->member_multi_account_id,
             ];
         }
 

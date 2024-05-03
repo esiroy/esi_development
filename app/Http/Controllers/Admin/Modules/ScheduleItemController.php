@@ -15,6 +15,8 @@ use App\Models\Shift;
 use App\Models\Member;
 use App\Models\Status;
 
+use App\Models\MemberMultiAccountAlias;
+
 use Gate;
 use Validator;
 use Input;
@@ -157,6 +159,9 @@ class ScheduleItemController extends Controller
         } 
         else if (Gate::allows('tutor_lesson_scheduler_access'))
         {
+
+           
+
             //time slots
             $timeSlots = $this->timeSlots;
 
@@ -187,6 +192,7 @@ class ScheduleItemController extends Controller
             $tutor = Tutor::where('user_id', Auth::user()->id)->first();
 
             if ($tutor) {
+
                 $scheduleItem =  new ScheduleItem();
                 
                 $lessons = $scheduleItem->getTutorLessons($tutor->id, $dateFrom, $dateTo);
