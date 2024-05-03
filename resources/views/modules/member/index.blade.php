@@ -95,8 +95,14 @@
 
                                 <tbody>
                                     @foreach($desiredSchedules as $schedule)
+                                   
                                     <tr class="border-bottom">
-                                        <td class="text-center font-weight-normal">{{ $schedule->day ?? '' }}</td>
+                                        <td class="text-center font-weight-normal">
+                                            <div>{{ $schedule->day ?? '' }}</div>
+                                            <div class="badge badge-primary small">
+                                                AC{{ $schedule->member_multi_account_id}}
+                                            </div>
+                                        </td>
                                         <td class="text-center font-weight-normal">
                                             @if (date('H', strtotime($schedule->desired_time)) == 00)
                                                 {{ date('24:i', strtotime($schedule->desired_time)) }} 

@@ -15,7 +15,10 @@ class MemberDesiredSchedule extends Model
 
     public function getMemberDesiredSchedule($memberID)
     {
-        return MemberDesiredSchedule::where('member_id', $memberID)->where('valid', 1)->orderBy('id', 'ASC')->get();
+        return MemberDesiredSchedule::where('member_id', $memberID)
+            ->where('valid', 1)
+            ->orderBy('member_multi_account_id', 'ASC')
+            ->get();
     }
 
 }
