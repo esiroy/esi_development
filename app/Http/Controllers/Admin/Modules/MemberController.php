@@ -28,6 +28,7 @@ use App\Models\MemberMiniTestSetting;
 use App\Models\MemberSetting;
 use App\Models\MemberMonthlyTerm;
 
+use App\Models\MemberMultiAccountAlias;
 
 use Auth, Hash, Storage;
 use Carbon\Carbon;
@@ -556,8 +557,31 @@ class MemberController extends Controller
         $lessonClasses = $memberAttribute->getMemberAttribute($memberID);
 
         $memberDesiredSchedule = new MemberDesiredSchedule();
-        $desiredSchedule = $memberDesiredSchedule->getMemberDesiredSchedule($memberID);
+        $memberSchedules = $memberDesiredSchedule->getMemberDesiredSchedule($memberID);
 
+        if (count($memberSchedules) > 0) 
+        {
+            $desiredSchedule = [];
+
+            foreach ($memberSchedules as $index => $schedule) 
+            {
+                if ($schedule['member_multi_account_id'] == null) {
+                    $multiAccountID = 1;
+                } else {
+                    $multiAccountID = $schedule['member_multi_account_id'];
+                }
+
+                $items['account'] = $multiAccountID;
+                $items['day'] = $schedule['day'];
+                $items['desired_time'] = $schedule['desired_time'];  
+                $desiredSchedule[$multiAccountID][] = $items;
+            }
+        } else {
+            $desiredSchedule = (object)[];
+        }
+
+
+       
 
         //get User Mini Test 
         $memberMiniTestSetting = new MemberMiniTestSetting();
@@ -576,14 +600,17 @@ class MemberController extends Controller
 
         $isMemberAgreedToTerms = $memberMonthlyTermObj->isMemberAgreedToMonthlyTerms($memberID); 
         
+        $multiAccountsObj = new MemberMultiAccountAlias();
+        $multiAccounts = $multiAccountsObj->getMemberSelectedAccounts($memberID);
 
         //View all the stufff
         return view('admin.modules.member.edit', compact('agentInfo', 'memberships', 'shifts', 'attributes',
             'userInfo', 'memberInfo', 'userImage', 'latestReportCard',
             'lessonGoals', 'lessonClasses', 'desiredSchedule', 'purpose', 'memberLatestExamScore', 'currentMemberlevel',
             'minitest', 'hideMemberTabs',
-            'memberMonthlyTerm', 'isMemberAgreedToTerms'
-            ));
+            'memberMonthlyTerm', 'isMemberAgreedToTerms',
+            'multiAccounts',
+        ));
 
     }
 

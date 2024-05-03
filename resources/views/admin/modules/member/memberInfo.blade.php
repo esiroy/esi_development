@@ -17,7 +17,7 @@
             <!--Member List -->
             <div class="card esi-card">
                 <div class="card-header esi-card-header">
-                   Member Details 
+                   Member Details
                 </div>
                 <div class="card-body">
                     <div class="row">
@@ -292,6 +292,47 @@
                                         <th colspan="13">Latest Report Card</th>
                                     </tr>
 
+                                    <tr>
+                                        <td class="red">&nbsp;</td>
+                                        <td>&nbsp;</td>
+                                        <td>:</td>                                        
+                                        <td>
+
+                                            @php
+                                                $accountID = Request::get('accountID');
+
+                                                if ($accountID == null) {
+
+                                                    $accountAliasModel = new \App\Models\MemberMultiAccountAlias();
+                                                    $accountAlias = $accountAliasModel->getMemberDefaultAccount($memberInfo->user_id);
+
+                                                    if ($accountAlias) {
+                                                        $accountID = $accountAlias->member_multi_account_id;
+                                                    }                                                    
+                                                }
+
+                                            @endphp
+
+                                            @if (isset($accountID)) 
+                                                <report-card-viewer-component
+                                                    :memberinfo="{{  json_encode($memberInfo )  }}" 
+                                                    api_token="{{ Auth::user()->api_token }}" 
+                                                    csrf_token="{{ csrf_token() }}"
+                                                    :selected_account_id="{{ $accountID }}"
+                                                    >
+                                                </report-card-viewer-component>
+                                            @else 
+
+                                                <report-card-viewer-component
+                                                    :memberinfo="{{  json_encode($memberInfo )  }}" 
+                                                    api_token="{{ Auth::user()->api_token }}" 
+                                                    csrf_token="{{ csrf_token() }}"
+                                                >
+                                                </report-card-viewer-component>
+                                            @endif                                       
+                                        </td>
+                                    </tr>
+                                    @php /*
                                     <tr valign="top">
                                         <td class="red">&nbsp;</td>
                                         <td>Subject</td>
@@ -338,8 +379,10 @@
                                             @endif
                                         </td>
                                     </tr>
+                                    */
+                                    @endphp
 
-                                  <tr valign="top">
+                                    <tr valign="top">
                                         <td class="red">&nbsp;</td>
                                         <td>Homework</td>
                                         <td>:</td>

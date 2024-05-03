@@ -1532,13 +1532,11 @@ class MemberController extends Controller
 
     public function update(Request $request)
     {
-
+        
         //abort_if(Gate::denies('member_create'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
         $data = json_decode($request['user']);
-        
         $memberID = $data->user_id;
-
         $purposeList = json_decode($request['purposeList']);
 
         //disallow duplicate email and username
@@ -1810,30 +1808,32 @@ class MemberController extends Controller
                 Desired Schedules
                  *****************************/
                 $desiredSchedules = [];
-                $ctr = 0;
-                foreach ($data->desiredScheduleList as $schedule) {
-                    $ctr = $ctr + 1;
-                    array_push($desiredSchedules, [
-                        "member_id" => $data->user_id,
-                        "day" => $schedule->day,
-                        "desired_time" => $schedule->desired_time,
-                        "sequence_number" => $ctr,
-                        "valid" => true,
-                    ]);
+         
+                foreach ($data->desiredScheduleList as $lists) {          
+                    if ($lists !== null) {
+                        $ctr = 0;
+                        foreach ($lists as $schedule) {
+                            $ctr = $ctr + 1;
+                            array_push($desiredSchedules, [
+                                "member_id" => $data->user_id,
+                                'member_multi_account_id' => $schedule->account,
+                                "day" => $schedule->day,
+                                "desired_time" => $schedule->desired_time,
+                                "sequence_number" => $ctr,
+                                "valid" => true,
+                            ]);                    
+                        }
+                    }
                 }
                 MemberDesiredSchedule::where('member_id', $data->user_id)->delete();
                 MemberDesiredSchedule::insert($desiredSchedules);
 
 
-
                 $memberMiniTestSetting = new MemberMiniTestSetting(); 
-
                 $minitestData = $request->minitest;
-
                 $memberMiniTestSetting->createOrUpdateOverride($memberID, $minitestData['memberMiniTestHasOverride']);
                 $memberMiniTestSetting->createOrUpdateLimit($memberID, $minitestData['memberMiniTestLimit']);
                 $memberMiniTestSetting->createOrUpdateDuration($memberID, $minitestData['memberMiniTestDuration']);
-
                 $memberSetting = new MemberSetting();
                 $memberSetting->createOrUpdateSetting($memberID, "hide_member_tabs", $data->hideMemberTabs);
 

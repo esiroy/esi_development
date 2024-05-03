@@ -267,6 +267,9 @@ export default {
             this.refresh();
             this.$bvModal.hide('memberMultiAccountModal');
             clearTimeout(this.hideTimeOut);
+
+            window.location.reload();
+
         },
 		showAddMultiAccountsModal() {
 

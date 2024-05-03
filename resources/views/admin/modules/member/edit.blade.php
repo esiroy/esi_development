@@ -180,6 +180,7 @@
                                 :latestreportcard="{{ json_encode($latestReportCard) }}" 
                                 :currentmemberlevel="{{ json_encode($currentMemberlevel) }}" 
                                 :hidemembertabs="{{ json_encode($hideMemberTabs)  }}" 
+                                :multi_accounts="{{ json_encode($multiAccounts) }}"
                                 usertype="{{ Auth::user()->user_type }}"                  
                                 api_token="{{ Auth::user()->api_token }}" 
                                 csrf_token="{{ csrf_token() }}" />

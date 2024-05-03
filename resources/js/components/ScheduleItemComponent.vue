@@ -583,7 +583,6 @@ export default {
                         let lessonData = this.lessonsData[data.tutorUserID][this.scheduled_at][data.startTime];
                         if (lessonData.maid !== null) {
                             tag = "AC"+lessonData.maid;
-                            
                         }                          
                         
                     } else {
@@ -606,11 +605,14 @@ export default {
                     } else {
                         // Code to handle when the value is undefined
                     }
-
-
                 }
 
-                return "<span class='small'>"+ tag +"</span>";
+                if (tag !== null) {
+                    return "<span class='small'>"+ tag +"</span>";
+                } else {
+                    return "";
+                }
+                
 
             } catch(err) { console.log(err) }
         },
@@ -623,6 +625,8 @@ export default {
 
                     let lessonData = this.lessonsData[data.tutorUserID][this.nextDay][data.startTime];
 
+                 
+
                     //return lessonData.status_checker;
                     //let nickname = this.memberDataList[lessonData.member_id].nickname;
 
@@ -631,17 +635,18 @@ export default {
                     //return "<a id='"+lessonData.id+"' href='#' onclick='openMemberTab("+lessonData.member_id+")'>"+ lessonData.nickname +"</a>";
 
                     if (nickname) {
-                        return "<a id='"+lessonData.id+"' href='#' onclick='openMemberTab("+lessonData.member_id+")'>"+ nickname +"</a>";
+                        return "<a id='"+lessonData.id+"' href='#' onclick='openMemberTab("+lessonData.member_id+","+ lessonData.maid +")'>"+ nickname +"</a>";
                     }
                     
 
                 } else {
+
                     let lessonData = this.lessonsData[data.tutorUserID][this.scheduled_at][data.startTime];
                     let nickname = lessonData.nickname;
 
                     //return "<a id='"+lessonData.id+"' href='#' onclick='openMemberTab("+lessonData.member_id+")'>"+ lessonData.nickname +"</a>";
                     if (nickname) {
-                        return "<a id='"+lessonData.id+"' href='#' onclick='openMemberTab("+lessonData.member_id+")'>"+ nickname +"</a>";
+                        return "<a id='"+lessonData.id+"' href='#' onclick='openMemberTab("+lessonData.member_id+","+ lessonData.maid +")'>"+ nickname +"</a>";
                     }
                 }
                 //console.log(this.lessonsData[data.tutorUserID][this.scheduled_at][data.startTime])
