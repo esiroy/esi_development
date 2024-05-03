@@ -265,30 +265,38 @@
                             $activeAccount = $sessionAccount;
                         }
                       
+
                     } else {
+
                         $activeAccount = $multiAccounts->getMemberDefaultAccount(Auth::user()->id);
                     }
 
+                 
                     
                 @endphp
 
                 <div class="changeAccountWrapper">
                     @if ( count($memberAccounts) >= 1)
 
-                        <div class="dropdown">
-                            <a href="#" class="dropdown-toggle blue" id="dropdownMultiAccountMenu" data-toggle="dropdown">
-                                {{ $activeAccount->name }}
-                            </a>
-                            <div class="dropdown-menu" aria-labelledby="dropdownMultiAccountMenu">
-                                @foreach($memberAccounts as $account)
-                                    <div class="dropdown-item  @if ($account->member_multi_account_id == $activeAccount->member_multi_account_id) {{ 'active text-white' }} @endif">
-                                        <a href="{{ url('home/?accountID='.$account->member_multi_account_id) }}">
-                                            <span class="@if ($account->member_multi_account_id == $activeAccount->member_multi_account_id) {{ 'text-white' }} @else {{ 'text-secondary' }} @endif">{{$account->name}} </span>
-                                        </a>
-                                    </div>         
-                                @endforeach
+                        @if ($activeAccount)
+                            <div class="dropdown">
+                                <a href="#" class="dropdown-toggle blue" id="dropdownMultiAccountMenu" data-toggle="dropdown">
+                                    {{ $activeAccount->name ?? '' }}
+                                </a>
+                            
+                                <div class="dropdown-menu" aria-labelledby="dropdownMultiAccountMenu">
+                                
+                                        @foreach($memberAccounts as $account)
+                                            <div class="dropdown-item  @if ($account->member_multi_account_id == $activeAccount->member_multi_account_id) {{ 'active text-white' }} @endif">
+                                                <a href="{{ url('home/?accountID='.$account->member_multi_account_id) }}">
+                                                    <span class="@if ($account->member_multi_account_id == $activeAccount->member_multi_account_id) {{ 'text-white' }} @else {{ 'text-secondary' }} @endif">{{$account->name}} </span>
+                                                </a>
+                                            </div>         
+                                        @endforeach
+                                
+                                </div>
                             </div>
-                        </div>
+                        @endif
 
                     @endif
                 </div>

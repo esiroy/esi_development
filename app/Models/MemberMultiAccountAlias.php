@@ -42,16 +42,20 @@ class MemberMultiAccountAlias extends Model
     }
 
     public function getAlias($userID, $member_multi_account_id) {
-
         $info =  $this->where('user_id', $userID)
                 ->where('member_multi_account_id', $member_multi_account_id)                
-                ->first(); 
-                
+                ->first();                 
         if ($info) {
             return $info->name;       
         } else{
             return null;
         }
-        
+    }
+
+    public function isActivated($userID) {
+        return $this->where('user_id', $userID)
+        ->where('selected', true)
+        ->where('valid', true)
+        ->count() >= 1;
     }
 }

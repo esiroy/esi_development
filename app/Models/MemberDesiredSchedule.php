@@ -19,19 +19,26 @@ class MemberDesiredSchedule extends Model
     {
 
         $memberMultiAccountAlias = new MemberMultiAccountAlias();
-
         $selectedMultiAccounts = $memberMultiAccountAlias->getMemberSelectedAccounts($memberID);
 
-        $ids = $selectedMultiAccounts->pluck('member_multi_account_id');
-        
+        $ids = $selectedMultiAccounts->pluck('member_multi_account_id');  
+                
+        $desiredSchedules = MemberDesiredSchedule::where('member_id', $memberID)->where('valid', 1);
 
-       
+        if (count($ids) >= 1) { 
+   
+            $desiredSchedules->where(function ($query) use ($ids) {
+                $query->whereIn('member_multi_account_id', $ids)
+                    ->orWhereNull('member_multi_account_id');
+            });
 
-        return MemberDesiredSchedule::where('member_id', $memberID)
-            ->where('valid', 1)
-            ->whereIn('member_multi_account_id', $ids)
-            ->orderBy('member_multi_account_id', 'ASC')
-            ->get();
+        } else {
+            $desiredSchedules->where('member_multi_account_id', null);
+        }
+
+        return $desiredSchedules->orderBy('member_multi_account_id', 'ASC')->get();
+
+
     }
 
 }

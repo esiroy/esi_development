@@ -101,11 +101,19 @@
                                         <td class="text-center font-weight-normal">
                                             <div>{{ $schedule->day ?? '' }}</div>
 
-                                            @if ($schedule->member_multi_account_id)
-                                            <div class="badge badge-primary small">
-                                                AC{{$schedule->member_multi_account_id}}
-                                            </div>
+                                         
+                                            @if ($isMultiAccountActive == true)
+                                                @if ($schedule->member_multi_account_id == null)
+                                                    <div class="badge badge-primary small">
+                                                        AC1
+                                                    </div>
+                                                @else 
+                                                    <div class="badge badge-primary small">
+                                                        AC{{$schedule->member_multi_account_id}}
+                                                    </div>
+                                                @endif
                                             @endif
+                                          
 
                                         </td>
                                         <td class="text-center font-weight-normal">
