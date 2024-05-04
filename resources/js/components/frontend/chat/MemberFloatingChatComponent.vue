@@ -236,7 +236,7 @@ import FileUpload from 'vue-upload-component'
 import TextareaAutosize from 'vue-textarea-autosize'
 
 Vue.use(new VueSocketIO({
-    debug: true,
+    debug: false,
     connection: 'https://chatserver.mytutor-jpn.info:30001/',
 }));
 
@@ -265,11 +265,10 @@ export default {
         },
         update_user_list: function (users) {
             //console.log(" !!!!!!!!!! test update_user_list")
-            //this.users = users;
+            //this.users = users;            
         },
         PRIVATE_MESSAGE: function (data) {
-            console.log(" !!!!!!!!!! PRIVATE MESSAGE", data);
-
+          
             let admin = {
                 userid: 1,
                 username: "admin",
@@ -395,12 +394,13 @@ export default {
         });
 
 
+        //Initialize who admin is
         let admin = this.getAdmin();
         this.initializeChatBox(admin);
+
         this.registerUser();
 
-        //this.addChatEventListener();
-
+      
         //This will get all the message from the customer support
         this.getUnreadMemberMessages(this.userid);
 
@@ -421,96 +421,9 @@ export default {
         });
     },
     methods: {
-        addChatEventListener() {
-
-            /*
-            let user = this.getUser();
-            this.$socket.emit('REGISTER', user);
-
-            //update the list
-            socket.on('update_user_list', users => {
-                //console.log("XXXXXXXXXXXXXXXXXXXX update user list XXXXXXXXXXXXXX")
-                //this.updateUserList(users);
-            });
-            
-            socket.on('PRIVATE_MESSAGE', data => {
-            
-                console.log("xxxxxxxxxxxxxxxx private message XXXXXXXXXXXXX");
-            
-                let admin = {
-                    userid: 1,
-                    username: "admin",
-                }
-            
-                if (data.sender.username == this.username) {
-                    //user sent
-            
-                    let sender = {
-                        'userid': data.sender.userid,
-                        'username': data.sender.username,
-                        'nickname': data.sender.nickname,
-                        'message': data.sender.message,
-                        'user_image': this.user_image,
-                        'type': data.sender.type,
-                    };
-            
-                    this.chatlogs[admin.userid].push({
-                        time: data.time,
-                        sender: sender
-                    });
-            
-                    this.$forceUpdate();
-            
-                    this.$nextTick(function () {
-                        this.scrollToEnd();
-            
-                    });
-                }
-            
-                if (data.recipient.userid == this.userid) {
-            
-                    this.openChatBox(admin);
-            
-                    console.log("sent from support")
-            
-                    this.unread_message_count++;
-            
-            
-                    let sender_customer_support = {
-                        'userid': data.sender.userid,
-                        'username': data.sender.username,
-                        'nickname': data.sender.nickname,
-                        'message': data.sender.message,
-                        'type': data.sender.type,
-                    };
-            
-                    this.chatlogs[admin.userid].push({
-                        time: data.time,
-                        sender: sender_customer_support,
-                        //message: data.sender.message        
-                    });
-            
-                    this.$forceUpdate();
-            
-                    this.$nextTick(function () {
-                        this.scrollToEnd();
-            
-                    });
-            
-                    //play audio
-                    let audio = new Audio("/mp3/message-sent.mp3");
-                    audio.play();
-                }
-            
-            });
-            */
-
-
-        },
-        registerUser() {
-            console.log("registering user")
-            let user = this.getUser();
-            console.log("ako ", user);
+        registerUser() 
+        {
+            let user = this.getUser(); 
             this.$socket.emit('REGISTER', user);
         },
         getUser() {
@@ -543,10 +456,6 @@ export default {
             if (message !== null) {
                 return this.urlify(message);
             }
-
-        },
-        linkify_v1(str) {
-            return str.replace(/((http(s)?(\:\/\/))?(www\.)?([\w\-\.\/])*(\.[a-zA-Z]{2,3}\/?))(?!(.*a>)|(\'|\"))/g, '<a href="$1"  target="_blank" >$1</a>');
         },
         linkify(text) {
 
@@ -804,8 +713,7 @@ export default {
                     return prevent();
                 }
             }
-
-
+            
             if (newFile && (!oldFile || newFile.file !== oldFile.file)) {
                 // Create a blob field
                 newFile.blob = ''
@@ -898,7 +806,8 @@ export default {
                 });
             }
         },
-        getUnreadMemberMessages(userid) {
+        getUnreadMemberMessages(userid) 
+        {
             axios.post("/api/getUnreadChatMessages?api_token=" + this.api_token,
                 {
                     method: "POST",

@@ -128,8 +128,8 @@ class ChatSupportController extends Controller
     */
     public function getRecentUserChatList(Request $request, UserImage $userImage, ChatSupportHistory $chatSupportHistory) 
     {
-
-        $userList =  [];
+        $ids        = [];
+        $userList   =  [];
 
         
         //user that has chatted to chat support

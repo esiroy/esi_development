@@ -316,7 +316,7 @@ import Multiselect from 'vue-multiselect'
 import TextareaAutosize from 'vue-textarea-autosize'
 
 Vue.use(new VueSocketIO({
-    debug: true,
+    debug: false,
     connection: 'https://chatserver.mytutor-jpn.info:30001/',
 }));
 
@@ -382,7 +382,7 @@ export default {
     },
     sockets: {
         update_user_list: function (users) {
-            console.log("update_user_list", users)
+            //console.log("update_user_list", users)
             //this.updateUserList(users); 
         },
         OWNER_MESSAGE: function (data) {
@@ -1183,10 +1183,8 @@ export default {
 
                         if (this.current_user !== null) {
                             //this.openChatBox(this.current_user);
-                        }
-                            
-                    });
-                   
+                        }                            
+                    });                  
 
                 } else {
                 
@@ -1394,17 +1392,13 @@ export default {
   	},
 	computed: {},
 	updated: function () {},
-	mounted: function () {  
-
-        //socket = io.connect(this.$props.chatserver_url);
-        
+	mounted: function () 
+    {   
         let adminChat = document.getElementById("AdminChat");        
         adminChat.style.display = 'none';
 
-
         let enterChat = document.getElementById("enterChat");
         enterChat.style.display = 'block';
-
 
         this.windowStatus = "FOCUSED";
         this.TabTitle =  document.title;
@@ -1425,259 +1419,6 @@ export default {
         window.addEventListener("blur", (e) => {
             this.windowStatus = "BLURRED";
         });
-
-
-        /*
-        //update the list
-        socket.on('update_user_list', users => {
-            this.updateUserList(users); 
-        });
-
-	    socket.on("OWNER_MESSAGE", data => 
-        {
-            if (data.broadcast_recipient.userid == this.userid) 
-            {
-                this.prepareChatBox(data.broadcast_recipient);
-
-                let sender = {
-                    'msgCtr': 1,
-                    'userid': data.broadcast_sender.userid,
-                    'username': data.broadcast_sender.username, 
-                    'nickname':  "Customer Support",
-                    'message': data.broadcast_sender.message,
-                    'user_image': data.broadcast_sender.user_image,   
-                    'type': data.broadcast_sender.type,          
-                };
-
-               
-                if (this.current_user !== null && this.current_user.userid == data.broadcast_sender.userid) 
-                {
-
-                    console.log("owner message");
-
-                    this.chatlogs.push({
-                            time: data.time,
-                            sender: sender            
-                    });
-
-                    this.$forceUpdate();
-                    
-                    this.$nextTick(function()
-                    {
-                       
-
-                        if (this.current_user.userid == data.broadcast_sender.userid) {
-                            console.log("scroll to end 1")
-                
-                            this.scrollToEnd();
-                        }                        
-                    });
-
-                }
-
-                
-            } else {
-
-                console.log("this is from other users");
-
-                //reset unread message to 0
-
-                if (data.broadcast_sender.type !== 'MEMBER') {
-
-                    let userIndex = this.users.findIndex(user => user.userid == data.broadcast_sender.userid)
-
-                    if (userIndex) {
-                        this.users[userIndex].unreadMsg  = 0;  
-                    }
-                }                
-
-                //log and simultainously show to other admin               
-                if (data.broadcast_sender.userid == this.activeUserID) {
-
-                    this.prepareChatBox(data.broadcast_sender);                 
-
-                    let sender = {
-                        'msgCtr': 1,
-                        'userid': data.broadcast_sender.userid,
-                        'username': data.broadcast_sender.username, 
-                        'nickname':  "Customer Support",
-                        'message': data.broadcast_sender.message,
-                        'user_image': data.broadcast_sender.user_image,   
-                        'type': data.broadcast_sender.type,          
-                    };
-
-            
-                    this.chatlogs.push({
-                        time: data.time,
-                        sender: sender            
-                    });
-
-                    this.$forceUpdate();
-                    this.$nextTick(function()
-                    {
-
-                        if (this.current_user.userid == data.broadcast_sender.userid) {
-
-                            console.log("scroll to end 2")
-                            this.scrollToEnd();
-                        }                        
-                    });
-
-                }
-            }	
-	    });
-
-        socket.on('PRIVATE_MESSAGE', data => 
-        {
-
-            this.prepareChatBox(data.sender);
-
-            let sender = {
-                'msgCtr': 1,
-                'userid': data.sender.userid,
-                'username': data.sender.username, 
-                'nickname': data.sender.nickname,
-                'message': data.sender.message,
-                'user_image': data.sender.user_image,   
-                'type': data.sender.type, 
-            };
-            
-
-
-            if (this.current_user !== null && this.current_user.userid == data.sender.userid) {                
-
-                //console.log("PRIVATE_MESSAGE");
-                this.chatlogs.push({
-                    time: data.time,
-                    sender: sender            
-                });
-                this.$forceUpdate();
-            }
- 
-
-
-            this.$nextTick(function() 
-            {
-                console.log("private message");
-
-                if (this.current_user.userid == data.sender.userid) {
-                    this.scrollToEnd();
-                }
-                
-
-                //DETECTION FOR OPENED CHATBOX,
-                //AND ZERO OUT THE CHAT MESSAGE COUNT IN 1 AND A HALF SECOND SINCE IT WILL BE CONSIDERED READ
-                //THIS WILL BE DISCREGARDED IF WINDOWSTATUS IS BLURRED
-                if (this.windowStatus == "FOCUSED") {
-                    this.stopBlink();
-                   // this.markSeenMessages();                
-                }
-                
-                if (this.windowStatus == "BLURRED") {
-
-                    if (data.sender.type !== "CHAT_SUPPORT") {
-                        this.blink();
-                    }                    
-                    console.log("window status ", this.windowStatus);                
-                }
-
-            });             
-
-            this.$nextTick(function()
-            {
-                //let chatMessage = this.users.find(user => user.userid == data.sender.userid);
-
-                var length = 30;
-                let string = data.sender.message                
-                var trimmedString = string.length > length ? string.substring(0, length - 3) + "..." : string;
-               
-
-                let userIndex = this.users.findIndex(user => user.userid == data.sender.userid)
-
-                if (this.users[userIndex]) 
-                {
-                    //USER SENDING A MESSAGE IS FOUND ON THE LIST OF USERS ONLINE
-                    if (data.sender.type == "CHAT_SUPPORT") {
-
-                        //chat support is sending a message to a member
-                        //we don't need to increase the unread message counter since this counter is for unread message from member
-
-                        //this.markSeenMessages() //marked as read relegated to when a chat support reply to messages only
-
-                    } else {
-
-                        //Member message is recieved, increase to message counter by 1
-                        //console.log("Private chat message + indexed for new user")
-
-                      
-                        if (isNaN(this.users[userIndex].unreadMsg)) {
-                            this.users[userIndex].unreadMsg = 1;
-                        } else {
-                            this.users[userIndex].unreadMsg++;
-                        }
-
-                        if (isNaN(this.users[userIndex].totalMsg)) {
-                            this.users[userIndex].totalMsg = 1;
-                        } else {
-                            this.users[userIndex].totalMsg++;
-                        }      
-
-                        this.users[userIndex].recentMsg = trimmedString; 
-                        this.users.unshift(this.users.splice(userIndex, 1)[0]);
-                        this.$forceUpdate();
-                        
-                    }
-
-                } else {
-
-                    //USER WHO SENT A MESSAGE IS NOT IN THE LIST OF RECENT USERS, 
-                    //WE WILL CREATE A NEW USER ON THE LIST
-
-                    //console.log("private message "+ data.sender.type + " ", data)
-
-
-                    if (data.sender.type == "CHAT_SUPPORT") {
-
-                        //chat support is sending a message to a user, 
-                        //unread message reset to zero
-                        let userIndex = this.users.findIndex(user => user.userid == data.recipient.userid)
-
-                        //reset other admin unread message count
-                        if (this.users[userIndex]) {
-                            this.users[userIndex].unreadMsg = 0;
-
-                            //this.markSeenMessages() //marked as read relegated to when a chat support reply to messages only
-                        }                      
-
-                    } else {
-
-                         //the user is online but not on the list since he has no recent messages, 
-                        //append the online uses to recent user list and initiazlie unread messages and total messages
-
-                        data.sender.unreadMsg    = 1;
-                        data.sender.totalMsg     = 1;
-                        data.sender.recentMsg    = trimmedString; 
-                        data.sender.status      = "online"; 
-                        this.users.unshift(data.sender);
-             
-                    }
-                
-                }
-            }); 
-
- 
-            
-            //console.log("private MSG", data);
-            
-            if (data.recipient.userid == this.userid || data.recipient.type == "CHAT_SUPPORT") {                
-                //play audio
-                let audio = new Audio("/mp3/message-sent.mp3");               
-                audio.play();
-            }             
-
-        }); */
-
-
        
         $(document).on('keydown', '#message', (event) => {        
             if (event.which === 13 && event.shiftKey) {
@@ -1689,9 +1430,7 @@ export default {
             }
         });
           
-        this.appendRecentUserChatList(this.onlineUsers) 
-
-          
+        this.appendRecentUserChatList(this.onlineUsers) ;          
     },
 };
 
