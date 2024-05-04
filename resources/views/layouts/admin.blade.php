@@ -18,11 +18,11 @@
     <link rel="preconnect" href="//fonts.gstatic.com" crossorigin />
     <link rel="preconnect" href="//fonts.googleapis.com" crossorigin />
     <link rel="preconnect" href="//cdn.datatables.net" rel="preconnect" crossorigin />
-    <link rel="preload" href="{{ asset('css/app.css') .'?id=version_5_8_2' }}" as="style">
+    <link rel="preload" href="{{ asset('css/app.css') .'?id=2024_5_4' }}" as="style">
 
-    <link rel="stylesheet" href="{{ asset('css/app.css')  .'?id=version_5_8_2' }}">
+    <link rel="stylesheet" href="{{ asset('css/app.css')  .'?id=2024_5_4' }}">
 
-    <script src="{{ asset('js/admin.js') .'?id=version_5_8_2'  }}" defer></script>
+    <script src="{{ asset('js/admin.js') .'?id=2024_5_4'  }}" defer></script>
     <script src="{{ env('APP_MESSENGER_URL', 'https://messenger.mytutor-jpn.info:40009') }}/socket.io/socket.io.js"></script>
     
     <noscript>

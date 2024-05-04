@@ -385,7 +385,7 @@ export default {
             console.log("update_user_list", users)
             //this.updateUserList(users); 
         },
-        OWNER_MESSAGE: function (users) {
+        OWNER_MESSAGE: function (data) {
 
 
             if (data.broadcast_recipient.userid == this.userid) 
