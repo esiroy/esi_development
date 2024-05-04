@@ -79,7 +79,8 @@ if (url[1] === 'admin') {
     //front end 
     switch (url[1]) {
         case 'customerchatsupport':
-            Vue.component('customer-chat-component', require('./components/frontend/chat/CustomerChatComponent.vue').default);
+            //this is for front end dedicated page (cancelled project)
+            //Vue.component('customer-chat-component', require('./components/frontend/chat/CustomerChatComponent.vue').default);
             break;
         default:
             Vue.component('member-floating-chat-component', require('./components/frontend/chat/MemberFloatingChatComponent.vue').default);

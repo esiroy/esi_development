@@ -154,10 +154,15 @@
 </template>
 
 <script>
-import io from "socket.io-client";
+import VueSocketIO from 'vue-socket.io';
 import FileUpload from 'vue-upload-component'
-//const socket = io.connect("http://localhost:30001");
-const socket = io.connect("https://chatserver.mytutor-jpn.info:30001");
+
+
+
+Vue.use(new VueSocketIO({
+    debug: true,
+    connection: 'https://chatserver.mytutor-jpn.info:30001/',
+}));
 
 export default {
   name: "customer-chat-component",
@@ -480,6 +485,8 @@ export default {
   mounted: function () 
   {
   
+	alert ("Test");
+	AdminChatWrapper
     window.addEventListener("keyup", (e) =>
     {
         this.prepareButtons();       
@@ -503,7 +510,7 @@ export default {
       user_image: this.user_image,      
       type: "MEMBER",      
     }    
-    socket.emit('REGISTER', user);     
+    this.$socket.emit('REGISTER', user);     
 
     //update the list
     socket.on('update_user_list', users => {
@@ -514,7 +521,6 @@ export default {
     socket.on('PRIVATE_MESSAGE', data => {      
         
         //console.log(data.sender.username  + "|"  + this.username)
-
         //this.openChatBox(data.sender)
 
         let admin = {

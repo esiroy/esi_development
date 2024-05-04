@@ -302,7 +302,7 @@
             <button type="button" class="btn btn-success my-5" v-on:click="enterAdminChat()">Enter Administrator Chat</button>
             <div>
                 <small>You must click "Enter Administrator Chat" button to enter</small>
-                <small>Sorry for the inconvenience</small>
+              
             </div>
         </div>
 
@@ -310,13 +310,19 @@
 </template>
 
 <script>
-import io from "socket.io-client";
+import VueSocketIO from 'vue-socket.io';
 import FileUpload from 'vue-upload-component'
 import Multiselect from 'vue-multiselect'
 import TextareaAutosize from 'vue-textarea-autosize'
+
+Vue.use(new VueSocketIO({
+    debug: true,
+    connection: 'https://chatserver.mytutor-jpn.info:30001/',
+}));
+
 Vue.use(TextareaAutosize)
 
-var socket = null;
+
 
 export default {
     name: "chatComponent",
@@ -373,6 +379,254 @@ export default {
         api_token: String,    
         csrf_token: String,  
         chatserver_url: String,              
+    },
+    sockets: {
+        update_user_list: function (users) {
+            console.log("update_user_list", users)
+            //this.updateUserList(users); 
+        },
+        OWNER_MESSAGE: function (users) {
+
+
+            if (data.broadcast_recipient.userid == this.userid) 
+            {
+                this.prepareChatBox(data.broadcast_recipient);
+
+                let sender = {
+                    'msgCtr': 1,
+                    'userid': data.broadcast_sender.userid,
+                    'username': data.broadcast_sender.username, 
+                    'nickname':  "Customer Support",
+                    'message': data.broadcast_sender.message,
+                    'user_image': data.broadcast_sender.user_image,   
+                    'type': data.broadcast_sender.type,          
+                };
+
+               
+                if (this.current_user !== null && this.current_user.userid == data.broadcast_sender.userid) 
+                {
+
+                    console.log("owner message");
+
+                    this.chatlogs.push({
+                            time: data.time,
+                            sender: sender            
+                    });
+
+                    this.$forceUpdate();
+                    
+                    this.$nextTick(function()
+                    {
+                       
+
+                        if (this.current_user.userid == data.broadcast_sender.userid) {
+                            console.log("scroll to end 1")
+                
+                            this.scrollToEnd();
+                        }                        
+                    });
+
+                }
+
+                
+            } else {
+
+                console.log("this is from other users");
+
+                //reset unread message to 0
+
+                if (data.broadcast_sender.type !== 'MEMBER') {
+
+                    let userIndex = this.users.findIndex(user => user.userid == data.broadcast_sender.userid)
+
+                    if (userIndex) {
+                        this.users[userIndex].unreadMsg  = 0;  
+                    }
+                }                
+
+                //log and simultainously show to other admin               
+                if (data.broadcast_sender.userid == this.activeUserID) {
+
+                    this.prepareChatBox(data.broadcast_sender);                 
+
+                    let sender = {
+                        'msgCtr': 1,
+                        'userid': data.broadcast_sender.userid,
+                        'username': data.broadcast_sender.username, 
+                        'nickname':  "Customer Support",
+                        'message': data.broadcast_sender.message,
+                        'user_image': data.broadcast_sender.user_image,   
+                        'type': data.broadcast_sender.type,          
+                    };
+
+            
+                    this.chatlogs.push({
+                        time: data.time,
+                        sender: sender            
+                    });
+
+                    this.$forceUpdate();
+                    this.$nextTick(function()
+                    {
+
+                        if (this.current_user.userid == data.broadcast_sender.userid) {
+
+                            console.log("scroll to end 2")
+                            this.scrollToEnd();
+                        }                        
+                    });
+
+                }
+            }	            
+        }, 
+        PRIVATE_MESSAGE: function(data) {
+
+
+            this.prepareChatBox(data.sender);
+
+            let sender = {
+                'msgCtr': 1,
+                'userid': data.sender.userid,
+                'username': data.sender.username, 
+                'nickname': data.sender.nickname,
+                'message': data.sender.message,
+                'user_image': data.sender.user_image,   
+                'type': data.sender.type, 
+            };
+            
+
+
+            if (this.current_user !== null && this.current_user.userid == data.sender.userid) {                
+
+                //console.log("PRIVATE_MESSAGE");
+                this.chatlogs.push({
+                    time: data.time,
+                    sender: sender            
+                });
+                this.$forceUpdate();
+            }
+ 
+
+
+            this.$nextTick(function() 
+            {
+                console.log("private message");
+
+                if (this.current_user.userid == data.sender.userid) {
+                    this.scrollToEnd();
+                }
+                
+
+                //DETECTION FOR OPENED CHATBOX,
+                //AND ZERO OUT THE CHAT MESSAGE COUNT IN 1 AND A HALF SECOND SINCE IT WILL BE CONSIDERED READ
+                //THIS WILL BE DISCREGARDED IF WINDOWSTATUS IS BLURRED
+                if (this.windowStatus == "FOCUSED") {
+                    this.stopBlink();
+                   // this.markSeenMessages();                
+                }
+                
+                if (this.windowStatus == "BLURRED") {
+
+                    if (data.sender.type !== "CHAT_SUPPORT") {
+                        this.blink();
+                    }                    
+                    console.log("window status ", this.windowStatus);                
+                }
+
+            });             
+
+            this.$nextTick(function()
+            {
+                //let chatMessage = this.users.find(user => user.userid == data.sender.userid);
+
+                var length = 30;
+                let string = data.sender.message                
+                var trimmedString = string.length > length ? string.substring(0, length - 3) + "..." : string;
+               
+
+                let userIndex = this.users.findIndex(user => user.userid == data.sender.userid)
+
+                if (this.users[userIndex]) 
+                {
+                    //USER SENDING A MESSAGE IS FOUND ON THE LIST OF USERS ONLINE
+                    if (data.sender.type == "CHAT_SUPPORT") {
+
+                        //chat support is sending a message to a member
+                        //we don't need to increase the unread message counter since this counter is for unread message from member
+
+                        //this.markSeenMessages() //marked as read relegated to when a chat support reply to messages only
+
+                    } else {
+
+                        //Member message is recieved, increase to message counter by 1
+                        //console.log("Private chat message + indexed for new user")
+
+                      
+                        if (isNaN(this.users[userIndex].unreadMsg)) {
+                            this.users[userIndex].unreadMsg = 1;
+                        } else {
+                            this.users[userIndex].unreadMsg++;
+                        }
+
+                        if (isNaN(this.users[userIndex].totalMsg)) {
+                            this.users[userIndex].totalMsg = 1;
+                        } else {
+                            this.users[userIndex].totalMsg++;
+                        }      
+
+                        this.users[userIndex].recentMsg = trimmedString; 
+                        this.users.unshift(this.users.splice(userIndex, 1)[0]);
+                        this.$forceUpdate();
+                        
+                    }
+
+                } else {
+
+                    //USER WHO SENT A MESSAGE IS NOT IN THE LIST OF RECENT USERS, 
+                    //WE WILL CREATE A NEW USER ON THE LIST
+
+                    //console.log("private message "+ data.sender.type + " ", data)
+
+
+                    if (data.sender.type == "CHAT_SUPPORT") {
+
+                        //chat support is sending a message to a user, 
+                        //unread message reset to zero
+                        let userIndex = this.users.findIndex(user => user.userid == data.recipient.userid)
+
+                        //reset other admin unread message count
+                        if (this.users[userIndex]) {
+                            this.users[userIndex].unreadMsg = 0;
+
+                            //this.markSeenMessages() //marked as read relegated to when a chat support reply to messages only
+                        }                      
+
+                    } else {
+
+                         //the user is online but not on the list since he has no recent messages, 
+                        //append the online uses to recent user list and initiazlie unread messages and total messages
+
+                        data.sender.unreadMsg    = 1;
+                        data.sender.totalMsg     = 1;
+                        data.sender.recentMsg    = trimmedString; 
+                        data.sender.status      = "online"; 
+                        this.users.unshift(data.sender);
+             
+                    }
+                
+                }
+            }); 
+
+ 
+            
+            //console.log("private MSG", data);
+            
+            if (data.recipient.userid == this.userid || data.recipient.type == "CHAT_SUPPORT") {                
+                //play audio
+                let audio = new Audio("/mp3/message-sent.mp3");               
+                audio.play();
+            }                
+        }
     },
     methods: {
 
@@ -541,7 +795,7 @@ export default {
                 });      
 
                 //semd
-                socket.emit("SEND_USER_MESSAGE", { id, time, recipient, sender });
+                this.$socket.emit("SEND_USER_MESSAGE", { id, time, recipient, sender });
 
 
                 //get the sender from props (user)
@@ -563,7 +817,7 @@ export default {
                     'type': "CHAT_SUPPORT"
                 };
 
-                socket.emit("SEND_OWNER_MESSAGE", { id, time, broadcast_recipient, broadcast_sender });
+                this.$socket.emit("SEND_OWNER_MESSAGE", { id, time, broadcast_recipient, broadcast_sender });
 
                 this.$forceUpdate();
                 this.$nextTick(function()
@@ -957,7 +1211,7 @@ export default {
             this.onlineUsers = this.filterUnique(fusers);   
 
             //Append Users to chat list
-            this.appendRecentUserChatList(this.onlineUsers) 
+            // this.appendRecentUserChatList(this.onlineUsers) 
 
             this.$forceUpdate();
         },      
@@ -982,7 +1236,7 @@ export default {
                 status: "online",
                 type: "CHAT_SUPPORT",
             }
-            socket.emit('REGISTER', this.adminUser);
+            this.$socket.emit('REGISTER', this.adminUser);
 
             let adminChat = document.getElementById("AdminChat");        
             adminChat.style.display = 'block';
@@ -1071,7 +1325,7 @@ export default {
                             'username': newFile.response.recipient_username,
                         };
 
-                        socket.emit("SEND_USER_MESSAGE", { id, time, recipient, sender });   
+                        this.$socket.emit("SEND_USER_MESSAGE", { id, time, recipient, sender });   
 
 
                         //get the sender from props (user)
@@ -1093,7 +1347,7 @@ export default {
                             'type': "CHAT_SUPPORT"
                         };
 
-                        socket.emit("SEND_OWNER_MESSAGE", { id, time, broadcast_recipient, broadcast_sender }); 
+                        this.$socket.emit("SEND_OWNER_MESSAGE", { id, time, broadcast_recipient, broadcast_sender }); 
 
                     }
                 }
@@ -1142,7 +1396,7 @@ export default {
 	updated: function () {},
 	mounted: function () {  
 
-        socket = io.connect(this.$props.chatserver_url);
+        //socket = io.connect(this.$props.chatserver_url);
         
         let adminChat = document.getElementById("AdminChat");        
         adminChat.style.display = 'none';
@@ -1173,7 +1427,7 @@ export default {
         });
 
 
-
+        /*
         //update the list
         socket.on('update_user_list', users => {
             this.updateUserList(users); 
@@ -1421,7 +1675,7 @@ export default {
                 audio.play();
             }             
 
-        });
+        }); */
 
 
        
@@ -1435,6 +1689,7 @@ export default {
             }
         });
           
+        this.appendRecentUserChatList(this.onlineUsers) 
 
           
     },
