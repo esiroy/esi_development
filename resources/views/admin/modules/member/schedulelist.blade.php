@@ -103,12 +103,13 @@
                                             {{ ESIFormatTime(date('H:i',strtotime($schedule->lesson_time ."+ $schedule->duration minutes"))) }}
                                         @endif
                                     </td>
-                                    <td>
+                                    <td class="pl-1 text-left">
                                         @if (isset($schedule->multiAccount->member_multi_account_id))
                                             <span class="badge badge-primary small">AC {{ $schedule->multiAccount->member_multi_account_id ?? '' }} </span>
-                                            {{ $schedule->multiAccount->name ?? '' }}
+                                            <span class="small text-muted">{{ $schedule->multiAccount->name ?? '' }}</span>
                                         @else 
-                                            <span class="text-center">-</span>
+                                            <span class="badge badge-primary small">AC1</span>
+                                            <span class="small text-muted"> ~</span>
                                         @endif
                                     </td>
                                     <td>
