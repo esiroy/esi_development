@@ -159,9 +159,9 @@
                             <tr>
                                 <th>Schedule <br/>ID</td>
                                 <th>Account</td>
-                                <th>Transaction Date</th>
-                                <th>Transaction</th>
-                                <th>Lesson Date</th> 
+                                <th style="width:160px">Transaction Date</th>
+                                <th style="width:100px">Transaction</th>
+                                <th style="width:125px">Lesson Date</th> 
                                 <th>Name</th>
                                 <th>Points</th>
                                 <th>Original Credit Expiration Date</th>
