@@ -180,7 +180,7 @@
                                 </td>                               
                                 <td class="small">
                                     @if (isset($scheduleItem->multiAccount->member_multi_account_id))
-                                        <span class="badge badge-primary small">AC {{ $scheduleItem->multiAccount->member_multi_account_id ?? '' }} </span>
+                                        <span class="badge badge-primary small">AC{{ $scheduleItem->multiAccount->member_multi_account_id ?? '' }} </span>
                                     @else 
                                         <span class="badge badge-primary small">AC1</span>
                                         <span class="small text-muted"> ~</span>

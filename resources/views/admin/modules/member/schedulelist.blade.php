@@ -105,7 +105,7 @@
                                     </td>
                                     <td class="pl-1 text-left">
                                         @if (isset($schedule->multiAccount->member_multi_account_id))
-                                            <span class="badge badge-primary small">AC {{ $schedule->multiAccount->member_multi_account_id ?? '' }} </span>
+                                            <span class="badge badge-primary small">AC{{ $schedule->multiAccount->member_multi_account_id ?? '' }} </span>
                                             <span class="small text-muted">{{ $schedule->multiAccount->name ?? '' }}</span>
                                         @else 
                                             <span class="badge badge-primary small">AC1</span>
