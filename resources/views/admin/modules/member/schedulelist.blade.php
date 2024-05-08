@@ -105,11 +105,11 @@
                                     </td>
                                     <td class="pl-1 text-left">
                                         @if (isset($schedule->multiAccount->member_multi_account_id))
-                                            <span class="badge badge-primary small">AC{{ $schedule->multiAccount->member_multi_account_id ?? '' }} </span>
-                                            <span class="small text-muted">{{ $schedule->multiAccount->name ?? '' }}</span>
+                                            <span class="badge badge-primary small">AC{{ $schedule->multiAccount->member_multi_account_id ?? '' }}</span>
+                                            <span class="account-popover" data-toggle="popover" data-content="{{ $schedule->multiAccount->name }}">{!! Str::limit($schedule->multiAccount->name, 10, ' ...') !!}</span>
                                         @else 
                                             <span class="badge badge-primary small">AC1</span>
-                                            <span class="small text-muted"> ~</span>
+                                            <span class="small text-muted"> ~ </span>
                                         @endif
                                     </td>
                                     <td>
@@ -180,4 +180,28 @@
 
 </div>
 
+@endsection
+
+
+@section('scripts')
+@parent
+<script type="text/javascript">
+    window.addEventListener('load', function() {           
+
+        $('.account-popover').popover({
+            trigger: 'manual' // Don't trigger popover on click by default
+        });
+
+        // Show popover on hover
+        $('.account-popover').on('mouseenter', function(){
+            $(this).popover('show');
+        });
+
+        // Hide popover on mouse leave
+        $('.account-popover').on('mouseleave', function(){
+            $(this).popover('hide');
+  });
+
+    });
+    </script>
 @endsection
