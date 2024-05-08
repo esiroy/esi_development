@@ -158,6 +158,7 @@
                         <tbody>
                             <tr>
                                 <th>Schedule <br/>ID</td>
+                                <th>Account</td>
                                 <th>Transaction Date</th>
                                 <th>Transaction</th>
                                 <th>Lesson Date</th> 
@@ -176,13 +177,16 @@
                                
                                 <td class="small">
                                     {{ $scheduleItem->id ?? ''}}
+                                </td>                               
+                                <td class="small">
+                                    @if (isset($scheduleItem->multiAccount->member_multi_account_id))
+                                        <span class="badge badge-primary small">AC {{ $scheduleItem->multiAccount->member_multi_account_id ?? '' }} </span>
+                                    @else 
+                                        <span class="text-center">-</span>
+                                    @endif
                                 </td>
-                                
                                 <td class="small">
                                     <input type="hidden" value="{{ $scheduleItem->id ?? ''}}">
-
-
-                                    
                                     {{ date('F d, Y', strtotime($transaction->created_at)) }} 
                                    
                                     {{ date('h:i:s a', strtotime($transaction->created_at)) }}                                    

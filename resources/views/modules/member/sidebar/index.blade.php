@@ -32,17 +32,20 @@
 <div class="col-md-3">
     <div>@include('modules.member.sidebar.profile')</div>
 
+    @if (Auth::user()->memberInfo->attribute !== 'TRIAL')
     <div class="mt-3">@include('modules.member.sidebar.multiaccount')</div>
+    @endif
+
     <div class="mt-3">@include('modules.member.sidebar.customerchatsupport')</div>
     <div class="mt-3">@include('modules.member.sidebar.memberlevel')</div>   
 
+    
+    @if (Auth::user()->memberInfo->attribute !== 'TRIAL')
     <div class="mt-3">@include('modules.member.sidebar.alllessonviewer')</div>
-
-    @php 
-    /*
+    @else 
     <div class="mt-3">@include('modules.member.sidebar.reports')</div>
-    */
-    @endphp 
+    @endif   
+    
     <div class="mt-3">@include('modules.member.sidebar.membertestscores')</div>    
     <div class="mt-3">@include('modules.member.sidebar.memberpurpose')</div>
     <div class="mt-3">@include('modules.member.sidebar.timemanager')</div>

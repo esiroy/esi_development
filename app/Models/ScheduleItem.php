@@ -1052,4 +1052,9 @@ class ScheduleItem extends Model
         return $lessonItems->count();
     }
 
+    public function multiAccount() {
+
+        return $this->hasOne(MemberMultiAccountAlias::class, 'member_multi_account_id', 'member_multi_account_id');
+       
+    }
 }

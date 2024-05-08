@@ -74,8 +74,14 @@
                             <div class="col-3" v-for="(account,i) in accounts" :key="i">
                             
                                 <input type="checkbox" name="memberMultiAccount" :value="account.id" v-model="account.selected" :disabled="(i == 0) ? true : false">
-                                <span class="font-weight-bold">{{ account.name }}</span>
-                            
+                                
+                                <span class="badge badge-primary small" v-if="!isAliasAccount">AC {{ account.id }}</span>
+                                <span class="badge badge-primary small" v-else>AC {{ account.member_multi_account_id }}</span>
+                                
+                                <span class="font-weight-bold">
+                                    {{ account.name }}
+                                </span>
+                                                           
 
                                 <div :id="'alias_container_'+i" v-show="account.selected">
                                     <span class="small">Name your account </span>

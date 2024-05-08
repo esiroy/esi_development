@@ -46,8 +46,7 @@ class TutorScheduleController extends Controller
     public function getMembersDropdownOptions(Request $request)
     {
         try {
-
-            //DB::table('members')->
+          
             $members = DB::table('members')->join('users', 'users.id', '=', 'members.user_id')
                 ->select('members.user_id as uid', 'users.firstname as fn', 'users.lastname as ln')
                 ->where('users.valid', 1)

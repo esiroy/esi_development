@@ -41,6 +41,7 @@
                     Schedule List
                 </div>
 
+                <!--[start] HEADER MEMBER INFO DETAILS
                 <div class="member mt-3">
                     <div class="container">
                         <div class="row">
@@ -71,6 +72,7 @@
                         </div>
                     </div>
                 </div>
+                [end] HEADER MEMBER INFO DETAILS--> 
 
                 <div class="card-body esi-card-body">
 
@@ -80,6 +82,7 @@
                                 <tr>
                                     <th scope="col">Lesson Date</th>
                                     <th scope="col">Lesson Time</th>
+                                    <th scope="col">ACCOUNT</th>
                                     <th scope="col">Status</th>
                                     <th scope="col">Tutor</th>
                                     <th scope="col">Memo</th>
@@ -98,6 +101,14 @@
                                             {{ ESIFormatTime(date('H:i',strtotime($schedule->lesson_time ."+ 25 minutes"))) }}
                                         @else 
                                             {{ ESIFormatTime(date('H:i',strtotime($schedule->lesson_time ."+ $schedule->duration minutes"))) }}
+                                        @endif
+                                    </td>
+                                    <td>
+                                        @if (isset($schedule->multiAccount->member_multi_account_id))
+                                            <span class="badge badge-primary small">AC {{ $schedule->multiAccount->member_multi_account_id ?? '' }} </span>
+                                            {{ $schedule->multiAccount->name ?? '' }}
+                                        @else 
+                                            <span class="text-center">-</span>
                                         @endif
                                     </td>
                                     <td>

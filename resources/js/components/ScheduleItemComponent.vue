@@ -14,19 +14,11 @@
             </div>
         </b-modal>
 
-        <b-modal id="schedulesModal" 
-            title="Schedule Lesson"
-            button-size="sm"
-            no-fade
-            :cancel-disabled="modalBusy"
-            :ok-disabled="modalBusy"
-            :no-close-on-backdrop="true"
-            @show="resetModal"
-            @hidden="hideModal"
-            @ok="handleOk"
-            
-            
+        <b-modal id="schedulesModal" title="Schedule Lesson" button-size="sm" no-fade :cancel-disabled="modalBusy" 
+            :ok-disabled="modalBusy" :no-close-on-backdrop="true" 
+            @show="resetModal" @hidden="hideModal" @ok="handleOk"
         >
+
             <div class="row">
                 <div class="col-md-3">
                     <label>Status :</label>
@@ -715,23 +707,25 @@ export default {
             this.modalBusy = false;
             
             this.modalType = "save";
-            //console.log(tutorData);            
-            //console.log("open schedule");
             this.$bvModal.show("schedulesModal");
-            this.tutorData = tutorData;
-
-            //UPDATE (MAY 19, 2021): 
-            //Set the default status dropdown option  "TUTOR_SCHEDULED" default 
+            
+            //SET TUTOR SCHEDULE AS DEFAULT
+            this.tutorData = tutorData;            
             this.status = "TUTOR_SCHEDULED";
         },
         hideModal() {
-            //console.log("hide modal");
-            //update the schedules when you hide it?
-            //this.getSchedules(this.scheduled_at, this.shiftDuration);
             this.currentStatus = "";
         },
-        resetModal() {
-            //console.log("reset modal"); //this will reset every time it closes.
+        resetMultiAccount() {
+            console.log("reset multiaccont")
+            this.showMultiAccountDropdown = false;
+            this.multiAccountID = null;
+        },
+        resetModal() {          
+
+            //[NEW!] RESET MODAL MULTI ACCOUNT DROPDOWN ADDED (2024)
+            this.resetMultiAccount();
+
             this.memberSelectedID = "";
             this.status = "";
             this.isStatusDisabled = true; 
@@ -740,7 +734,8 @@ export default {
         {
             this.modalBusy = true;            
             
-            if (this.status === "NOTHING") this.confirmDelete(this.tutorData);
+            if (this.status === "NOTHING") 
+                this.confirmDelete(this.tutorData);
             else if(this.status === "OVERRIDE") this.confirmOverride(this.tutorData);
             else {
                 //console.log("the id selected => " + this.memberSelectedID.id)
@@ -798,34 +793,18 @@ export default {
                             }
                         });
                     }
-
-                    /*
-                    this.$nextTick(function()
-                    {
-
-
-                    });*/
-                    
-            
                 } else {
                     if (this.modalType === 'save') 
-                    {                       
-                        //this.checkBookedScheduleLimit();
+                    {        
                         this.setTutorSchedule();
 
-                    } else {                   
-                     
-                        //this.checkBookedScheduleLimit();
+                    } else { 
                         this.updateTutorSchedule();
                     }                        
                 }
             }            
             bvModalEvt.preventDefault();
-        }, 
-        checkBookedScheduleLimit() {
-
         },
-
         onChange (value) {
             this.multiAccountID = null;
             this.showMultiAccountField(value.id);
