@@ -901,18 +901,15 @@ export default {
                 {
                     this.showMultiAccountDropdown = true;       
                     
-                    const defaultAccount = this.accounts.find(account => account.is_default);
-                    if (defaultAccount) {
-                        this.multiAccountID = defaultAccount.member_multi_account_id;
-                        this.$forceUpdate();
 
-                        setTimeout(() => {
-                            this.multiAccountID = defaultAccount.member_multi_account_id;
-                            this.$forceUpdate();
-                        }, 2000); // Adjust the delay time as needed    
-                        
-                        console.log(this.multiAccountID);
-                    } 
+                    for (const account of this.accounts) {
+                        if (account.is_default == true || account.is_default == 1 || account.is_default == "true") {                           
+                           this.multiAccountID = account.member_multi_account_id;
+                           this.$forceUpdate()
+                        }
+                    }
+                    console.log("deafult accoount id " + this.multiAccountID);
+                   
                 }
      
             });
