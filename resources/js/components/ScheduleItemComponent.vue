@@ -897,13 +897,21 @@ export default {
                 this.modalBusy = false;
                 this.accounts = response.data.accounts;              
 
-                if (this.accounts.length > 0) {
+                if (this.accounts.length > 0) 
+                {
                     this.showMultiAccountDropdown = true;       
                     
                     const defaultAccount = this.accounts.find(account => account.is_default);
                     if (defaultAccount) {
                         this.multiAccountID = defaultAccount.member_multi_account_id;
                         this.$forceUpdate();
+
+                        setTimeout(() => {
+                            this.multiAccountID = defaultAccount.member_multi_account_id;
+                            this.$forceUpdate();
+                        }, 2000); // Adjust the delay time as needed    
+                        
+                        console.log(this.multiAccountID);
                     } 
                 }
      
