@@ -880,21 +880,18 @@ export default {
 
 
                 this.modalBusy = false;
-                
                 this.accounts = response.data.accounts;              
 
                 if (this.accounts.length > 0) {
-                    this.showMultiAccountDropdown = true;                    
-                }
-
-                // Find the default account and set its ID as the initial value
-                if (this.modalType !== 'edit')  {
+                    this.showMultiAccountDropdown = true;       
+                    
                     const defaultAccount = this.accounts.find(account => account.is_default);
                     if (defaultAccount) {
                         this.multiAccountID = defaultAccount.member_multi_account_id;
-                    }         
-                        
-                }               
+                        this.$forceUpdate();
+                    } 
+                }
+     
             });
 
 
@@ -1027,8 +1024,7 @@ export default {
 
                         let memberData = this.memberDataList[response.data.memberData.id];
 
-                        console.log(response.data.memberData.id);
-
+                        //console.log(response.data.memberData.id);
                        
                         if (response.data.memberData.id !== '') {      
                             
