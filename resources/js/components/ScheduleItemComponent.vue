@@ -899,17 +899,18 @@ export default {
 
                 if (this.accounts.length > 0) 
                 {
-                    this.showMultiAccountDropdown = true;       
-                    
+                    this.showMultiAccountDropdown = true;  
+                  
+                    if (this.multiAccountID == null) {
 
-                    for (const account of this.accounts) {
-                        if (account.is_default == true || account.is_default == 1 || account.is_default == "true") {                           
-                           this.multiAccountID = account.member_multi_account_id;
-                           this.$forceUpdate()
-                        }
+                        for (const account of this.accounts) {
+                            if (account.is_default == true || account.is_default == 1 || account.is_default == "true") {                           
+                                this.multiAccountID = account.member_multi_account_id;
+                                this.$forceUpdate()
+                            }
+                        }                        
                     }
-                    console.log("deafult accoount id " + this.multiAccountID);
-                   
+                    console.log("deafult accoount id " + this.multiAccountID);                   
                 }
      
             });
