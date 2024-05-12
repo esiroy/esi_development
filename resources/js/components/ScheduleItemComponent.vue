@@ -18,7 +18,11 @@
             :ok-disabled="modalBusy" :no-close-on-backdrop="true" 
             @show="resetModal" @hidden="hideModal" @ok="handleOk"
         >
-
+            <!--
+            <div class="row">
+                <div class="col-12">test : {{ modalBusy }}</div>
+            </div>
+            -->
             <div class="row">
                 <div class="col-md-3">
                     <label>Status :</label>
@@ -729,6 +733,7 @@ export default {
             this.memberSelectedID = "";
             this.status = "";
             this.isStatusDisabled = true; 
+            
         },
         handleOk(bvModalEvt) 
         {
@@ -860,10 +865,11 @@ export default {
             }
          
         },
-        showMultiAccountField(memberID) {
-
-            console.log("multi-account-field-wrapper", memberID)
+        showMultiAccountField(memberID) 
+        {
+            //show multi account  
             this.showMultiAccountDropdown = false;
+            this.modalBusy = true;
 
             axios.post("/api/getMultiAccountOptions?api_token=" + this.api_token, 
             {
@@ -871,9 +877,11 @@ export default {
                 memberID          : memberID,
             })
             .then(response => {
+
+
+                this.modalBusy = false;
                 
-                this.accounts = response.data.accounts;
-                console.log(this.accounts.length);
+                this.accounts = response.data.accounts;              
 
                 if (this.accounts.length > 0) {
                     this.showMultiAccountDropdown = true;                    
@@ -893,6 +901,10 @@ export default {
         },        
         editSchedule(scheduleData) 
         {
+          
+            this.modalBusy = true;
+
+            this.$forceUpdate();
 
             //show the modal first and update the values below             
             this.$bvModal.show("schedulesModal");            
@@ -926,9 +938,10 @@ export default {
                 memberIDFullName =  this.currentScheduledData.member_id + " " + firstname  + " " + lastname;  
                 this.memberSelectedID = { id: this.currentScheduledData.member_id , 'name': memberIDFullName };   
 
-                this.modalBusy = false;
+                //this.modalBusy = false;
             } else {
-                this.modalBusy = false;
+                
+                //this.modalBusy = false;
                 this.memberSelectedID = { id: "" , 'name': "-- Select A Member --" };
             }
             

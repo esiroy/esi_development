@@ -194,14 +194,18 @@ class TutorScheduleController extends Controller
                 }
             } else if ($request['status'] == 'TUTOR_SCHEDULED' ||  $request['status'] == 'SUPPRESSED_SCHEDULE' || $request['status'] == 'CLIENT_NOT_AVAILABLE' || $request['status'] == 'COMPLETED') {
 
-                $isLessonExists = ScheduleItem::where('lesson_time', $lessonTime)->where('tutor_id', $tutorInfo->user_id)->where('member_id', '!=', $memberID)->where('valid', 1)->exists();            
+                $isLessonExists = ScheduleItem::where('lesson_time', $lessonTime)
+                            ->where('tutor_id', $tutorInfo->user_id)
+                            ->where('member_id', '!=', $memberID)
+                            ->where('valid', 1)->exists();            
+
                 if ($isLessonExists) {                
                     $tutorLessonsData = $scheduleItem->getSchedules($scheduled_at, $duration);
                     return Response()->json([
                         "success" => false,
                         "refresh" => true,
                         'tutorLessonsData' => $tutorLessonsData,
-                        "message" => "The Schedule $FlessonTime is already booked or was updated after the page load, press okay to refresh schedules.",
+                        "message" => "The Schedule $FlessonTime is already booked or was updated after the page load, press okay to refresh schedules..",
                     ]);                    
                 }
             }
@@ -376,16 +380,21 @@ class TutorScheduleController extends Controller
 
             //** ADD MEMBER TRANSACTION */          
             if ($memberID != null) {
-                $memberTransactionData = [
-                     //'scheduleItem'      => $scheduleItem,
-                    'scheduleItemID'      => $scheduledItemData['id'],
-                    'memberID' => $memberID,
-                    'shiftDuration' => $request['shiftDuration'],
-                    'reservation_type' => $reservationType,
-                    'status' => $request['status'],
-                ];
-                $transactionObj = new AgentTransaction();
-                $transaction = $transactionObj->addMemberTransactions($memberTransactionData);
+
+                if ($memberID !== $scheduleItem->member_id) {
+
+                    $memberTransactionData = [
+                        //'scheduleItem'      => $scheduleItem,
+                       'scheduleItemID'      => $scheduledItemData['id'],
+                       'memberID' => $memberID,
+                       'shiftDuration' => $request['shiftDuration'],
+                       'reservation_type' => $reservationType,
+                       'status' => $request['status'],
+                   ];
+                   $transactionObj = new AgentTransaction();
+                   $transaction = $transactionObj->addMemberTransactions($memberTransactionData);
+                                       
+                }
             }
 
             //get lessons
