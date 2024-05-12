@@ -282,6 +282,8 @@ export default {
             //List
             membersList: [],            
             schedules: [],
+            //timer interval
+            intervalId: null,
             //time 
             timeList: [
                 {id:1, startTime: '10:00', endTime: '11:00'},
@@ -327,7 +329,7 @@ export default {
     },
     async mounted() 
     {
-        let intervalId;
+       
 
         this.nextDay  = this.schedule_next_day;
         this.fromDay = this.scheduled_at;       
@@ -343,14 +345,27 @@ export default {
         let preloader = document.getElementById("preloader");
         preloader.style.display  = "block";
 
-       this.startInterval();
+        this.startInterval();
 
     },
     methods: {      
-        startInterval: function () {
-            setInterval(() => {
-                 this.updateSchedules(this.scheduled_at, this.shiftDuration);
-                 
+        clearInterval() {
+            if (this.intervalId) {
+                console.log("interval cleared")
+                clearInterval(this.intervalId);
+                this.intervalId = null;
+            }
+        },        
+        startInterval() {
+            // Clear any existing interval
+            this.clearInterval();
+
+            console.log("interval started")
+
+            // Start a new interval
+            this.intervalId = setInterval(() => {
+                console.log("updating via interval")
+                this.updateSchedules(this.scheduled_at, this.shiftDuration);
             }, 30000);
         },
         scrollToEnd: function() 
@@ -1072,6 +1087,11 @@ export default {
                         //this is repitive but this will allow the user to see updated from other admin??
                        // this.getSchedules(this.scheduled_at, this.shiftDuration);
                         this.$forceUpdate();
+
+                        //clear the auto update interval
+                        this.clearInterval();
+                        this.startInterval();
+
                     });
       
                 } else {           
@@ -1184,7 +1204,12 @@ export default {
                     preloaderText.textContent  = "refreshing schedules";                    
 
                     this.getSchedules(this.scheduled_at, this.shiftDuration);
-                    this.$forceUpdate();                    
+                    this.$forceUpdate();           
+                    
+                    //clear the auto update interval
+                    this.clearInterval();
+                    this.startInterval();
+
                 } 
                 else {            
                     this.modalBusy = false;        
