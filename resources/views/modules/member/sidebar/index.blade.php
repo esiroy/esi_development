@@ -20,7 +20,7 @@
 @endphp
 
 @php
-    //DETERMIN IF MEMBER HAS ACTIVE NOTIFICATIONS FOR MONTHLY MEMBERSHIP    
+    //DETERMINE IF MEMBER HAS ACTIVE NOTIFICATIONS FOR MONTHLY MEMBERSHIP    
     $memberSettingModel = new \App\Models\MemberSetting();
     $memberMonthlyNotification = $memberSettingModel->getMemberSetting(Auth::user()->id, 'show_monthly_member_notification');
     $memberAgreedMonthlyTerms = $memberSettingModel->getMemberSetting(Auth::user()->id, 'member_agreed_monthly_terms');

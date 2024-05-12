@@ -4,6 +4,8 @@ namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use App\Models\Member;
+use App\Models\ScheduleItem;
 use App\Models\MemberMultiAccount;
 use App\Models\MemberMultiAccountAlias;
 
@@ -36,7 +38,7 @@ class MemberMultiAccountController extends Controller
     }
 
 
-    public function getMemberMultiAccount(Request $request, MemberMultiAccount $memberMultiAccount, MemberMultiAccountAlias $memberMultiAccountAlias) 
+    public function getMemberMultiAccount(Request $request, Member $member, ScheduleItem $scheduleItem, MemberMultiAccount $memberMultiAccount, MemberMultiAccountAlias $memberMultiAccountAlias) 
     {
 
         $userID = $request->memberID; 
@@ -44,10 +46,16 @@ class MemberMultiAccountController extends Controller
         //get member alias accounts
         $MemberAliasAccounts = $memberMultiAccountAlias->getMemberAliasAccounts($userID);
 
+        //count member active schedules
+        $memberInfo = $member->where('user_id', $userID)->first();
+        $totalScheduledItem = $scheduleItem->getTotalMemberReserved($memberInfo);
+
+
         if (count($MemberAliasAccounts) >= 1) {
 
             $results = [                
                 'accounts'  => $MemberAliasAccounts,
+                'totalScheduledItem' =>  $totalScheduledItem,
                 'isAliasAccount' => true,
                 'success'   => true,               
             ];  
@@ -151,4 +159,6 @@ class MemberMultiAccountController extends Controller
                 "accounts" => $accounts
             ]);               
     }
+
+   
 }

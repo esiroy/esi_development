@@ -47,9 +47,7 @@
         </div>     
 
         <div id="multiaccount-modal-container">
-            <b-modal id="memberMultiAccountModal" size="lg" title="Add Multiple Account" @show="showAddMultiAccountsModal">                  
-
-           
+            <b-modal id="memberMultiAccountModal" size="lg" title="Add Multiple Account" @show="showAddMultiAccountsModal"> 
 
                 <div class="row" v-show="this.loading">
                     <div class="col-12 text-center">
@@ -103,8 +101,15 @@
                 <template #modal-footer>
 
                     <div class="buttons-container w-100" v-if="!loading">
-                        <b-button variant="primary" size="sm" class="float-right mr" id="saveAccount" v-on:click="saveAccount">Save</b-button>
-                        <b-button variant="danger" size="sm" class="float-right mr-2" @click="$bvModal.hide('memberMultiAccountModal')">Cancel</b-button>                            
+                        <div id="button-container" class="w-100" v-if="totalScheduledItem <= 0">
+                            <b-button variant="primary" size="sm" class="float-right mr" id="saveAccount" v-on:click="saveAccount">Save</b-button>
+                            <b-button variant="danger" size="sm" class="float-right mr-2" @click="$bvModal.hide('memberMultiAccountModal')">Cancel</b-button>                            
+                        </div>
+                        <div v-else class="w-100">
+                            <span class="text-danger small font-weight-bold">*Note: You can only update multi accounts if you have no more active schedules</span>
+                            <b-button variant="secondary" size="sm" class="float-right mr" id="saveAccount" disabled>Save</b-button>
+                            <b-button variant="danger" size="sm" class="float-right mr-2" @click="$bvModal.hide('memberMultiAccountModal')">Cancel</b-button>                             
+                        </div>
                     </div>
 
                     <div v-if="loading">
@@ -150,7 +155,9 @@ export default {
             successMessage: null,
 
              //Listings
-            accountLists: null
+            accountLists: null,
+
+            totalScheduledItem: 0
 		};
 	},
     mounted: function () 
@@ -169,6 +176,8 @@ export default {
             this.isSuccess =  null;
             this.successMessage = null;           
             
+            this.totalScheduledItem = 0;
+
             clearTimeout(this.hideTimeOut);
             
         },
@@ -299,10 +308,14 @@ export default {
 
                 if (response.data.success === true) 
                 { 
+                
                     this.accounts = response.data.accounts; 
+                    this.totalScheduledItem = response.data.totalScheduledItem;
+
                     this.isAliasAccount = response.data.isAliasAccount;
 
-                    for (let i = 0; i < this.accounts.length; i++) {
+                    for (let i = 0; i < this.accounts.length; i++) 
+                    {
                         if (this.accounts[i].is_default == true) {
                             this.accounts[i].is_default = true;
                         } else {

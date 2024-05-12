@@ -416,7 +416,6 @@
 
         // Event listener for when the connection is established
         socket.on('connect', () => {
-            console.log('Connected to chat server');
             let user = {
                 channelid: id,
                 userid: id,
@@ -432,7 +431,7 @@
 
 
         socket.on('CHANNEL_JOINED', (data) => {
-            console.log("joined in channel: " + data.channelID);
+            //console.log("joined in channel: " + data.channelID);
         });
 
         socket.on('PRIVATE_MESSAGE_SENT', (data) => {
@@ -464,7 +463,7 @@
             if ($('#tutorMemoReplyModal').is(':visible')) {
                 getUnreadTeacherMessages(data.lessonID);
             } else {
-                console.log("hidden member reply modal, will not get unread messages")
+                //console.log("hidden member reply modal, will not get unread messages")
             }
 
             getMemberInbox();   
@@ -977,7 +976,7 @@
                 },               
                 success: function(data) 
                 {
-                    console.log(data);
+                    //console.log(data);
                     
                     //delegate to user message list and show counter on that 
                     delegateToMessageList(data.inbox)

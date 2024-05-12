@@ -254,10 +254,12 @@ Route::middleware('auth:api')->post('/memberAgreeMonthlyTerms', 'API\MemberMonth
 
 
 //Member ulti Account 
-Route::middleware('auth:api')->post('/getMemberMultiAccount', 'API\MemberMultiAccountController@getMemberMultiAccount')->name('getMemberMultiAccount');
+Route::middleware('auth:api')->post('/getMemberMultiAccount', 'API\MemberMultiAccountController@getMemberMultiAccount')->name('getMemberMultiAccount');    //Default options or if it has options will get the alias of the multi Accounts
+Route::middleware('auth:api')->post('/listMemberMultiAccount', 'API\MemberMultiAccountController@listMemberMultiAccount')->name('listMemberMultiAccount'); //Listings of the Users Ony Selected
+Route::middleware('auth:api')->post('/getMultiAccountOptions', 'API\MemberMultiAccountController@getMultiAccountOptions')->name('getMemberMultiAccount');  //Show Accounts for Multi accounts
 Route::middleware('auth:api')->post('/saveMemberMultiAccount', 'API\MemberMultiAccountController@saveMemberMultiAccount')->name('saveMemberMultiAccount');
-Route::middleware('auth:api')->post('/listMemberMultiAccount', 'API\MemberMultiAccountController@listMemberMultiAccount')->name('listMemberMultiAccount');
-Route::middleware('auth:api')->post('/getMultiAccountOptions', 'API\MemberMultiAccountController@getMultiAccountOptions')->name('listMemberMultiAccount');
+Route::middleware('auth:api')->post('/checkMultiAccountsIsValid', 'API\MemberMultiAccountController@checkMultiAccountsIsValid')->name('checkMultiAccountsIsValid');
+
 
 //Recent Lesson (Report Card with multi Accounts)
 Route::middleware('auth:api')->post('/getRecentLessonScore', 'API\RecentLessonController@getRecentLessonScore')->name('getRecentLessonScore');
