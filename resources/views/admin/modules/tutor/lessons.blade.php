@@ -161,7 +161,14 @@
                                                 <!--@note: get member profile link / name -->
                                                 @if(isset( $lessons[$dateView][$timeSlot['startTime']]['member_id'] ))
                                                     @php 
-                                                        $memberID = $lessons[$dateView][$timeSlot['startTime']]['member_id'];
+
+                                                        $lesson = $lessons[$dateView][$timeSlot['startTime']];
+                                                        $memberID = $lessons[$dateView][$timeSlot['startTime']]['member_id'];    
+                                                        
+                                                        if (isset($lesson['maid'])) {
+                                                            $multiAccountID = $lesson['maid'];
+                                                        }
+                                                        
                                                     @endphp
                                                     <div class="text-dark">
                                                         <!--
@@ -169,9 +176,16 @@
                                                             {{$lessons[$dateView][$timeSlot['startTime']]['nickname']}}
                                                         </a>
                                                         -->
+                                                        @if (isset($multiAccountID)) 
+
+                                                        <a id="{{$memberID}}" name="{{$memberID}}" onclick="openUrlTab('{{ route('admin.member.show',  $memberID) }}?accountID={{$multiAccountID}}')" href="#">
+                                                            {{$lessons[$dateView][$timeSlot['startTime']]['nickname']}}
+                                                        </a>                                                        
+                                                        @else 
                                                         <a id="{{$memberID}}" name="{{$memberID}}" onclick="openUrlTab('{{ route('admin.member.show',  $memberID) }}')" href="#">
                                                             {{$lessons[$dateView][$timeSlot['startTime']]['nickname']}}
                                                         </a>
+                                                        @endif
                                                         
                                                     </div>
                                                     <div class="hide">
