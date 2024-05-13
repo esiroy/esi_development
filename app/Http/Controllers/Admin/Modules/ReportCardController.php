@@ -97,7 +97,10 @@ class ReportCardController extends Controller
 
             if ($accountID == null) {
 
-                $accountID = $accountAliasModel->getMemberDefaultAccount($memberID)->member_multi_account_id;
+                if (isset( $accountAliasModel->getMemberDefaultAccount($memberID)->member_multi_account_id)) {
+                    $accountID = $accountAliasModel->getMemberDefaultAccount($memberID)->member_multi_account_id;
+                }
+                
             }
         
 
