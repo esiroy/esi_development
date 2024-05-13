@@ -80,6 +80,7 @@ class MemberMultiAccountController extends Controller
                 }
                 $results = [                
                     'accounts'  => $accounts,
+                    'totalScheduledItem' =>  $totalScheduledItem,
                     'isAliasAccount' => false,
                     'success'   => true,               
                 ];  
@@ -90,6 +91,7 @@ class MemberMultiAccountController extends Controller
                 
                 $results = [                
                     'message'   => "Error, No multiple member accounts detected",
+                    'totalScheduledItem' =>  $totalScheduledItem,
                     'isAliasAccount' => false,
                     'success'   => false,               
                 ];  
