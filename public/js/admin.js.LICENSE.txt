@@ -40,16 +40,6 @@
  * The buffer module from node.js, for the browser.
  *
  * @author   Feross Aboukhadijeh <feross@feross.org> <http://feross.org>
-<<<<<<< HEAD
-=======
- * @license  MIT
- */
-
-/*!
- * The buffer module from node.js, for the browser.
- *
- * @author   Feross Aboukhadijeh <http://feross.org>
->>>>>>> multiaccount_4_26_2024
  * @license  MIT
  */
 
