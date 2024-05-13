@@ -7,11 +7,19 @@
         <div id="member-multaccount-ui" class="bg-lightgreen pt-0 px-0">
             <div class="col-md-12 bg-green text-white pt-2 pb-2 text-center">
                 <strong>Multi Account</strong> 
-                <span class="float-right">
-                    <span v-b-modal.memberMultiAccountModal>
-                        <i class="fas fa-plus"></i>
-                    </span>
-                </span>
+               
+                
+               
+                <span class="pl-2 float-right">
+                    <a href="JavaScript:PopupCenter('https://www.mytutor-jpn.com/info/2024/0509183247.html','Member Multiple Account Help',900,820);" class="text-white">
+                        <i aria-hidden="true" class="fa fa-question"></i>
+                    </a>
+                </span>     
+                
+                <span class="float-right" v-b-modal.memberMultiAccountModal>
+                    <i class="fas fa-plus"></i>
+                </span>    
+
             </div>
             <div class="col-md-12  pt-2 pb-2 ">
 
