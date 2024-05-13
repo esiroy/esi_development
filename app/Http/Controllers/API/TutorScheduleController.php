@@ -381,7 +381,7 @@ class TutorScheduleController extends Controller
             //** ADD MEMBER TRANSACTION */          
             if ($memberID != null) {
 
-                if ($memberID !== $scheduleItem->member_id) {
+                //if ($memberID !== $scheduleItem->member_id) {
 
                     $memberTransactionData = [
                         //'scheduleItem'      => $scheduleItem,
@@ -394,7 +394,7 @@ class TutorScheduleController extends Controller
                    $transactionObj = new AgentTransaction();
                    $transaction = $transactionObj->addMemberTransactions($memberTransactionData);
                                        
-                }
+                //}
             }
 
             //get lessons

@@ -550,7 +550,7 @@ class MemberController extends Controller
         /* TEST ALL VARIABLES 
         *  BUG UPDATE (RESERVATION NOT COUNTING PROPERLY)      
 
-    return Response()->json([
+        return Response()->json([
                 "success"   => false,
                 "MEMBER_RESERVE_LIMIT_ACTIVE" => $MEMBER_RESERVE_LIMIT_ACTIVE,
                 "tutor" => $tutorID,
