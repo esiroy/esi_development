@@ -39,10 +39,10 @@
             <div id="member-details" class="card esi-card">
                 <div class="card-header esi-card-header">
                     Schedule List 
-                    <span class="small text-dark ml-5"> Total Reserved For the Current Month ({{ $totalReserved }}) </span>
+                    <!--<span class="small text-dark ml-5"> Total Reserved For the Current Month ({{ $totalReserved }}) </span>-->
                 </div>
 
-                <!--[start] HEADER MEMBER INFO DETAILS
+             
                 <div class="member mt-3">
                     <div class="container">
                         <div class="row">
@@ -73,7 +73,7 @@
                         </div>
                     </div>
                 </div>
-                [end] HEADER MEMBER INFO DETAILS--> 
+               
 
                 <div class="card-body esi-card-body">
 
