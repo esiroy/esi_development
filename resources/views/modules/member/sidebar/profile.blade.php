@@ -12,7 +12,7 @@
             <img src="{{ url('images/userMale.png') }}" align="absmiddle"> マイページ
 
             <span id="linked-account-help" class="pl-2 float-right pt-1">
-                <a href="JavaScript:PopupCenter('https://www.mytutor-jpn.com/info/2019/0405223135.html','Member Account Help',900,820);" class="text-white">
+                <a href="JavaScript:PopupCenter('https://www.mytutor-jpn.com/info/2023/0904211645.html','Member Account Help',900,820);" class="text-white">
                     <i class="fa fa-question" aria-hidden="true"></i>
                 </a>
             </span>
