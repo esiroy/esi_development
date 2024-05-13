@@ -158,9 +158,10 @@
                         <tbody>
                             <tr>
                                 <th>Schedule <br/>ID</td>
-                                <th>Transaction Date</th>
-                                <th>Transaction</th>
-                                <th>Lesson Date</th> 
+                                <th>Account</td>
+                                <th style="width:160px">Transaction Date</th>
+                                <th style="width:100px">Transaction</th>
+                                <th style="width:125px">Lesson Date</th> 
                                 <th>Name</th>
                                 <th>Points</th>
                                 <th>Original Credit Expiration Date</th>
@@ -176,13 +177,17 @@
                                
                                 <td class="small">
                                     {{ $scheduleItem->id ?? ''}}
+                                </td>                               
+                                <td class="small">
+                                    @if (isset($scheduleItem->multiAccount->member_multi_account_id))
+                                        <span class="badge badge-primary small">AC{{ $scheduleItem->multiAccount->member_multi_account_id ?? '' }} </span>
+                                    @else 
+                                        <span class="badge badge-primary small">AC1</span>
+                                        <span class="small text-muted"> ~</span>
+                                    @endif
                                 </td>
-                                
                                 <td class="small">
                                     <input type="hidden" value="{{ $scheduleItem->id ?? ''}}">
-
-
-                                    
                                     {{ date('F d, Y', strtotime($transaction->created_at)) }} 
                                    
                                     {{ date('h:i:s a', strtotime($transaction->created_at)) }}                                    

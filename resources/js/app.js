@@ -34,6 +34,8 @@ if (url[1] === 'admin') {
             if (url[4] === 'edit') {
                 console.log("load edit member!")
                 Vue.component('member-update-component', require('./components/MemberUpdateComponent.vue').default);
+                Vue.component('member-multiaccount-update', require('./components/backend/member/MemberMultiAccountUpdateComponent.vue').default);
+                
             } else {
 
                 Vue.component('member-create-component', require('./components/MemberCreateComponent.vue').default);
@@ -46,6 +48,7 @@ if (url[1] === 'admin') {
                 Vue.component('member-notes-component', require('./components/backend/member/MemberNotesComponent.vue').default);
                 Vue.component('member-time-manager-viewer-component', require('./components/backend/member/MemberTimeManagerViewerComponent.vue').default);
                 Vue.component('member-mini-test-viewer-component', require('./components/backend/member/MemberMiniTestViewerComponent.vue').default);
+                Vue.component('report-card-viewer-component', require('./components/backend/member/ReportCardViewerComponent.vue').default) 
             }
             break;
         case 'reportcard':
@@ -55,13 +58,13 @@ if (url[1] === 'admin') {
         case 'customerchatsupport':
             Vue.component('admin-chat-component', require('./components/AdminChatComponent.vue').default);
             break;
-
-
         default:
             console.log("admin default page loaded")
-            Vue.component('schedule-item-component', require('./components/ScheduleItemComponent.vue').default);
+            Vue.component('schedule-item-component', require('./components/ScheduleItemComponent.vue').default);          
 
     }
+
+    
 
 } else {
 
@@ -75,7 +78,10 @@ if (url[1] === 'admin') {
 
     //Vue.component('simple-uploader-component', require('./components/SimpleUploaderComponent.vue').default);
 
-
+    Vue.component('member-mutliaccount-component', require('./components/frontend/member/MemberMultiAccountComponent.vue').default)
+    Vue.component('member-lessonviewer-component', require('./components/frontend/member/MemberLessonViewerComponent.vue').default)
+    
+    
     //front end 
     switch (url[1]) {
         case 'customerchatsupport':
@@ -88,7 +94,7 @@ if (url[1] === 'admin') {
     }
 }
 
-
+Vue.component('debug-chat-component', require('./components/frontend/chat/debugChatComponent.vue').default)
 
 
 /**

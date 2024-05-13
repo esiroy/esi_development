@@ -55,6 +55,20 @@
                                             </td>
                                         </tr>
 
+                                        <tr>
+                                            <td>Multi Account ID</td>
+                                            <td> 
+                                                <input required type="text" disabled value="{{$scheduleItem->member_multi_account_id ??'' }}">                                               
+                                            </td>
+                                        </tr>    
+
+                                        <tr>
+                                            <td>Multi Account Alias</td>
+                                            <td> 
+                                                <input required type="text" disabled value="{{ $multiAccountAlias  ?? ''}}">
+                                            </td>
+                                        </tr>                                        
+
                                         <!--
                                         <tr>
                                             <td>

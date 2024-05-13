@@ -54,8 +54,19 @@ class dummyController extends Controller
     }
 
     public function index() {
+
+        $aliases = Auth::User()->memberInfo->selectedAliasAccounts;
+        
+        foreach($aliases as $alias) {
+            echo $alias->name;
+            echo "<BR>";
+        }
+
+        exit();
         return view("dummy/index", ['title'=> "TEST"]);
     }
+
+
 
     public function questions() {
 

@@ -46,8 +46,7 @@ class TutorScheduleController extends Controller
     public function getMembersDropdownOptions(Request $request)
     {
         try {
-
-            //DB::table('members')->
+          
             $members = DB::table('members')->join('users', 'users.id', '=', 'members.user_id')
                 ->select('members.user_id as uid', 'users.firstname as fn', 'users.lastname as ln')
                 ->where('users.valid', 1)
@@ -94,9 +93,9 @@ class TutorScheduleController extends Controller
  
         $lessonData = null;
         $scheduled_at = $request['scheduled_at'];
-        $duration = $request['shiftDuration'];
-        
+        $duration = $request['shiftDuration'];        
         $scheduledItemData = $request['scheduledItemData'];
+        $multiAccountID = $request['multiAccountID'];
         
         //find schedule to update
         $scheduleItem = ScheduleItem::find($scheduledItemData['id']);
@@ -179,7 +178,11 @@ class TutorScheduleController extends Controller
             if ($request['status'] == 'CLIENT_RESERVED' || $request['status'] == 'CLIENT_RESERVED_B') 
             {
                 //WHEN CLIENT IS RESERVED IT WILL NOT LET IT BOOK, IT WILL PROMPT TO REFRESH
-                $isLessonExists = ScheduleItem::where('lesson_time', $lessonTime)->where('tutor_id', $tutorInfo->user_id)->where('schedule_status', '!=', 'TUTOR_SCHEDULED')->where('valid', 1)->exists();            
+                $isLessonExists = ScheduleItem::where('lesson_time', $lessonTime)
+                    ->where('tutor_id', $tutorInfo->user_id)
+                    ->where('member_id', '!=', $member['id'])
+                    ->where('schedule_status', '!=', 'TUTOR_SCHEDULED')->where('valid', 1)->exists();  
+
                 if ($isLessonExists) {                
                     $tutorLessonsData = $scheduleItem->getSchedules($scheduled_at, $duration);
                     return Response()->json([
@@ -191,14 +194,18 @@ class TutorScheduleController extends Controller
                 }
             } else if ($request['status'] == 'TUTOR_SCHEDULED' ||  $request['status'] == 'SUPPRESSED_SCHEDULE' || $request['status'] == 'CLIENT_NOT_AVAILABLE' || $request['status'] == 'COMPLETED') {
 
-                $isLessonExists = ScheduleItem::where('lesson_time', $lessonTime)->where('tutor_id', $tutorInfo->user_id)->where('member_id', '!=', $memberID)->where('valid', 1)->exists();            
+                $isLessonExists = ScheduleItem::where('lesson_time', $lessonTime)
+                            ->where('tutor_id', $tutorInfo->user_id)
+                            ->where('member_id', '!=', $memberID)
+                            ->where('valid', 1)->exists();            
+
                 if ($isLessonExists) {                
                     $tutorLessonsData = $scheduleItem->getSchedules($scheduled_at, $duration);
                     return Response()->json([
                         "success" => false,
                         "refresh" => true,
                         'tutorLessonsData' => $tutorLessonsData,
-                        "message" => "The Schedule $FlessonTime is already booked or was updated after the page load, press okay to refresh schedules.",
+                        "message" => "The Schedule $FlessonTime is already booked or was updated after the page load, press okay to refresh schedules..",
                     ]);                    
                 }
             }
@@ -215,6 +222,7 @@ class TutorScheduleController extends Controller
                     'schedule_status' => $request['status'],
                     'email_type' => $emailType,
                     'valid' => 1,
+                    'member_multi_account_id' => $multiAccountID
                 ];
 
             } else if ($request['status'] == 'TUTOR_CANCELLED') {
@@ -225,6 +233,7 @@ class TutorScheduleController extends Controller
                     'schedule_status' => $request['status'],
                     'email_type' => $emailType,
                     'valid' => 1,
+                    'member_multi_account_id' => $multiAccountID
                 ];
 
             } else if ($request['status'] == 'CLIENT_RESERVED' || $request['status'] == 'CLIENT_RESERVED_B') {
@@ -244,6 +253,7 @@ class TutorScheduleController extends Controller
                     'schedule_status' => $request['status'],
                     'email_type' => $emailType,
                     'valid' => 1,
+                    'member_multi_account_id' => $multiAccountID
                 ];
 
 
@@ -370,16 +380,21 @@ class TutorScheduleController extends Controller
 
             //** ADD MEMBER TRANSACTION */          
             if ($memberID != null) {
-                $memberTransactionData = [
-                     //'scheduleItem'      => $scheduleItem,
-                    'scheduleItemID'      => $scheduledItemData['id'],
-                    'memberID' => $memberID,
-                    'shiftDuration' => $request['shiftDuration'],
-                    'reservation_type' => $reservationType,
-                    'status' => $request['status'],
-                ];
-                $transactionObj = new AgentTransaction();
-                $transaction = $transactionObj->addMemberTransactions($memberTransactionData);
+
+                if ($memberID !== $scheduleItem->member_id) {
+
+                    $memberTransactionData = [
+                        //'scheduleItem'      => $scheduleItem,
+                       'scheduleItemID'      => $scheduledItemData['id'],
+                       'memberID' => $memberID,
+                       'shiftDuration' => $request['shiftDuration'],
+                       'reservation_type' => $reservationType,
+                       'status' => $request['status'],
+                   ];
+                   $transactionObj = new AgentTransaction();
+                   $transaction = $transactionObj->addMemberTransactions($memberTransactionData);
+                                       
+                }
             }
 
             //get lessons
@@ -416,6 +431,7 @@ class TutorScheduleController extends Controller
                 "tutorData" => $tutor,
                 "memberData" => $memberData,
                 //'tutorLessonsData' => $tutorLessonsData,
+                "maid" => $selectedSchedule->member_multi_account_id,
             ]);
 
         } catch (\Exception $e) {
@@ -443,6 +459,8 @@ class TutorScheduleController extends Controller
         $duration = $request['shiftDuration'];
         $tutor = $request['tutorData'];
         $member = $request['memberData'];
+        $multiAccountID = $request['multiAccountID'];
+
 
         if (isset($member['id'])) {
             $memberID = $member['id'];
@@ -505,6 +523,7 @@ class TutorScheduleController extends Controller
                 'lesson_shift_id' => $shift->id,
                 'valid' => 1,
                 'memo' => "",
+                'member_multi_account_id' => $multiAccountID
             ];
 
             /****************************************************
@@ -673,6 +692,7 @@ class TutorScheduleController extends Controller
                 "scheduleItemID" => $scheduleItem->id,
                 "tutorData" => $request['tutorData'],
                 "memberData" => $memberData,
+                "maid" => $selectedSchedule->member_multi_account_id,
                 //'tutorLessonsData' => $tutorLessonsData, //@todo: replace this MEMOMY HUGGER WITH ID JS
             ]);
 

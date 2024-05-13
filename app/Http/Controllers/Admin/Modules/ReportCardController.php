@@ -14,6 +14,8 @@ use App\Models\Agent;
 use App\Models\Tutor;
 use App\Models\UploadFile; 
 use App\Models\Homework; 
+use App\Models\MemberMultiAccountAlias; 
+use Auth;
 
 class ReportCardController extends Controller
 {   
@@ -23,14 +25,16 @@ class ReportCardController extends Controller
     */
     public function index(Request $request) 
     {   
-
+       
         $scheduleitemid = $request->scheduleitemid;
 
         $scheduleItem = ScheduleItem::find($scheduleitemid);
         
         //get member details        
-        $memberInfo = Member::where('user_id',$scheduleItem->member_id)->first();       
-        
+        $memberInfo = Member::where('user_id',$scheduleItem->member_id)->first(); 
+
+        $multiAccountAliasObj = new MemberMultiAccountAlias;
+        $multiAccountAlias = $multiAccountAliasObj->getAlias($scheduleItem->member_id, $scheduleItem->member_multi_account_id);
 
         //get photo
         $userImageObj = new UserImage();
@@ -57,12 +61,15 @@ class ReportCardController extends Controller
         //(get  list of home work )
         $homework = Homework::where('schedule_item_id', $scheduleitemid)->first();
 
-        return view('admin.modules.member.reportcard', compact('scheduleitemid', 'userImage', 'scheduleItem', 'reportCard', 'latestReportCard', 'memberInfo', 'tutorInfo' , 'homework'));
+        return view('admin.modules.member.reportcard', compact('multiAccountAlias',
+                                        'scheduleitemid', 'userImage', 
+                                        'scheduleItem', 
+                                        'reportCard', 'latestReportCard', 'memberInfo', 'tutorInfo' , 'homework'));
     }
 
 
 
-    public function reportcardlist($memberID, Request $request) 
+    public function reportcardlist($memberID, Request $request, ReportCard $reportCard) 
     {
 
         $memberInfo         = Member::where('user_id',$memberID)->first();
@@ -75,13 +82,30 @@ class ReportCardController extends Controller
             $tutorInfo       = Tutor::where('user_id', $memberInfo->tutor_id)->first(); 
 
             //report cards
+            /*
             $reportcards = ReportCard::select('report_card.*', 'schedule_item.lesson_time')
                                         ->join('schedule_item', 'report_card.schedule_item_id', '=', 'schedule_item.id')
                                         ->where('report_card.member_id', $member->id)
                                         ->orderBy('schedule_item.lesson_time', 'DESC')
                                         ->paginate(30);
+            */            
+            
+            
+            $accountID = $request->get('accountID');
+            $accountAliasModel = new \App\Models\MemberMultiAccountAlias();
 
-            return view('admin.modules.member.reportcardlist', compact('reportcards', 'agentInfo' ,'tutorInfo', 'member', 'memberInfo'));
+
+            if ($accountID == null) {
+
+                $accountID = $accountAliasModel->getMemberDefaultAccount($memberID)->member_multi_account_id;
+            }
+        
+
+            $perPage = 30;         
+            $reportcards = $reportCard->getAllLatestByMultiID($memberID, $accountID, $perPage);                                    
+            $accounts = $accountAliasModel->getMemberSelectedAccounts($memberID);
+
+            return view('admin.modules.member.reportcardlist', compact('accountID', 'accounts','reportcards', 'agentInfo' ,'tutorInfo', 'member', 'memberInfo'));
 
         } else {
 

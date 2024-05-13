@@ -7,25 +7,22 @@
     <div id="scheduleItemModal">
 
 
-        <b-modal id="memberMemoModal" ref="memberMemoModal"  v-bind:title="'Member Memo - ' + this.selectedlessonTime"  @show="retrieveMemo()" ok-only ok-variant="secondary" ok-title="Close" no-fade class="small">
+        <b-modal id="memberMemoModal" ref="memberMemoModal"  v-bind:title="'Member Memo - ' + this.selectedlessonTime"  
+        @show="retrieveMemo()" ok-only ok-variant="secondary" ok-title="Close" no-fade class="small">
             <div id="user-chatlog" ref="userChatlog" style="height: 420px;overflow-y: scroll;overflow-x: hidden;">
                 <p class="my-2 " v-html="memberMemo"></p>
             </div>
         </b-modal>
 
-        <b-modal id="schedulesModal" 
-            title="Schedule Lesson"
-            button-size="sm"
-            no-fade
-            :cancel-disabled="modalBusy"
-            :ok-disabled="modalBusy"
-            :no-close-on-backdrop="true"
-            @show="resetModal"
-            @hidden="hideModal"
-            @ok="handleOk"
-            
-            
+        <b-modal id="schedulesModal" title="Schedule Lesson" button-size="sm" no-fade :cancel-disabled="modalBusy" 
+            :ok-disabled="modalBusy" :no-close-on-backdrop="true" 
+            @show="resetModal" @hidden="hideModal" @ok="handleOk"
         >
+            <!--
+            <div class="row">
+                <div class="col-12">test : {{ modalBusy }}</div>
+            </div>
+            -->
             <div class="row">
                 <div class="col-md-3">
                     <label>Status :</label>
@@ -83,6 +80,18 @@
                 </div>
             </div> 
   
+            <div id="multi-account-field-wrapper" class="row mt-2" v-show="showMultiAccountDropdown">
+                <div class="col-md-3">Member Account:</div>  
+                <div class="col-md-9">
+                    <select id="multi-account-field" class="form-control form-control-sm" v-model="multiAccountID">
+                        <option v-for="account in accounts" :key="'account-' + account.member_multi_account_id"                            
+                            :value="account.member_multi_account_id">
+                            AC{{ account.member_multi_account_id }} - {{ account.name }}
+                        </option>
+                    </select>                    
+                </div>
+            </div>
+
             <!--#Email Type-->
             <div class="row mt-2" v-show="this.status === 'CLIENT_RESERVED' || this.status === 'CLIENT_RESERVED_B'">
                 <div class="col-md-3">Email Type:</div>
@@ -119,12 +128,12 @@
                         <tr>
                             <th class="schedTime static">
                                 <div class="bordered">
-                                    <div class="class-schedule-container"></div>
+                                    <div class="class-schedule-container "></div>
                                 </div>
                             </th>
                             <td class="schedTime" v-for="time in timeList" :key="time.id">
                                 <div class="bordered">
-                                    <div class="class-schedule-container">
+                                    <div class="class-schedule-container ">
                                         <span class="flag-ph"></span>
                                         <span class="class-schedule class-schedule-start">{{time.startTime}}</span>
                                     </div>
@@ -150,15 +159,20 @@
                                 <div :id="'btnAdd-' + tutor.user_id + '-' + time.startTime"
                                     class="addSchedule SCHEDULE_ITEM" 
                                     v-show="checkButton({'tutorID':tutor.id, 'tutorUserID': tutor.user_id, 'startTime':time.startTime, 'endTime': time.endTime })">
-                                    <input type="button" value="" class="btnAdd" v-b-modal.addScheduleModal @click="openSchedule({'tutorID':tutor.id, 'tutorUserID': tutor.user_id, 'startTime': time.startTime, 'endTime': time.endTime })"/>
+                                    <input type="button" value="" class="btnAdd" v-b-modal.addScheduleModal 
+                                    @click="openSchedule({'tutorID':tutor.id, 'tutorUserID': tutor.user_id, 'startTime': time.startTime, 'endTime': time.endTime })"/>
                                 </div>
 
                                 <div :id="tutor.user_id + '-' + time.startTime"
                                     v-show="checkStatus({'tutorID':tutor.id, 'tutorUserID': tutor.user_id, 'startTime':time.startTime, 'endTime': time.endTime })" 
                                     :class="getStatus({'tutorID':tutor.id, 'tutorUserID': tutor.user_id, 'startTime':  time.startTime, 'endTime': time.endTime }) + ' SCHEDULE_ITEM' ">
-                                    <div class="client">
+
+                                    <!--- [START] NAME OF STUDENT-->
+                                    <div class="client">                                        
                                         <div v-html="getMember({'tutorID':tutor.id, 'tutorUserID': tutor.user_id, 'startTime':time.startTime, 'endTime': time.endTime })"></div>                                   
                                     </div>
+                                    <!--- [END]NAME OF STUDENT-->
+
                                     <div class="btn-container">
 
                                         <div class="iReportCard2" v-show="hasQuestionnaire({'tutorID':tutor.id, 'tutorUserID': tutor.user_id, 'startTime': time.startTime, 'endTime': time.endTime})">
@@ -177,8 +191,13 @@
                                         </div>
 
                                         
-                                        <div class="iEdit"><a href="javascript:void(0);" @click="editSchedule({'tutorID':tutor.id, 'tutorUserID': tutor.user_id, 'startTime': time.startTime, 'endTime': time.endTime})"><img src="/images/iEdit.gif"></a></div>
+                                        <div class="iEdit"><a href="javascript:void(0);" 
+                                            @click="editSchedule({'tutorID':tutor.id, 'tutorUserID': tutor.user_id, 'startTime': time.startTime, 'endTime': time.endTime})">
+                                            <img src="/images/iEdit.gif"></a>
+                                        </div>
                                         <div class="iDelete"><a href="javascript:void(0);" @click="confirmDelete({'tutorID':tutor.id, 'tutorUserID': tutor.user_id, 'startTime': time.startTime, 'endTime': time.endTime})"><img src="/images/iDelete.gif"></a></div>
+
+                                        <div class="badge badge-pill badge-info" v-html="getAccountTag({'tutorUserID': tutor.user_id, 'startTime':time.startTime, 'endTime': time.endTime })"></div>                                                                           
                                     </div>
                                 </div>
                             </td>
@@ -225,6 +244,10 @@ export default {
     },
     data() {
         return {
+            accounts: [], //multi account id
+            multiAccountID: null, //select model
+            showMultiAccountDropdown: false,
+
             scrollInterval: false,
 
             showModal: false,
@@ -259,6 +282,8 @@ export default {
             //List
             membersList: [],            
             schedules: [],
+            //timer interval
+            intervalId: null,
             //time 
             timeList: [
                 {id:1, startTime: '10:00', endTime: '11:00'},
@@ -293,17 +318,18 @@ export default {
         };
     },
     created() {
-        this.getMemberList();
+        //this.getMemberList();
     },
     async beforeMount() {
         this.shiftDuration  = this.duration;
         this.nextDay  = this.schedule_next_day;
         this.fromDay = this.scheduled_at;    
+        
         this.setMemberListLock(); //disabler of additoinal options 
     },
     async mounted() 
     {
-        let intervalId;
+       
 
         this.nextDay  = this.schedule_next_day;
         this.fromDay = this.scheduled_at;       
@@ -319,14 +345,27 @@ export default {
         let preloader = document.getElementById("preloader");
         preloader.style.display  = "block";
 
-       this.startInterval();
+        this.startInterval();
 
     },
     methods: {      
-        startInterval: function () {
-            setInterval(() => {
-                 this.updateSchedules(this.scheduled_at, this.shiftDuration);
-                 
+        clearInterval() {
+            if (this.intervalId) {
+                console.log("interval cleared")
+                clearInterval(this.intervalId);
+                this.intervalId = null;
+            }
+        },        
+        startInterval() {
+            // Clear any existing interval
+            this.clearInterval();
+
+            console.log("interval started")
+
+            // Start a new interval
+            this.intervalId = setInterval(() => {
+                console.log("updating via interval")
+                this.updateSchedules(this.scheduled_at, this.shiftDuration);
             }, 30000);
         },
         scrollToEnd: function() 
@@ -537,29 +576,89 @@ export default {
 
             this.memberMemo += content;
      
-        },            
+        },
+        getMultiAccountTag(data) {
+            return 1;
+        },  
+        getAccountTag(data) 
+        {
+            let tag = null;
+
+            try {
+                if (data.startTime !== '23:00' || data.startTime !== '23:30') {
+
+                    if (typeof this.lessonsData[data.tutorUserID] !== 'undefined' &&
+                        typeof this.lessonsData[data.tutorUserID][this.scheduled_at] !== 'undefined' &&
+                        typeof this.lessonsData[data.tutorUserID][this.scheduled_at][data.startTime] !== 'undefined') 
+                    {
+                        let lessonData = this.lessonsData[data.tutorUserID][this.scheduled_at][data.startTime];
+                        if (lessonData.maid !== null) {
+                            tag = "AC"+lessonData.maid;
+                        }                          
+                        
+                    } else {
+                        // Code to handle when the value is undefined
+                    }
+
+                } else {
+
+                    if (typeof this.lessonsData[data.tutorUserID] !== 'undefined' &&
+                        typeof this.lessonsData[data.tutorUserID][this.nextDay] !== 'undefined' &&
+                        typeof this.lessonsData[data.tutorUserID][this.nextDay][data.startTime] !== 'undefined') 
+                    {
+
+                        
+                        let lessonData = this.lessonsData[data.tutorUserID][this.nextDay][data.startTime];
+                        if (lessonData.maid !== null) {
+                            tag = "AC"+lessonData.maid;
+                        }                        
+                        
+                    } else {
+                        // Code to handle when the value is undefined
+                    }
+                }
+
+                if (tag !== null) {
+                    return "<span class='small'>"+ tag +"</span>";
+                } else {
+                    return "";
+                }
+                
+
+            } catch(err) { console.log(err) }
+        },
         getMember(data) 
         {          
             try {
                 //23:00 - will be 1 hour advance in japan (00:00) is the time will midnight.
                 //23:30 - will be 1 hour advance in japan (00:30) is the time will midnight and a half :D
                 if (data.startTime == '23:00' || data.startTime == '23:30') {
-                    let lessonData = this.lessonsData[data.tutorUserID][this.nextDay][data.startTime];
-                    //return lessonData.status_checker;
 
-                    let nickname = this.memberDataList[lessonData.member_id].nickname;
+                    let lessonData = this.lessonsData[data.tutorUserID][this.nextDay][data.startTime];
+
+                 
+
+                    //return lessonData.status_checker;
+                    //let nickname = this.memberDataList[lessonData.member_id].nickname;
+
+                    let nickname = lessonData.nickname;
                   
                     //return "<a id='"+lessonData.id+"' href='#' onclick='openMemberTab("+lessonData.member_id+")'>"+ lessonData.nickname +"</a>";
 
-                    return "<a id='"+lessonData.id+"' href='#' onclick='openMemberTab("+lessonData.member_id+")'>"+ nickname +"</a>";
+                    if (nickname) {
+                        return "<a id='"+lessonData.id+"' href='#' onclick='openMemberTab("+lessonData.member_id+","+ lessonData.maid +")'>"+ nickname +"</a>";
+                    }
+                    
 
                 } else {
+
                     let lessonData = this.lessonsData[data.tutorUserID][this.scheduled_at][data.startTime];
-                    let nickname = this.memberDataList[lessonData.member_id].nickname;
+                    let nickname = lessonData.nickname;
 
                     //return "<a id='"+lessonData.id+"' href='#' onclick='openMemberTab("+lessonData.member_id+")'>"+ lessonData.nickname +"</a>";
-
-                    return "<a id='"+lessonData.id+"' href='#' onclick='openMemberTab("+lessonData.member_id+")'>"+ nickname +"</a>";
+                    if (nickname) {
+                        return "<a id='"+lessonData.id+"' href='#' onclick='openMemberTab("+lessonData.member_id+","+ lessonData.maid +")'>"+ nickname +"</a>";
+                    }
                 }
                 //console.log(this.lessonsData[data.tutorUserID][this.scheduled_at][data.startTime])
             }
@@ -627,32 +726,36 @@ export default {
             this.modalBusy = false;
             
             this.modalType = "save";
-            //console.log(tutorData);            
-            //console.log("open schedule");
             this.$bvModal.show("schedulesModal");
-            this.tutorData = tutorData;
-
-            //UPDATE (MAY 19, 2021): 
-            //Set the default status dropdown option  "TUTOR_SCHEDULED" default 
+            
+            //SET TUTOR SCHEDULE AS DEFAULT
+            this.tutorData = tutorData;            
             this.status = "TUTOR_SCHEDULED";
         },
         hideModal() {
-            //console.log("hide modal");
-            //update the schedules when you hide it?
-            //this.getSchedules(this.scheduled_at, this.shiftDuration);
             this.currentStatus = "";
         },
-        resetModal() {
-            //console.log("reset modal"); //this will reset every time it closes.
+        resetMultiAccount() {
+            console.log("reset multiaccont")
+            this.showMultiAccountDropdown = false;
+            this.multiAccountID = null;
+        },
+        resetModal() {          
+
+            //[NEW!] RESET MODAL MULTI ACCOUNT DROPDOWN ADDED (2024)
+            this.resetMultiAccount();
+
             this.memberSelectedID = "";
             this.status = "";
             this.isStatusDisabled = true; 
+            
         },
         handleOk(bvModalEvt) 
         {
             this.modalBusy = true;            
             
-            if (this.status === "NOTHING") this.confirmDelete(this.tutorData);
+            if (this.status === "NOTHING") 
+                this.confirmDelete(this.tutorData);
             else if(this.status === "OVERRIDE") this.confirmOverride(this.tutorData);
             else {
                 //console.log("the id selected => " + this.memberSelectedID.id)
@@ -710,40 +813,28 @@ export default {
                             }
                         });
                     }
-
-                    /*
-                    this.$nextTick(function()
-                    {
-
-
-                    });*/
-                    
-            
                 } else {
                     if (this.modalType === 'save') 
-                    {                       
-                        //this.checkBookedScheduleLimit();
+                    {        
                         this.setTutorSchedule();
 
-                    } else {                   
-                     
-                        //this.checkBookedScheduleLimit();
+                    } else { 
                         this.updateTutorSchedule();
                     }                        
                 }
             }            
             bvModalEvt.preventDefault();
-        }, 
-        checkBookedScheduleLimit() {
-
         },
         onChange (value) {
+            this.multiAccountID = null;
+            this.showMultiAccountField(value.id);
+
             //changing modal selection
-            //console.log(value.id);
+            console.log("on change user:  " + value.id);
+
             try {                
-                this.currentSelectedID = value.id;
-            }   
-            catch(err) { 
+                this.currentSelectedID = value.id;               
+            }   catch(err) { 
                 //console.log("no value");
                 this.currentSelectedID = null; 
             }            
@@ -789,14 +880,61 @@ export default {
             }
          
         },
+        showMultiAccountField(memberID) 
+        {
+            //show multi account  
+            this.showMultiAccountDropdown = false;
+            this.modalBusy = true;
+
+            axios.post("/api/getMultiAccountOptions?api_token=" + this.api_token, 
+            {
+                method            : "POST",
+                memberID          : memberID,
+            })
+            .then(response => {
+
+
+                this.modalBusy = false;
+                this.accounts = response.data.accounts;              
+
+                if (this.accounts.length > 0) 
+                {
+                    this.showMultiAccountDropdown = true;  
+                  
+                    if (this.multiAccountID == null) {
+
+                        for (const account of this.accounts) {
+                            if (account.is_default == true || account.is_default == 1 || account.is_default == "true") {                           
+                                this.multiAccountID = account.member_multi_account_id;
+                                this.$forceUpdate()
+                            }
+                        }                        
+                    }
+                    console.log("deafult accoount id " + this.multiAccountID);                   
+                }
+     
+            });
+
+
+        },        
         editSchedule(scheduleData) 
         {
+          
+            this.modalBusy = true;
+
+            this.$forceUpdate();
+
             //show the modal first and update the values below             
             this.$bvModal.show("schedulesModal");            
             this.modalType = "edit";
 
             //get current schedule data
             this.currentScheduledData = this.getScheduleData(scheduleData);
+      
+            //dropdown multi account field(show)            
+            this.multiAccountID = this.currentScheduledData.maid;
+            this.showMultiAccountField(this.currentScheduledData.member_id);
+            
 
             this.tutorData = scheduleData;
             this.status = this.currentScheduledData.status;
@@ -818,9 +956,10 @@ export default {
                 memberIDFullName =  this.currentScheduledData.member_id + " " + firstname  + " " + lastname;  
                 this.memberSelectedID = { id: this.currentScheduledData.member_id , 'name': memberIDFullName };   
 
-                this.modalBusy = false;
+                //this.modalBusy = false;
             } else {
-                this.modalBusy = false;
+                
+                //this.modalBusy = false;
                 this.memberSelectedID = { id: "" , 'name': "-- Select A Member --" };
             }
             
@@ -867,6 +1006,7 @@ export default {
                 status              : this.status,
                 reservationType     : this.reservationType,
                 cancelationType     : this.cancelationType,
+                multiAccountID      : this.multiAccountID
             })
             .then(response => 
             {
@@ -905,13 +1045,22 @@ export default {
 
                         let memberData = this.memberDataList[response.data.memberData.id];
 
-                        console.log(response.data.memberData.id);
+                        //console.log(response.data.memberData.id);
+                       
+                        if (response.data.memberData.id !== '') {      
+                            
+                            /*
+                           // nickname = memberData.nickname;
+                            //firstname = memberData.firstname;
+                            //lastname = memberData.lastname;
+                            */                            
 
-                        if (response.data.memberData.id !== '') {                            
-                            nickname = memberData.nickname;
-                            firstname = memberData.firstname;
-                            lastname = memberData.lastname;                            
-                        }         
+                            nickname = response.data.memberData.nickname;
+                            firstname = response.data.firstname;
+                            lastname = response.data.lastname;                                                        
+                        } 
+                                     
+                        
 
                         this.lessonsData[tutorUserID][scheduled_at][startTime] = {
                             'id': response.data.scheduleItemID,
@@ -922,6 +1071,7 @@ export default {
                             'lastname':  lastname,
                             'nickname':  nickname,
                             'member_memo': null,
+                            'maid': response.data.maid
                         }
 
                         //set the schedule to display
@@ -941,8 +1091,13 @@ export default {
                         preloaderText.textContent  = "refreshing schedules"; 
 
                         //this is repitive but this will allow the user to see updated from other admin??
-                        this.getSchedules(this.scheduled_at, this.shiftDuration);
+                       // this.getSchedules(this.scheduled_at, this.shiftDuration);
                         this.$forceUpdate();
+
+                        //clear the auto update interval
+                        this.clearInterval();
+                        this.startInterval();
+
                     });
       
                 } else {           
@@ -998,6 +1153,7 @@ export default {
                 status              : this.status,
                 reservationType     : this.reservationType,
                 cancelationType     : this.cancelationType,
+                multiAccountID      : this.multiAccountID
             })
             .then(response => 
             {
@@ -1035,6 +1191,7 @@ export default {
                         'lastname': response.data.memberData.lastname,
                         'nickname': response.data.memberData.nickname,
                         'member_memo': response.data.member_memo,
+                        'maid': response.data.maid
                     }
 
                     //set the schedule to display
@@ -1053,7 +1210,12 @@ export default {
                     preloaderText.textContent  = "refreshing schedules";                    
 
                     this.getSchedules(this.scheduled_at, this.shiftDuration);
-                    this.$forceUpdate();                    
+                    this.$forceUpdate();           
+                    
+                    //clear the auto update interval
+                    this.clearInterval();
+                    this.startInterval();
+
                 } 
                 else {            
                     this.modalBusy = false;        

@@ -132,8 +132,14 @@
 <script>
     let url = "{{ url('/admin/member/') }}";
 
-    function openMemberTab(id) {
-        window.open(url + "/" + id, 'memberTab');
+    function openMemberTab(id, multiAccountID) {
+        if (multiAccountID >= 1) {
+            let link = url + "/" + id + "?accountID=" + multiAccountID;
+            window.open(link, 'memberTab');
+        } else {
+            window.open(url + "/" + id, 'memberTab');
+        }
+            
     }
 
 </script>

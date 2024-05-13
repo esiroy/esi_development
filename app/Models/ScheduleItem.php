@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 use App\Models\MemoReply;
 
 use App\Models\MiniTestResult;
+use App\Models\Member;
 
 class ScheduleItem extends Model
 {
@@ -710,7 +711,8 @@ class ScheduleItem extends Model
                 'member_id' => $item->member_id,
                 'nickname' => $nickname,
                 'firstname' => preg_replace('/[^A-Za-z0-9]/', ' ', $firstname),
-                'lastname' => preg_replace('/[^A-Za-z0-9]/', ' ', $lastname)
+                'lastname' => preg_replace('/[^A-Za-z0-9]/', ' ', $lastname),
+                'maid' => $item->member_multi_account_id,
             ];
         }
 
@@ -878,6 +880,8 @@ class ScheduleItem extends Model
                             ->get();
 
         $reportCard = new ReportCard();
+        $member = new Member();
+
 
         $schedules = [];
         foreach ($scheduleItems as $item) 
@@ -895,6 +899,7 @@ class ScheduleItem extends Model
 
             //add report card marker
             $memberReportCard = $reportCard->getReportbyScheduleItemID($item->id);
+            
             if ($memberReportCard) {
                 $hasReportCard = true;
             } else {
@@ -927,10 +932,11 @@ class ScheduleItem extends Model
                     'email_type' => $item->email_type,
                     'duration' => $item->duration,                
                     'member_id' => $item->member_id,
+                    "nickname" => $member->getNickname($item->member_id),
                     'member_memo' => $userMemoValid,
                     'hasReportCard' => $hasReportCard,
-                    'hasQuestionnaire' => $hasQuestionnaire
-                    //'questionnaire' => $questionnaire,
+                    'hasQuestionnaire' => $hasQuestionnaire,
+                    "maid" => $item->member_multi_account_id , //multi accountid
                 ];
             }
 
@@ -940,7 +946,57 @@ class ScheduleItem extends Model
         return $schedules;
     }
 
+    public function testSchedulOptimize($date, $duration) {
 
+        $nextDay = date("Y-m-d", strtotime($date . " + 1 day"));
+
+
+        $scheduleItems = ScheduleItem::select('*', 
+            DB::raw('(SELECT COUNT(*) FROM  questionnaire WHERE  questionnaire.schedule_item_id = schedule_item.id) AS has_questionnaire'),
+            DB::raw('(SELECT COUNT(*) FROM report_card WHERE report_card.schedule_item_id = schedule_item.id) AS has_reportcard'),
+            DB::raw('(SELECT COUNT(*) FROM memo_replies WHERE memo_replies.schedule_item_id = schedule_item.id) AS has_memoreplies'),
+        )
+        ->whereDate('lesson_time', '=', $date)
+        ->where('valid', 1)
+        ->orWhere(function ($subQuery) use ($nextDay) {
+            $subQuery->whereDate('lesson_time', '=', $nextDay . " 00:30:00")
+                    ->orWhereDate('lesson_time', '=', $nextDay . " 00:00:00");
+        })
+        ->get();
+     
+        
+        $schedules = [];
+
+        foreach ($scheduleItems as $item) {
+        
+            $hasQuestionnaire = $item->has_questionnaire > 0;
+            $hasReportCard = $item->has_reportcard > 0;
+            $hasMemoReplies = $item->has_memoreplies > 0;
+
+            $userMemoValid = null;
+            
+            if ($item->valid === 1 || $item->valid === '1') {
+                $userMemoValid = $item->memo || $hasMemoReplies;
+            }
+        
+            $schedules[$item->tutor_id][date('Y-m-d', strtotime($item->lesson_time))][date("H:i", strtotime($item->lesson_time . " -1 hour"))] = [
+                'valid' => $item->valid,
+                'id' => $item->id,
+                'status' => $item->schedule_status,
+                'startTime' => date("H:i", strtotime($item->lesson_time . " -1 hour")),
+                'endTime' => date("H:i", strtotime($item->lesson_time)),
+                'scheduled_at' => date('Y-m-d', strtotime($item->lesson_time)),
+                'email_type' => $item->email_type,
+                'duration' => $item->duration,
+                'member_id' => $item->member_id,
+                'member_memo' => $userMemoValid,
+                'hasReportCard' => $hasReportCard,
+                'hasQuestionnaire' => $hasQuestionnaire
+            ];
+        }
+        
+        return $schedules;        
+    }
 
     //List ALL specific Member schedules
     public function getMemberScheduledLesson($memberID)
@@ -996,4 +1052,8 @@ class ScheduleItem extends Model
         return $lessonItems->count();
     }
 
+    public function multiAccount() 
+    {
+        return $this->hasOne(MemberMultiAccountAlias::class, 'member_multi_account_id', 'member_multi_account_id');       
+    }
 }

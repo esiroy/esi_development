@@ -27,6 +27,25 @@ class Member extends Model
         return $this->hasOne('App\Models\Agent', 'id', 'agent_id');
     }
 
+    public function aliasAccounts()
+    {
+        return $this->hasMany('App\Models\MemberMultiAccountAlias', 'user_id', 'user_id');       
+    }    
+    
+
+    public function selectedAliasAccounts()
+    {
+        return $this->hasMany('App\Models\MemberMultiAccountAlias', 'user_id', 'user_id')
+                    ->where('selected', 1)       
+                    ->where('valid', 1);
+    }    
+
+    public function defaultAliasAccount()
+    {
+      return $this->hasMany('App\Models\MemberMultiAccountAlias', 'user_id', 'user_id')
+                  ->where('is_default', 1);
+    }
+
     public function getLatestPurchaseDateAttribute($value) {
         if (isset($value)) {
             return \Carbon\Carbon::parse($value)->format('m/d/Y  g:i:s a');
@@ -193,6 +212,16 @@ class Member extends Model
         } else {
             return false;
         }
+    }
+
+    public function getNickname($memberID) {
+         $memberInfo = Member::where('user_id', $memberID)->first();
+         if (isset($memberInfo->nickname)) {
+            return $memberInfo->nickname;
+         } else {
+            return null;
+         }
+         
     }
 
 }

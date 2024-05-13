@@ -7,7 +7,7 @@
     </div>
 
 
-     <div id="userDetails-{{ $latestReportCard->id ?? "" }}" class="row mx-0 pt-2" >
+     <div id="userDetails-{{ $latestReportCard->id ?? '' }}" class="row mx-0 pt-2" >
 
         <!--
          <div class="col-md-12">

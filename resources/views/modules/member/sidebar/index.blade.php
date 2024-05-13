@@ -20,7 +20,7 @@
 @endphp
 
 @php
-    //DETERMIN IF MEMBER HAS ACTIVE NOTIFICATIONS FOR MONTHLY MEMBERSHIP    
+    //DETERMINE IF MEMBER HAS ACTIVE NOTIFICATIONS FOR MONTHLY MEMBERSHIP    
     $memberSettingModel = new \App\Models\MemberSetting();
     $memberMonthlyNotification = $memberSettingModel->getMemberSetting(Auth::user()->id, 'show_monthly_member_notification');
     $memberAgreedMonthlyTerms = $memberSettingModel->getMemberSetting(Auth::user()->id, 'member_agreed_monthly_terms');
@@ -31,9 +31,21 @@
 
 <div class="col-md-3">
     <div>@include('modules.member.sidebar.profile')</div>
+
+    @if (Auth::user()->memberInfo->attribute !== 'TRIAL')
+    <div class="mt-3">@include('modules.member.sidebar.multiaccount')</div>
+    @endif
+
     <div class="mt-3">@include('modules.member.sidebar.customerchatsupport')</div>
-    <div class="mt-3">@include('modules.member.sidebar.memberlevel')</div>    
+    <div class="mt-3">@include('modules.member.sidebar.memberlevel')</div>   
+
+    
+    @if (Auth::user()->memberInfo->attribute !== 'TRIAL')
+    <div class="mt-3">@include('modules.member.sidebar.alllessonviewer')</div>
+    @else 
     <div class="mt-3">@include('modules.member.sidebar.reports')</div>
+    @endif   
+    
     <div class="mt-3">@include('modules.member.sidebar.membertestscores')</div>    
     <div class="mt-3">@include('modules.member.sidebar.memberpurpose')</div>
     <div class="mt-3">@include('modules.member.sidebar.timemanager')</div>

@@ -250,8 +250,8 @@
             let username = "{{Auth::user()->username }}";
 
             // Connect to the chat server
-            //const socket = io('https://chatserver.mytutor-jpn.info:30001'); (previous server)             
-            const socket = io("{{ env('APP_MESSENGER_URL', 'https://messenger.mytutor-jpn.info:40009') }}", {});                    
+            //const socket = io('https://chatserver.mytutor-jpn.info:30001');  
+            const socket = io('{{ env("APP_MESSENGER_URL", "https://messenger.mytutor-jpn.info:40009") }}', {});        
 
 
             // Event listener for when the connection is established

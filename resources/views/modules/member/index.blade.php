@@ -95,8 +95,27 @@
 
                                 <tbody>
                                     @foreach($desiredSchedules as $schedule)
+                                   
                                     <tr class="border-bottom">
-                                        <td class="text-center font-weight-normal">{{ $schedule->day ?? '' }}</td>
+
+                                        <td class="text-center font-weight-normal">
+                                            <div>{{ $schedule->day ?? '' }}</div>
+
+                                         
+                                            @if ($isMultiAccountActive == true)
+                                                @if ($schedule->member_multi_account_id == null)
+                                                    <div class="badge badge-primary small">
+                                                        AC1
+                                                    </div>
+                                                @else 
+                                                    <div class="badge badge-primary small">
+                                                        AC{{$schedule->member_multi_account_id}}
+                                                    </div>
+                                                @endif
+                                            @endif
+                                          
+
+                                        </td>
                                         <td class="text-center font-weight-normal">
                                             @if (date('H', strtotime($schedule->desired_time)) == 00)
                                                 {{ date('24:i', strtotime($schedule->desired_time)) }} 
@@ -170,12 +189,18 @@
 
                                     <tr class="row_reserve_{{$reserve->id}} reserved_items">
                                         <td style="text-align: center;">
-
-                                            @if (date('H', strtotime($reserve->lesson_time)) == '00') 
-                                                {{  date('Y年 m月 d日 24:i', strtotime($reserve->lesson_time ." - 1 day")) }} - {{  date('24:i', strtotime($reserve->lesson_time." + 25 minutes ")) }}
-                                            @else 
-                                                {{  date('Y年 m月 d日 H:i', strtotime($reserve->lesson_time)) }} - {{  date('H:i', strtotime($reserve->lesson_time." + 25 minutes ")) }}
+                                            
+                                            @if(isset($reserve->member_multi_account_id))
+                                            <span class="badge badge-primary small">{{"AC".$reserve->member_multi_account_id}}</span>
                                             @endif
+
+                                            <span class="mx-1">
+                                                @if (date('H', strtotime($reserve->lesson_time)) == '00')                                                 
+                                                    {{  date('Y年 m月 d日 24:i', strtotime($reserve->lesson_time ." - 1 day")) }} - {{  date('24:i', strtotime($reserve->lesson_time." + 25 minutes ")) }}                                                    
+                                                @else
+                                                    {{  date('Y年 m月 d日 H:i', strtotime($reserve->lesson_time)) }} - {{  date('H:i', strtotime($reserve->lesson_time." + 25 minutes ")) }}                                                    
+                                                @endif
+                                            </span>
                                             
                                         </td>
                                         <td style="text-align: center;" colspan="2">                                            

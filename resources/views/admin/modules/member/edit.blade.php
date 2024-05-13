@@ -69,57 +69,71 @@
 
                             <div class="container">
 
-                            @if ($memberInfo->user->is_activated == false)
-
-                                <!--[start] Activate Member -->
-                                <div class="row mb-4">
-                                    <div class="col-md-4">
-                                        <a class="red pl-2 pr-2" href="{{ route('admin.member.activate', $memberInfo->user_id) }}" onclick="event.preventDefault(); document.getElementById('activate-member-form').submit();">{{ __('Activate') }}</a>                                        
-                                    </div>
-                                </div>                            
-
-                                <form id="activate-member-form" action="{{ route('admin.member.activate',  $memberInfo->user_id) }}"method="POST" style="display: none;">
-                                    @csrf
-                                </form>
-                                <!--[end] Activate Member -->
-
-                            @elseif ($memberInfo->user->is_activated == true)
-
-                                <!--[start] de-activate Member -->
-
-                                <div class="row mb-4">
-                                    <div class="col-md-4">
-                                        <a class="red pl-2 pr-2" href="{{ route('admin.member.deactivate', $memberInfo->user_id) }}" onclick="event.preventDefault(); document.getElementById('deactivate-member-form').submit();">{{ __('Deactivate') }}</a>                                        
-                                    </div>
-                                </div>                            
-
-                                <form id="deactivate-member-form" action="{{ route('admin.member.deactivate', $memberInfo->user_id) }}"method="POST" style="display: none;">
-                                    @csrf
-                                </form>
-
-                                 <!--[end] de-activate Member -->
-
-                            @endif
-
-                            <div id="uploaded_image" class="mt-4 mb-4">
-                                @if ($userImage == null)
-                                <img src="{{ Storage::url('user_images/noimage.jpg') }}" class="img-fluid border" alt="no photo uploaded" width="250">
-                                @else
-                                <img src="{{ Storage::url("$userImage->original") }}" class="img-fluid border" alt="profile photo" width="250">
-                                @endif
-                            </div>
-                                <div class="row mb-4">
-                                    <div class="col-md-4">
-                                        <div class="panel-heading">Select Profile Image</div>
-                                    </div>
-                                    <div class="col-md-4">
-                                        <div class="panel-body" align="center">
-                                            <input type="file" name="upload_image" id="upload_image" />
+                                <!--[START] USER ACTIVATION -->
+                                @if ($memberInfo->user->is_activated == false)
+                                    <!--[start] Activate Member -->
+                                    <div class="row mb-4">
+                                        <div class="col-md-4">
+                                            <a class="red pl-2 pr-2" href="{{ route('admin.member.activate', $memberInfo->user_id) }}" onclick="event.preventDefault(); document.getElementById('activate-member-form').submit();">{{ __('Activate') }}</a>                                        
                                         </div>
+                                    </div>                            
+
+                                    <form id="activate-member-form" action="{{ route('admin.member.activate',  $memberInfo->user_id) }}"method="POST" style="display: none;">
+                                        @csrf
+                                    </form>
+                                    <!--[end] Activate Member -->
+
+                                @elseif ($memberInfo->user->is_activated == true)
+
+                                    <!--[start] de-activate Member -->
+                                    <div class="row mb-4">
+                                        <div class="col-md-4">
+                                            <a class="red pl-2 pr-2" href="{{ route('admin.member.deactivate', $memberInfo->user_id) }}" onclick="event.preventDefault(); document.getElementById('deactivate-member-form').submit();">{{ __('Deactivate') }}</a>                                        
+                                        </div>
+                                    </div>                            
+
+                                    <form id="deactivate-member-form" action="{{ route('admin.member.deactivate', $memberInfo->user_id) }}"method="POST" style="display: none;">
+                                        @csrf
+                                    </form>
+
+                                    <!--[end] de-activate Member -->
+                                @endif
+                                <!--[END] USER ACTIVATION -->
+
+                                <div class="row mb-4">
+                                    <div class="col-md-6">
+
+                                        <!--[start] PROFILE IMAGE -->
+                                        <div id="uploaded_image" class="mt-4 mb-4">
+                                            @if ($userImage == null)
+                                            <img src="{{ Storage::url('user_images/noimage.jpg') }}" class="img-fluid border" alt="no photo uploaded" width="250">
+                                            @else
+                                            <img src="{{ Storage::url("$userImage->original") }}" class="img-fluid border" alt="profile photo" width="250">
+                                            @endif
+                                        </div>
+                                        <!--[end] PROFILE IMAGE -->
+
+                                        <div class="panel-heading">Select Profile Image</div>
+
+                                        <input type="file" name="upload_image" id="upload_image" />
+                                    </div>
+                                    <div class="col-md-6">
+                                      
+                                        <!--[start] Update Multi Account --> 
+
+                                            <member-multiaccount-update
+                                                :memberinfo="{{ json_encode($memberInfo) }}"
+                                                api_token="{{ Auth::user()->api_token }}" 
+                                                csrf_token="{{ csrf_token() }}"                                                
+                                            >
+                                            </member-multiaccount-update>
+                                        <!--[end] Update Multi Account --> 
                                     </div>
                                 </div>
+
                             </div>
 
+                            <!--[START] upload image modal -->
                             <div id="uploadimageModal" class="modal" role="dialog">
                                 <div class="modal-dialog">
                                     <div class="modal-content">
@@ -143,6 +157,7 @@
                                     </div>
                                 </div>
                             </div>
+                            <!--[END] upload image modal -->
 
 
                             <member-update-component 
@@ -165,6 +180,7 @@
                                 :latestreportcard="{{ json_encode($latestReportCard) }}" 
                                 :currentmemberlevel="{{ json_encode($currentMemberlevel) }}" 
                                 :hidemembertabs="{{ json_encode($hideMemberTabs)  }}" 
+                                :multi_accounts="{{ json_encode($multiAccounts) }}"
                                 usertype="{{ Auth::user()->user_type }}"                  
                                 api_token="{{ Auth::user()->api_token }}" 
                                 csrf_token="{{ csrf_token() }}" />

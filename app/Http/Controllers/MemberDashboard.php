@@ -8,6 +8,8 @@ use App\Models\ScheduleItem;
 use App\Models\User;
 use App\Models\Announcement;
 use App\Models\Purpose;
+use App\Models\MemberMultiAccountAlias;
+
 use Auth;
 
 class MemberDashboard extends Controller
@@ -22,21 +24,24 @@ class MemberDashboard extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index(ScheduleItem $scheduleItems, ReportCard $reportcards, MemberDesiredSchedule $memberDesiredSchedules,  Announcement $announcements) 
+    public function index(ScheduleItem $scheduleItems, ReportCard $reportcards, MemberMultiAccountAlias $memberMultiAccountAlias, MemberDesiredSchedule $memberDesiredSchedules,  Announcement $announcements) 
     {
+        
         $member = Member::where('user_id', Auth::user()->id)->first();
         
 
         if (isset($member)) {
 
             $reserves = $scheduleItems->getMemberActiveLessons($member);
-
-           
-
             $latestReportCard = $reportcards->getLatest($member->user_id);
 
+            if ($memberMultiAccountAlias->isActivated($member->user_id)) {
+                $isMultiAccountActive = true;
+            } else {
+                $isMultiAccountActive = false;
+            }
 
-            $desiredSchedules = $memberDesiredSchedules->getMemberDesiredSchedule($member->user_id);            
+            $desiredSchedules = $memberDesiredSchedules->getMemberDesiredSchedule($member->user_id);    
 
             $today = date('Y-m-d');
 
@@ -60,7 +65,7 @@ class MemberDashboard extends Controller
                 $purposeListView = 'No record found for member';
             }
 
-            return view('modules/member/index', compact('member', 'reserves', 'latestReportCard',  'desiredSchedules', 'announcement', 'purposeListView'));
+            return view('modules/member/index', compact('isMultiAccountActive', 'member', 'reserves', 'latestReportCard',  'desiredSchedules', 'announcement', 'purposeListView'));
 
         } else {
             

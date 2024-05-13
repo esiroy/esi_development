@@ -1271,6 +1271,25 @@
                             </div>
                             <div class="col-10">
                                 <div class="row">
+
+                                    <div class="col-2 pr-0" v-if="multi_accounts.length > 0">                                    
+                                        <select id="selectDay" name="desiredDay" v-model="user.desiredSchedule.account" class="form-control form-control-sm d-inline-block">
+                                            <option value="" selected >-- Select --</option>
+                                            <option :value="account.member_multi_account_id" 
+                                                v-for="(account, index) in multi_accounts" :key="'multi-account-option-'+ index">
+                                                {{  account.name }}
+                                            </option>
+                                        </select>
+                                    </div>
+                                    <div class="col-2 pr-0" v-else>       
+                                        <!---DEFAULT NO MULTI ACCOUNT -->   
+                                        <select id="selectDay" name="desiredDay"  v-model="user.desiredSchedule.account" class="form-control form-control-sm d-inline-block">
+                                            <option value="" selected >-- Select --</option>
+                                            <option value="1" >MAIN ACCOUNT - (AC1) </option>
+                                        </select>                           
+                                        <!---DEFAULT NO MULTI ACCOUNT -->                   
+                                    </div>
+
                                     <div class="col-2 pr-0">
                                         <select id="selectDay" name="desiredDay"  v-model="user.desiredSchedule.day" class="form-control form-control-sm d-inline-block">
                                             <option value="">-- Select --</option>
@@ -1292,21 +1311,46 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="row">
-                            <div class="col-6 offset-md-2">
-                                <!--[start] enumaration of all TOEIC timeslot */-->
-                                <div class="row py-2 bg-lightgray border-bottom" v-for="(schedule, index) in user.desiredScheduleList" :key="schedule.id" >
-                                    <div id="scheduleDayr" class="col-3 col-md-3 text-center">
-                                        {{ schedule.day }}
-                                    </div>
-                                    <div id="scheduleMo" class="col-3 col-md-3 text-center">                                                                                    
-                                        {{ schedule.desired_time | formatDate}}
-                                    </div>        
-                                    <div class="col-3 col-md-3 text-center">
-                                        <button class="btn btn-danger btn-sm col-4" @click.prevent="removeDesiredSchedule(index)">X</button>                                            
-                                    </div>																				                                 
-                                </div> 
-                                
+                        <div class="container">
+                            <div class="row">
+
+                                <div class="col-3" v-for="(account, index) in MEMBER_MULTI_ACCOUNTS" :key="'member-desired-schedules-'+account.member_multi_account_id" >   
+                                    <div class="card">
+                                        <div class="card-header bg-primary text-white small">
+                                            <span class="small">AC {{ account.member_multi_account_id }} {{ "("+account.name+")" }}</span>
+                                        </div>                                        
+                                        <div class="card-body">
+
+                                            <div v-if="isEmptyScheduleList(account)" class="small text-center py-3">
+                                                <span class="py-2 text-muted small text-center">
+                                                    No Schedules Found
+                                                </span>
+                                            </div>
+
+                                            <div class="pb-1" v-for="(schedule, index) in user.desiredScheduleList[account.member_multi_account_id]" 
+                                                :key="account.member_multi_account_id+'-schedule-'+index">
+                                                
+                                                <!--[start] DESIRED SCHEDULE */-->                                
+                                                <div class="d-flex justify-content-between bg-lightgray mb-1">
+                                                    <div class="item">
+                                                        {{ schedule.day }}
+                                                    </div>
+                                                    <div class="item">                                                                                    
+                                                        {{ schedule.desired_time | formatDate}}
+                                                    </div>        
+                                                    <div class="item">
+                                                        <button class="btn btn-danger btn-sm" @click.prevent="removeDesiredSchedule(account.member_multi_account_id, index)">X</button>                                            
+                                                    </div>																				                                 
+                                                </div>
+                                                <!--[end] DESIRED SCHEDULE */-->                                          
+                                            </div>
+
+                                        </div>
+
+                                    </div> 
+
+                                </div>
+
                             </div>
                         </div>
 
@@ -1555,7 +1599,7 @@ export default {
 			type: Array
 		},
 		desiredschedule: {
-			type: Array 
+			type: Object 
 		},
         memberships : {
             type: Array
@@ -1580,6 +1624,7 @@ export default {
 		api_token: {
 			type: String
 		},
+        multi_accounts: Array,
     },
     data() {
         return {
@@ -2110,6 +2155,7 @@ export default {
 
                 //desired schedule list
                 desiredSchedule: {
+                    account: "",
                     day: "",
                     desired_time: ""
                 },
@@ -2124,12 +2170,26 @@ export default {
                 duration: 7, //default 7 days duration 
             }*/
 
+            MEMBER_MULTI_ACCOUNTS: []
+
         };
     },      
     mounted: function () 
 	{
-
         this.getMergedAccounts();
+        this.user.desiredScheduleList = this.$props.desiredschedule;
+
+      
+
+        this.MEMBER_MULTI_ACCOUNTS = this.multi_accounts
+
+        if (this.multi_accounts.length == 0) {
+            this.MEMBER_MULTI_ACCOUNTS = [{
+                'id': 1,
+                'name': "MAIN ACCOUNT",
+                'member_multi_account_id': 1,
+            }];
+        }
 
 
         this.user.showMonthlyTermsNotification = this.$props.membermonthlyterm;
@@ -3277,30 +3337,75 @@ export default {
                 alert ("Please enter eiken month, year and grade");
             }
         },
-		removeDesiredSchedule(index) {
-			this.user.desiredScheduleList.splice(index, 1);
+		removeDesiredSchedule(accountID, index) {
+            console.log(accountID, index);
+			this.user.desiredScheduleList[accountID].splice(index, 1);
+            this.$forceUpdate();
 		},		
         addDesiredSchedule() 
         {
         
+            let account     = this.user.desiredSchedule.account;
             let day     = this.user.desiredSchedule.day;
             let desired_time    = this.user.desiredSchedule.desired_time;
 
-            if (day && desired_time) {
-                
-                let result =  this.user.desiredScheduleList.find(item => item.day === day && item.desired_time === desired_time);
+            //alert(account + " " + day + " : " + desired_time);
 
-                if (result) {
-                    alert ("Selected schedule is already added in the list");
-                    return false;
+            console.log(account);
+
+            if (account && day && desired_time) {
+                
+                
+                if (this.user.desiredScheduleList && this.user.desiredScheduleList[account]) 
+                {
+                    let result = this.user.desiredScheduleList[account].find(item => item.day === day && item.desired_time === desired_time);
+                    // Proceed with result handling
+                    if (result) {
+                        alert ("Selected schedule is already added in the list");
+                        return false;
+                    } else {
+                        
+                        if (!Array.isArray(this.user.desiredScheduleList[account])) {
+                            console.log("initialized")
+                            this.user.desiredScheduleList[account] = [];                       
+                        }
+
+                        this.user.desiredScheduleList[account].push({      
+                            account: account,                                
+                            day:  day,
+                            desired_time: desired_time 
+                        });      
+
+                        this.$forceUpdate();                     
+                    }
+
                 } else {
-                    this.user.desiredScheduleList.push({                                      
-                        day:  day,
-                        desired_time: desired_time 
-                    });
+                    //console.log("Desired schedule list or account not found.");
+
+                    if (!this.user.desiredScheduleList[account]) {
+                        this.user.desiredScheduleList[account] = [];   
+                    } 
+
+                    this.user.desiredScheduleList[account].push({      
+                            account: account,                                
+                            day:  day,
+                            desired_time: desired_time 
+                    });       
+
+                    //FORCE THIS TO SHOW 
+                    /*
+                    this.MEMBER_MULTI_ACCOUNTS = [{
+                        'id': 1,
+                        'name': "MAIN ACCOUNT)",
+                        'member_multi_account_id': 1,
+                    }];*/
+
+                    //console.log(this.user.desiredScheduleList);                    
+                    this.$forceUpdate();
                 }
+
             } else {
-                 alert ("Please enter schedule day and time");
+                 alert ("Please enter account, day and time for your schedule");
             }
                 
         },
@@ -3525,6 +3630,12 @@ export default {
             const year = new Date().getFullYear()
             return Array.from({length: (year - 2000) + 1}, (value, index) => 2010 + index)
         },
+        isEmptyScheduleList(e) {
+            return (account) => {
+                const scheduleList = this.user.desiredScheduleList[account.member_multi_account_id];
+                return !scheduleList || scheduleList.length === 0;
+             };
+        }        
         
     },    
 

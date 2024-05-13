@@ -17,11 +17,16 @@ use App\Models\ReportCardDate;
 use App\Models\Homework;
 use App\Models\MiniTestResult;
 
+use App\Models\MemberMultiAccountAlias;
+
+
+
 use Gate;
 use Validator;
 use Input;
 use DB;
 use Auth;
+use Session;
 
 class LessonRecordController extends Controller
 {
@@ -36,6 +41,35 @@ class LessonRecordController extends Controller
     {
         $user = Auth::user();
         $member = Member::where('user_id', $user->id)->first();
+
+        /* [start] multi accoun detection */
+        $accountAliasModel = new MemberMultiAccountAlias();
+
+        if ($request->get('reportID')) {
+            $accountID = $request->get('reportID');
+        } else {
+            $accountID = $request->get('accountID');
+
+            if (isset($accountID)) {
+                Session::put('accountID', $accountID);
+            } 
+        
+            $accountID = Session::get('accountID');
+        
+            if ($accountID == null) {        
+                //get the default since there are no session account saved and url params
+
+                $accountAlias = $accountAliasModel->getMemberDefaultAccount(Auth::user()->id); 
+
+                if ($accountAlias) {
+                    $accountID = $accountAlias->member_multi_account_id;
+                }
+            }
+        }
+       
+       
+
+        /* [end] muliti account detection */
 
         if (isset($member)) 
         {
@@ -52,11 +86,6 @@ class LessonRecordController extends Controller
             
             $datereportcards = ReportCardDate::where('member_id', $member->user_id)->orderBy('created_at', 'DESC')->paginate(Auth::user()->items_per_page,['*'], 'datereportcards');    
             $latestReportCard = $reportcards->getLatest($member->user_id);
-
-            
-        
-
-            
 
 
             if ($request->display == 'none') 
@@ -78,15 +107,35 @@ class LessonRecordController extends Controller
 
             } else {
 
-                $reportcards = ReportCard::where('member_id',  $member->user_id)->orderBy('created_at', 'DESC')->paginate(Auth::user()->items_per_page,['*'], 'reportcards');
+              
+
+                $memberAccounts = $accountAliasModel->getMemberSelectedAccounts(Auth::user()->id);
+
+                $memberID = $member->user_id;
+                  /*
+                $reportcards->getAllLatestByMultiID($memberID, $accountID, Auth::user()->items_per_page);
+
+                
+                $reportcards = ReportCard::where('member_id',  $member->user_id)
+                                ->orderBy('created_at', 'DESC')
+                                ->paginate(Auth::user()->items_per_page,['*'], 'reportcards');
+                */
 
                 $scheduleItems = ScheduleItem::where('member_id',  $member->user_id)
                                 ->where('schedule_status', '!=', 'TUTOR_CANCELLED')
                                 ->where('schedule_status', '!=', 'MINITEST')
-                                ->where('schedule_status', '!=', 'WRITING')
-                                //->where('valid', true)
-                                ->orderBy('lesson_time', 'DESC')                                
-                                ->paginate(Auth::user()->items_per_page, ['*'], 'reportcards');   
+                                ->where('schedule_status', '!=', 'WRITING');
+
+                if ($accountID == null || $accountID == 1) {
+                        $scheduleItems->where(function ($query) use ($accountID) {
+                                        $query->where('schedule_item.member_multi_account_id', 1)
+                                            ->orWhere('schedule_item.member_multi_account_id', null); // Main account
+                                    });
+                } else {
+                    $scheduleItems->where('schedule_item.member_multi_account_id', $accountID);
+                }
+
+                $scheduleItems = $scheduleItems->orderBy('lesson_time', 'DESC')->paginate(Auth::user()->items_per_page, ['*'], 'reportcards');   
 
                 $miniTestResults = MiniTestResult::select('question_categories.name', 'member_test_results.*')
                                     ->leftJoin('question_categories', 'question_categories.id', '=', 'member_test_results.question_category_id')                        
@@ -95,7 +144,7 @@ class LessonRecordController extends Controller
                                     ->orderBy('member_test_results.time_started', 'DESC')             
                                     ->paginate(Auth::user()->items_per_page, ['*'], 'minitest');
 
-                return view('modules.lessonrecord.index', compact('member', 'data', 'reportcards', 'scheduleItems', 'datereportcards', 'latestReportCard', 'miniTestResults'));
+                return view('modules.lessonrecord.index', compact('member', 'accountID', 'memberAccounts', 'data', 'reportcards', 'scheduleItems', 'datereportcards', 'latestReportCard', 'miniTestResults'));
             }
         } else {
             abort(404);

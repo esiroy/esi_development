@@ -194,10 +194,19 @@
 
                                             @if ($checkStatus == 'client_reserved' || $checkStatus == 'client_reserved_b' || $checkStatus == "completed" ||  
                                                     $checkStatus ==  'client_not_available' || $checkStatus ==  'tutor_cancelled')
+
+                                            <!--[START][NEW!] MULTI ACCOUNT -->
+                                            <div id="multiaccount-{{ $lessons[$dateView][$timeSlot['startTime']]['id'] }}" class="pt-1 mx-1 float-left">
+                                                @if (isset($lessons[$dateView][$timeSlot['startTime']]['maid']))
+                                                    <span class="badge badge-pill badge-info small mt-2 float-left">
+                                                        AC {{ $lessons[$dateView][$timeSlot['startTime']]['maid'] }}
+                                                    </span>
+                                                @endif
+                                            </div>
+                                            <!--[END][NEW!] MULTI ACCOUNT -->
+
                                             <div id="tutor-lesson-memoBox-{{ $lessons[$dateView][$timeSlot['startTime']]['id'] }}">
-                                                
-                                                @if ( $lessons[$dateView][$timeSlot['startTime']]['memo'] )
-                                                
+                                                @if ($lessons[$dateView][$timeSlot['startTime']]['memo'] )                                                
                                                     <div id="memoContainer" class="btn-container2 pt-2">
                                                         <!-- open memo -->
                                                         <a href="javascript:void()" data-toggle="modal" data-target="#tutorMemoModal" data-id="{{ $lessons[$dateView][$timeSlot['startTime']]['id'] }}">
@@ -207,9 +216,7 @@
                                                             <img src="{{ url('images/iEmail.jpg') }}" border="0" align="absmiddle">
                                                         </a>
                                                     </div>
-
-                                                @else
-                                                
+                                                @else                                                
                                                     <div id="memoContainer" class="btn-container2 pt-2" style="display:none" >
                                                         <!-- open memo -->
                                                         <a href="javascript:void()" data-toggle="modal" data-target="#tutorMemoModal" data-id="{{ $lessons[$dateView][$timeSlot['startTime']]['id'] }}">
@@ -222,6 +229,7 @@
                                                 @endif
                                             </div>
                                             @endif
+                                            
                                         </div>
                                     </div>
 

@@ -1237,9 +1237,7 @@ export default {
     mounted: function () 
     {
         this.childPurposeList = this.$props.purposeList;
-        console.log(this.purposeList);
-
-
+        //console.log(this.purposeList);
     },
 };
 </script>

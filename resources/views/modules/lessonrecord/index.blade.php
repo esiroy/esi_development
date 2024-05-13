@@ -25,16 +25,41 @@
 
                     <div class="card esi-card">
                         <div class="card-header esi-card-header">
-                            受講履歴 test
+                            受講履歴
                         </div>
 
                         <div class="card-body">
 
 
-                            <div class="my-2">
+
+                        <div class="my-2">
                                 <span class="">これまで受講した一覧です。</span>
                                 <span class="ml-3">（「欠席」も含まれます）</span>
                             </div>
+
+                            
+
+                            <div class="row my-2 float-right w-100">
+                                <div id="selection_multi_id" class="col-6 text-right">
+                                    <span class="small">Member Account:</span>
+                                </div>
+                                <div id="selection_multi_id" class="col-6">
+                                    <select name="accounts" id="accounts" class="form-control form-control-sm" onChange="change(event)">
+                                        @foreach ($memberAccounts as $index => $account)
+                                            <option class="small" value="{{ $account->member_multi_account_id }}" 
+                                                @if($account->member_multi_account_id == $accountID) {{ 'selected' }} @endif >
+                                                {{ $account->name }} @if($account->is_default == true) {{ '(Default)' }} @endif
+                                            </option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                            </div>
+                        
+
+
+
+
+
 
                             <table class="table table-bordered table-sm">
                                 <tbody>
@@ -231,4 +256,26 @@
 
 </div>
 </div>
+@endsection
+
+
+@section('scripts')
+@parent
+
+<script>
+    function change(event) {
+
+        var selectedValue = event.target.value;
+
+        // Construct the URL with the query parameter
+        var currentUrl = window.location.href; // Get the current URL
+        var redirectUrl = currentUrl.split('?')[0]; // Remove existing query parameters, if any
+        redirectUrl += "?reportID=" + encodeURIComponent(selectedValue); // Append the new query parameter
+
+        // Redirect the user to the new URL
+        window.location.href = redirectUrl;
+
+    }
+</script>
+
 @endsection
