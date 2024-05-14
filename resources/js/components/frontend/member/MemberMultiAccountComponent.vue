@@ -33,7 +33,7 @@
                     <div v-if="this.$props.selected_account_id">
                         <select name="accounts" id="accounts" class="form-control form-control-sm" @change="onChangeAccount($event)">
                             <option :value="accountList.member_multi_account_id" v-for="(accountList,i) in this.accountLists" 
-                                :key="'account-'+i" class="small" :selected="(accountList.member_multi_account_id == selected_account_id) ? true: ''">
+                                :key="'account-'+i"  :selected="(accountList.member_multi_account_id == selected_account_id) ? true: ''">
                                 {{ accountList.name }} 
                                 <span v-if="(accountList.is_default == true)">(default)</span>
                             </option>
@@ -41,7 +41,7 @@
                     </div>
                     <div v-else>
                         <select name="accounts" id="accounts" class="form-control form-control-sm" @change="onChangeAccount($event)">
-                            <option :value="accountList.member_multi_account_id" v-for="(accountList,i) in this.accountLists" :key="'account-'+i" class="small" 
+                            <option :value="accountList.member_multi_account_id" v-for="(accountList,i) in this.accountLists" :key="'account-'+i"
                                 :selected="(accountList.is_default) ? true: ''">
                                 {{ accountList.name }} 
                                 <span v-if="(accountList.is_default == true)">(default)</span>

@@ -381,20 +381,23 @@ class TutorScheduleController extends Controller
             //** ADD MEMBER TRANSACTION */          
             if ($memberID != null) {
 
-                //if ($memberID !== $scheduleItem->member_id) {
+                if ($memberID == $scheduleItem->member_id) {
+                    //@todo: if user has same user check if it has same schedule id on transaction that
+                    //deducted points with transaction (LESSON)
+                }
 
-                    $memberTransactionData = [
-                        //'scheduleItem'      => $scheduleItem,
-                       'scheduleItemID'      => $scheduledItemData['id'],
-                       'memberID' => $memberID,
-                       'shiftDuration' => $request['shiftDuration'],
-                       'reservation_type' => $reservationType,
-                       'status' => $request['status'],
-                   ];
-                   $transactionObj = new AgentTransaction();
-                   $transaction = $transactionObj->addMemberTransactions($memberTransactionData);
+                $memberTransactionData = [
+                    //'scheduleItem'      => $scheduleItem,
+                    'scheduleItemID'      => $scheduledItemData['id'],
+                    'memberID' => $memberID,
+                    'shiftDuration' => $request['shiftDuration'],
+                    'reservation_type' => $reservationType,
+                    'status' => $request['status'],
+                ];
+                $transactionObj = new AgentTransaction();
+                $transaction = $transactionObj->addMemberTransactions($memberTransactionData);
                                        
-                //}
+                
             }
 
             //get lessons

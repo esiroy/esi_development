@@ -34,7 +34,7 @@
             <label for="recipient-name" class="col-form-label">Account</label>
             <select name="accounts" id="accounts" class="form-control form-control-sm">
                 @foreach($memberAccounts as $account)
-                <option class="small" value="{{ $account->member_multi_account_id }}" @if ($account->member_multi_account_id == $activeAccount->member_multi_account_id) {{ 'selected' }} @endif>
+                <option value="{{ $account->member_multi_account_id }}" @if ($account->member_multi_account_id == $activeAccount->member_multi_account_id) {{ 'selected' }} @endif>
                     {{$account->name}} @if ($account->is_default) <span>(default)</span> @endif
                 </option>
                 @endforeach

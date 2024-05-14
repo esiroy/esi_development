@@ -13,12 +13,12 @@
     <link rel="preconnect" href="//cdn.datatables.net" rel="preconnect" crossorigin/>
 
     <!-- Styles -->
-    <link rel="preload" href="{{ asset('css/app.css') .'?id=version_6_0_1'  }}" as="style">
-    <link rel="stylesheet" href="{{ asset('css/app.css') .'?id=version_6_0_1'  }}">
+    <link rel="preload" href="{{ asset('css/app.css') .'?id=5_14_2024'  }}" as="style">
+    <link rel="stylesheet" href="{{ asset('css/app.css') .'?id=5_14_2024'  }}">
     
     <!-- Scripts -->
     
-    <script src="{{ asset('js/app.js') .'?id=version_6_0_1'  }}" defer ></script>
+    <script src="{{ asset('js/app.js') .'?id=5_14_2024'  }}" defer ></script>
     <script src="{{ env('APP_MESSENGER_URL', 'https://messenger.mytutor-jpn.info:40009') }}/socket.io/socket.io.js"></script>
     
 
@@ -1227,10 +1227,10 @@
 
 <style>
 .changeAccountWrapper {
-    float: right;
-    top: -30px;
-    right: 25px;
+    top: -10px;
+    right: 0;
     position: relative;
+    text-align: right;
 }   
 
 .member-speech-bubble {
