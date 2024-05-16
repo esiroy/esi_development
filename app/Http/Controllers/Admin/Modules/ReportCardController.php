@@ -40,16 +40,20 @@ class ReportCardController extends Controller
         $lessonDateTime = Carbon::createFromFormat('Y-m-d',  ESIDateDashed($scheduleItem->lesson_time));
         $lessonDate = $lessonDateTime->toDateString();            
 
-        //echo $currentDate . " | ". $lessonDate;
+        /*
+        echo "Lesson date: $lessonDate <==?   $currentDate <BR>";
+        */
 
         // Compare the dates
-        if ($currentDate == $lessonDate) {
-           // echo "The current day is the same as the lesson day.";
+        if ( $lessonDate <= $currentDate ) {
+            //echo "Valid: Lesson date is equal or before the current date";
             $isReportValidToScore = true;
         } else {
-           //echo "The current day is not the same as the lesson day.";
-            $isReportValidToScore = false;
+          // echo "The current day is not the same as the lesson day.";
+            $isReportValidToScore = false;           
         }
+       
+
 
 
         //get member details        
