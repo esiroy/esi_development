@@ -246,7 +246,13 @@
                                         </tr>
                                         <tr>
                                             <td colspan="7" class="text-center">
+                                                @if ($isReportValidToScore == true)
                                                 <input type="submit" value="save" class="btn btn-light">
+                                                @else 
+                                                    <span class="text-danger font-weight-bold">                                                        
+                                                        Note: Please wait until {{ $lessonDate }} to be able to score this lesson
+                                                    </span>
+                                                @endif
                                             </td>
                                         </tr>
                                     </tbody>

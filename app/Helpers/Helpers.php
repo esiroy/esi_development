@@ -73,6 +73,20 @@ if (! function_exists('ESIDate')) {
     }
 }
 
+//Lesson Time format with dashed as separator
+if (! function_exists('ESIDateDashed')) {
+    function ESIDateDashed($date) 
+    {        
+        if (date('H', strtotime($date)) == '00') 
+        {  
+           return date('Y-m-d', strtotime($date ." - 1 day"));
+        } else {
+            return  date('Y-m-d', strtotime($date));
+        }
+    }
+}
+
+
 
 //english ESI date formatter
 if (! function_exists('ESIDateTimeENFormat')) {

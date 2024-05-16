@@ -15,7 +15,8 @@ use App\Models\Tutor;
 use App\Models\UploadFile; 
 use App\Models\Homework; 
 use App\Models\MemberMultiAccountAlias; 
-use Auth;
+use Auth, DateTime;
+use Carbon\Carbon;
 
 class ReportCardController extends Controller
 {   
@@ -25,11 +26,32 @@ class ReportCardController extends Controller
     */
     public function index(Request $request) 
     {   
-       
+
+
         $scheduleitemid = $request->scheduleitemid;
 
         $scheduleItem = ScheduleItem::find($scheduleitemid);
+
         
+
+        $currentDateTime = Carbon::now();
+        $currentDate = $currentDateTime->toDateString();
+          
+        $lessonDateTime = Carbon::createFromFormat('Y-m-d',  ESIDateDashed($scheduleItem->lesson_time));
+        $lessonDate = $lessonDateTime->toDateString();            
+
+        //echo $currentDate . " | ". $lessonDate;
+
+        // Compare the dates
+        if ($currentDate == $lessonDate) {
+           // echo "The current day is the same as the lesson day.";
+            $isReportValidToScore = true;
+        } else {
+           //echo "The current day is not the same as the lesson day.";
+            $isReportValidToScore = false;
+        }
+
+
         //get member details        
         $memberInfo = Member::where('user_id',$scheduleItem->member_id)->first(); 
 
@@ -64,7 +86,9 @@ class ReportCardController extends Controller
         return view('admin.modules.member.reportcard', compact('multiAccountAlias',
                                         'scheduleitemid', 'userImage', 
                                         'scheduleItem', 
-                                        'reportCard', 'latestReportCard', 'memberInfo', 'tutorInfo' , 'homework'));
+                                        'reportCard', 'latestReportCard', 'memberInfo', 'tutorInfo' , 'homework',
+                                        'isReportValidToScore', 'lessonDate'
+                                    ));
     }
 
 
