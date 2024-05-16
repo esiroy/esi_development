@@ -33,7 +33,13 @@ class MemberDesiredSchedule extends Model
             });
 
         } else {
-            $desiredSchedules->where('member_multi_account_id', null);
+           
+            $ids = [1];
+
+            $desiredSchedules->where(function ($query) use ($ids) {
+                $query->whereIn('member_multi_account_id', $ids)
+                    ->orWhereNull('member_multi_account_id');
+            });            
         }
 
         return $desiredSchedules->orderBy('member_multi_account_id', 'ASC')->get();
