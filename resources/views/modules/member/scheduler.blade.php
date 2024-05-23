@@ -693,22 +693,23 @@
 
                             if (data.totalMemberReserved >= 15) 
                             {
-                                $('#confirmScheduleModal').modal('show');
-                                $('#confirmScheduleModalLabel').text('予約数が上限に達したため予約できません')                               
+                                $('#msgboxModal').modal('show');
+                                $('#msgboxMessage').text(" 予約数が上限に達したため予約できません");     
+
                             } else if (data.totalTutorDailyReserved < 2) {
                                 
                                 $('#confirmScheduleModal').modal('show');
                                 $('#confirmScheduleModalLabel').text('予約してもいいですか？')
 
-                                $("#btn-confirm-schedule").on("click", function() { 
+                                $("#btn-confirm-schedule").off('click').on("click", function() { 
 
                                     let memberMultiAccountID = $('#accounts').val();
-                                   
-                                    
                                     $('#confirmScheduleModal').modal('hide');
+
                                     setTimeout(() => {                                    
                                         SaveMemberSchedule(scheduleID, memberID, tutorID, memberMultiAccountID)
                                     }, 100);
+
                                     $(this).off("click");  
                                 });
 
@@ -722,7 +723,7 @@
                                 $('#confirmScheduleModal').modal('show');
                                 $('#confirmScheduleModalLabel').text('同日、同講師の予約上限2コマを超えています。こちらの予約はキャンセルができませんがよろしいでしょうか？')
 
-                                $("#btn-confirm-schedule").on("click", function() { 
+                                $("#btn-confirm-schedule").off('click').on("click", function() { 
                                  
                                     let memberMultiAccountID = $('#accounts').val();
                                    
@@ -730,6 +731,7 @@
                                     setTimeout(() => {                                    
                                         SaveMemberSchedule(scheduleID, memberID, tutorID, memberMultiAccountID)
                                     }, 100);         
+                                    
                                     $(this).off("click");                           
                                 });
 
