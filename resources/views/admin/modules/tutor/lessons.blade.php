@@ -167,6 +167,8 @@
                                                         
                                                         if (isset($lesson['maid'])) {
                                                             $multiAccountID = $lesson['maid'];
+                                                        } else {
+                                                            $multiAccountID = null;
                                                         }
                                                         
                                                     @endphp
