@@ -180,11 +180,11 @@
                                                         -->
                                                         @if (isset($multiAccountID)) 
 
-                                                        <a id="{{$memberID}}" name="{{$memberID}}" onclick="openUrlTab('{{ route('admin.member.show',  $memberID) }}?accountID={{$multiAccountID}}')" href="#">
+                                                        <a id="{{$memberID}}" name="{{$memberID}}" onclick="openUrlTab('{{ route('admin.member.show',  $memberID) }}?accountID={{$multiAccountID}}'); return false" href="#">
                                                             {{$lessons[$dateView][$timeSlot['startTime']]['nickname']}}
                                                         </a>                                                        
                                                         @else 
-                                                        <a id="{{$memberID}}" name="{{$memberID}}" onclick="openUrlTab('{{ route('admin.member.show',  $memberID) }}')" href="#">
+                                                        <a id="{{$memberID}}" name="{{$memberID}}" onclick="openUrlTab('{{ route('admin.member.show',  $memberID) }}'); return false" href="#">
                                                             {{$lessons[$dateView][$timeSlot['startTime']]['nickname']}}
                                                         </a>
                                                         @endif
