@@ -240,6 +240,27 @@ class ScheduleItem extends Model
         return $total;
     }
 
+    public function getTotalMemberMultiAccountReserved($userID, $multiAccountID) 
+    {
+        $dateOfReservation = date('Y-m-d H:i:s');
+                     
+        $total = ScheduleItem::where('member_id', $userID)
+        ->where('valid', 1)
+        ->where('member_multi_account_id', $multiAccountID)
+        ->where(function ($q) use ($userID) 
+        {
+            $q->orWhere('schedule_status', 'CLIENT_RESERVED')
+              ->orWhere('schedule_status', 'CLIENT_RESERVED_B');
+
+        })
+        ->where('lesson_time', ">=", $dateOfReservation)
+        ->count();
+
+
+        return $total;
+    }
+
+
     /**
      * @Added: JUNE 3, 2021
      * @Desc: Returns total number of reserve A and B for a particular day for a particular member

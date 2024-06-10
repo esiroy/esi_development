@@ -75,7 +75,7 @@
 
                             <div class="col-3" v-for="(account,i) in accounts" :key="i">
                             
-                                <input type="checkbox" name="memberMultiAccount" :value="account.id" v-model="account.selected" :disabled="(i == 0) ? true : false">
+                                <input type="checkbox" name="memberMultiAccount" :value="account.id" v-model="account.selected" :disabled="(i == 0 || account.scheduledItemCount >= 1) ? true : false" >
                                                                 
                                 <span class="badge badge-primary small" v-if="!isAliasAccount">AC {{ account.id }}</span>
                                 <span class="badge badge-primary small" v-else>AC {{ account.member_multi_account_id }}</span>
@@ -98,10 +98,18 @@
                                         </div>
                                     </div>
                                 </div>
+                              
+                                <div class="" v-if="i >= 1">
+                                    <div v-if="account.scheduledItemCount >= 1" class="text-danger text-small">                                       
+                                       <div class="text-small">* {{account.scheduledItemCount}} active schedule</div>
+                                    </div>
+                                </div>
                             </div>
 
 
                         </div>
+
+
                     </div>
 
                 </div>
@@ -109,6 +117,15 @@
                 <template #modal-footer>
 
                     <div class="buttons-container w-100" v-if="!loading">
+
+                        <div id="button-container" class="w-100">
+                            <b-button variant="primary" size="sm" class="float-right mr" id="saveAccount" v-on:click="saveAccount">Save</b-button>
+                            <b-button variant="danger" size="sm" class="float-right mr-2" @click="$bvModal.hide('memberMultiAccountModal')">Cancel</b-button>                            
+                        </div>
+
+                        <span class="text-danger small font-weight-bold">*Note: You can only deactivate an account if you have no more active schedules</span>
+
+                        <!--
                         <div id="button-container" class="w-100" v-if="totalScheduledItem <= 0">
                             <b-button variant="primary" size="sm" class="float-right mr" id="saveAccount" v-on:click="saveAccount">Save</b-button>
                             <b-button variant="danger" size="sm" class="float-right mr-2" @click="$bvModal.hide('memberMultiAccountModal')">Cancel</b-button>                            
@@ -118,6 +135,7 @@
                             <b-button variant="secondary" size="sm" class="float-right mr" id="saveAccount" disabled>Save</b-button>
                             <b-button variant="danger" size="sm" class="float-right mr-2" @click="$bvModal.hide('memberMultiAccountModal')">Cancel</b-button>                             
                         </div>
+                        -->
                     </div>
 
                     <div v-if="loading">
@@ -227,9 +245,9 @@ export default {
             console.log(event.target.value)
             window.location.href = "?accountID="+ event.target.value;
         },
-        saveAccount(a) {
-            let accountMemberSelectedCtr = 0;
-            
+        saveAccount(a) 
+        {
+            let accountMemberSelectedCtr = 0;            
             let isDefaultCtr = 0;
             let isAliasError = 0;
             

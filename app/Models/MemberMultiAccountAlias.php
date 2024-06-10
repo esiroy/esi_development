@@ -4,6 +4,8 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
+use App\Models\ScheduleItem ;
+
 class MemberMultiAccountAlias extends Model
 {
     public $table = 'member_multi_account_alias';
@@ -28,9 +30,28 @@ class MemberMultiAccountAlias extends Model
     
     //all alias accounts
     public function getMemberAliasAccounts($userID) {
+
+        $scheduleItem = new ScheduleItem();
+
+        
+        /*
         return $this->where('user_id', $userID)
                     ->where('valid', true)
                     ->orderBy('sequence_number', 'ASC')->get();
+        */
+        $accounts = $this->where('user_id', $userID)
+                    ->where('valid', true)
+                    ->orderBy('sequence_number', 'ASC')->get();
+
+        $accountArray = null;
+
+        
+        foreach ($accounts as $key => $account) {
+            $accountArray[$key] = $account;          
+            $accountArray[$key]['scheduledItemCount'] = $scheduleItem->getTotalMemberMultiAccountReserved($account->user_id, $account->member_multi_account_id);
+        }
+
+        return $accountArray;
     }
 
     //only selected accounts will appear (for dropdowns)
