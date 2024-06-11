@@ -51,7 +51,8 @@ class MemberMultiAccountController extends Controller
         $totalScheduledItem = $scheduleItem->getTotalMemberReserved($memberInfo);
 
 
-        if (count($MemberAliasAccounts) >= 1) {
+        if (is_countable($MemberAliasAccounts) && count($MemberAliasAccounts) >= 1) {
+
 
             $results = [                
                 'accounts'  => $MemberAliasAccounts,

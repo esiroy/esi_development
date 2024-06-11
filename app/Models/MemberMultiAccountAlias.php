@@ -39,19 +39,30 @@ class MemberMultiAccountAlias extends Model
                     ->where('valid', true)
                     ->orderBy('sequence_number', 'ASC')->get();
         */
+
+      
         $accounts = $this->where('user_id', $userID)
                     ->where('valid', true)
                     ->orderBy('sequence_number', 'ASC')->get();
 
-        $accountArray = null;
+        if (!empty($accounts)) 
+        {
 
-        
-        foreach ($accounts as $key => $account) {
-            $accountArray[$key] = $account;          
-            $accountArray[$key]['scheduledItemCount'] = $scheduleItem->getTotalMemberMultiAccountReserved($account->user_id, $account->member_multi_account_id);
+            $accountArray = null;
+            
+            foreach ($accounts as $key => $account) {
+                $accountArray[$key] = $account;          
+                $accountArray[$key]['scheduledItemCount'] = $scheduleItem->getTotalMemberMultiAccountReserved($account->user_id, $account->member_multi_account_id);
+            }
+            
+            return $accountArray;
+
+        } else {
+
+            return [];
         }
 
-        return $accountArray;
+        
     }
 
     //only selected accounts will appear (for dropdowns)
