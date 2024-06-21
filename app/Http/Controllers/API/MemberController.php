@@ -749,6 +749,7 @@ class MemberController extends Controller
                     //1. member id will be emptied  
                     //2. Update to back to tutor scheduled
                     $data = [
+                        'member_multi_account_id' => null,
                         'member_id' => null,
                         'schedule_status' => 'TUTOR_SCHEDULED',
                         'memo'  => null
@@ -795,8 +796,9 @@ class MemberController extends Controller
                     AgentTransaction::create($transaction); 
 
                     //turn the the status to not available since it is B
-                    $data = [
+                    $data = [                        
                         'schedule_status' => 'CLIENT_NOT_AVAILABLE',                     
+                        //'member_multi_account_id' => null,  [NOTE] (we will not remove this since it is now credited)
                     ];
 
                     //remove
