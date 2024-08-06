@@ -100,6 +100,8 @@ class TutorScheduleController extends Controller
         //find schedule to update
         $scheduleItem = ScheduleItem::find($scheduledItemData['id']);
 
+        
+
         if (!$scheduleItem) {
 
             $scheduleItem = new ScheduleItem();
@@ -111,6 +113,8 @@ class TutorScheduleController extends Controller
                 "message" => "ERROR: cannot process request a schedule is not valid, it may have been deleted or rescheduled, press okay to refresh schedules",
             ]);  
         }
+
+
 
         $reservationType = $scheduleItem->schedule_status; //previous reservation type
 
@@ -140,6 +144,8 @@ class TutorScheduleController extends Controller
 
             $tutor = $request['tutorData'];
             $member = $request['memberData'];
+
+
             $tutorInfo = Tutor::find($tutor['tutorID']);
             $lessonTime = date("Y-m-d H:i:s", strtotime($scheduled_at . " " . $tutor['startTime'] . " + 1 hour")); //JAPANESE TIMIE (1 HOUR ADVANCE)
             $FlessonTime = ESILessonTimeENFormat($lessonTime);
@@ -150,6 +156,16 @@ class TutorScheduleController extends Controller
             } else {
                 $memberID = null;
             }
+
+            //DETERMINE IF MEMBER ID IS UPDATED
+            /*
+            if ( $scheduleItem->member_id !== $memberID ) {
+                return Response()->json([
+                    "success" => false,
+                    "message" => "member is not the same ",
+                ]);                                
+            }*/
+
 
             $memberInfo = Member::where('user_id', $member['id'])->first();
             if ($memberInfo) {
@@ -178,10 +194,21 @@ class TutorScheduleController extends Controller
             if ($request['status'] == 'CLIENT_RESERVED' || $request['status'] == 'CLIENT_RESERVED_B') 
             {
                 //WHEN CLIENT IS RESERVED IT WILL NOT LET IT BOOK, IT WILL PROMPT TO REFRESH
+                /******* 
+                $isLessonExists = ScheduleItem::where('lesson_time', $lessonTime)
+                ->where('tutor_id', $tutorInfo->user_id)
+                ->where('member_id', '!=', $memberID)
+                ->where('schedule_status', '!=', 'CLIENT_RESERVED')
+                ->where('schedule_status', '!=', 'CLIENT_RESERVED_B')
+                ->where('valid', 1)->exists();  
+                *****/
+
+                /* update for safety concerns overriding member id */
                 $isLessonExists = ScheduleItem::where('lesson_time', $lessonTime)
                     ->where('tutor_id', $tutorInfo->user_id)
                     ->where('member_id', '!=', $member['id'])
-                    ->where('schedule_status', '!=', 'TUTOR_SCHEDULED')->where('valid', 1)->exists();  
+                    ->where('schedule_status', '!=', 'TUTOR_SCHEDULED')
+                    ->where('valid', 1)->exists();  
 
                 if ($isLessonExists) {                
                     $tutorLessonsData = $scheduleItem->getSchedules($scheduled_at, $duration);
@@ -381,43 +408,65 @@ class TutorScheduleController extends Controller
             //** ADD MEMBER TRANSACTION */          
             if ($memberID != null) {
 
-                if ($memberID == $scheduleItem->member_id) {
-                    //@todo: if user has same user check if it has same schedule id on transaction that
-                    //deducted points with transaction (LESSON)
-                }
+                 /********* UPDATE MULTI ACCOUNT LOGS HERE  *********/
+                if ($memberID == $scheduleItem->member_id && $request['multiAccountID'] !== $scheduledItemData['maid']) {                   
 
-                $memberTransactionData = [
-                    //'scheduleItem'      => $scheduleItem,
-                    'scheduleItemID'      => $scheduledItemData['id'],
-                    'memberID' => $memberID,
-                    'shiftDuration' => $request['shiftDuration'],
-                    'reservation_type' => $reservationType,
-                    'status' => $request['status'],
-                ];
-                $transactionObj = new AgentTransaction();
-                $transaction = $transactionObj->addMemberTransactions($memberTransactionData);
-                                       
-                
+                    $detailedRemarks = " FROM ID(".$scheduledItemData['maid'].") to ID(". $request['multiAccountID'] .")";
+
+                    $memberTransactionData = [
+                        //'scheduleItem'      => $scheduleItem,
+                        'scheduleItemID'        => $scheduledItemData['id'],
+                        'memberID'              => $memberID,
+                        'shiftDuration'         => $request['shiftDuration'],
+                        'transaction_type'      => "LESSON_UPDATE",
+                        'reservation_type'      => $reservationType,
+                        'amount'                => 0,
+                        'remarks'               => "MULTI ACCOUNT UPDATE  "  . $detailedRemarks,
+                        'status'                => $request['status'],
+                    ];
+    
+                    $transactionObj = new AgentTransaction();
+                    $transaction = $transactionObj->logMemberTransactions($memberTransactionData);
+
+                } else {
+
+
+                    $memberTransactionData = [
+                        //'scheduleItem'      => $scheduleItem,
+                        'scheduleItemID'        => $scheduledItemData['id'],
+                        'memberID'              => $memberID,
+                        'shiftDuration'         => $request['shiftDuration'],
+                        'reservation_type'      => $reservationType,
+                        'status' => $request['status'],
+                    ];
+    
+                    $transactionObj = new AgentTransaction();
+                    $transaction = $transactionObj->addMemberTransactions($memberTransactionData);
+                                        
+                } 
             }
 
             //get lessons
             $scheduleItem = new ScheduleItem();
             $scheduled_at = $request['scheduled_at'];
             $duration = $request['shiftDuration'];
-
             $selectedSchedule = $scheduleItem->find($scheduledItemData['id']);
 
             /****************************************************
              *      [START] SEND MAIL TO MEMBER AND TUTOR
              *****************************************************/
-            //if (App::environment(['prod', 'production'])) 
-            //{                
-                $lessonMailer = new LessonMailer();
-                $lessonMailer->send($memberInfo, $tutorInfo, $selectedSchedule);
-            //}
+            if (App::environment(['prod', 'production'])) 
+            {       
+                if ($memberID == $scheduleItem->member_id && $request['multiAccountID'] !== $scheduledItemData['maid']) {      
+                    /********* UPDATE MULTI ACCOUNT MAILS HERE  *********/
+                } else {
+                    $lessonMailer = new LessonMailer();
+                    $lessonMailer->send($memberInfo, $tutorInfo, $selectedSchedule);
+                }
+            }            
             /****************************************************
              *      [END] SEND MAIL TO MEMBER AND TUTOR
-             *****************************************************/            
+            *****************************************************/            
 
             if ($selectedSchedule->memo == null) {
                 $hasMemo = null;
@@ -541,7 +590,7 @@ class TutorScheduleController extends Controller
                     "success" => false,
                     "refresh" => true,
                     'tutorLessonsData' => $tutorLessonsData,
-                    "message" => "The Schedule $lessonTime is already booked, press okay to refresh schedules.",
+                    "message" => "The Schedule $lessonTime is already booked, press okay to refresh schedules",
                 ]);
             }
             
@@ -630,11 +679,8 @@ class TutorScheduleController extends Controller
                             "success" => false,
                             //"message" => "月間設定受講回数を超えているか、ポイントが足りないためレッスンの予約ができません",
                             //"message_en" => "I cannot book a lesson because I have exceeded the monthly set number of lessons or I do not have enough points",
-
                             //"message" => "ポイントが不足しているか、ポイントの有効期限が切れています。",
                             //"message_en" => "No points / monthly limit or Credit Balance",
-
-
                             "message" => "Member Monthly Reservation limit Reached",
                             "message_en" => "Member Monthly Reservation limit Reached"                            
                         ]);
