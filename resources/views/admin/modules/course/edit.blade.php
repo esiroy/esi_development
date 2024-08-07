@@ -242,9 +242,7 @@
     });
 </script>
 
-
-
-<script src="https://cdn.ckeditor.com/4.15.1/full/ckeditor.js"></script>
+<script src="https://mypage.mytutor-jpn.com/js/ckeditor/ckeditor.js" ></script>
 <script>
     CKEDITOR.replace('body', {
         toolbarGroups: [

@@ -128,7 +128,7 @@
 @endsection
 
 @section('scripts')
-<script src="https://cdn.ckeditor.com/4.15.1/full/ckeditor.js"></script>
+<script src="https://mypage.mytutor-jpn.com/js/ckeditor/ckeditor.js" ></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.10.3/moment.min.js"></script>
 <script type="text/javascript">
     window.addEventListener('load', function() 
