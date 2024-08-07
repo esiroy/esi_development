@@ -453,7 +453,7 @@ class TutorScheduleController extends Controller
             $selectedSchedule = $scheduleItem->find($scheduledItemData['id']);
 
             /****************************************************
-             *      [START] SEND MAIL TO MEMBER AND TUTOR
+             *      [START] SEND MAIL TO MEMBER AND TUTOR (UPDATE)
              *****************************************************/
             if (App::environment(['prod', 'production'])) 
             {       
@@ -465,7 +465,7 @@ class TutorScheduleController extends Controller
                 }
             }            
             /****************************************************
-             *      [END] SEND MAIL TO MEMBER AND TUTOR
+             *      [END] SEND MAIL TO MEMBER AND TUTOR (UPDATE)
             *****************************************************/            
 
             if ($selectedSchedule->memo == null) {
