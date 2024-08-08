@@ -462,14 +462,14 @@ class TutorScheduleController extends Controller
             /****************************************************
              *      [START] SEND MAIL TO MEMBER AND TUTOR (UPDATE)
              *****************************************************/
-            if (App::environment(['prod', 'production'])) 
-            {       
+           // if (App::environment(['prod', 'production'])) 
+           // {       
                 //if ($memberID == $scheduleItem->member_id && $request['multiAccountID'] !== $scheduledItemData['maid']) {      
                 if ($sendMailGate == true) {                    
                     $lessonMailer = new LessonMailer();
                     $lessonMailer->send($memberInfo, $tutorInfo, $selectedSchedule);
                 }
-            }            
+            //}            
             /****************************************************
              *      [END] SEND MAIL TO MEMBER AND TUTOR (UPDATE)
             *****************************************************/            
