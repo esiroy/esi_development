@@ -585,7 +585,7 @@ export default {
             let tag = null;
 
             try {
-                if (data.startTime !== '23:00' || data.startTime !== '23:30') {
+                if (data.startTime !== '23:00' || data.startTime !== '23:30' || data.startTime !== '24:00' || data.startTime !== '24:30') {
 
                     if (typeof this.lessonsData[data.tutorUserID] !== 'undefined' &&
                         typeof this.lessonsData[data.tutorUserID][this.scheduled_at] !== 'undefined' &&
@@ -597,11 +597,24 @@ export default {
                         }                          
                         
                     } else {
-                        // Code to handle when the value is undefined
+                      
+                        if (typeof this.lessonsData[data.tutorUserID] !== 'undefined' &&
+                        typeof this.lessonsData[data.tutorUserID][this.nextDay] !== 'undefined' &&
+                        typeof this.lessonsData[data.tutorUserID][this.nextDay][data.startTime] !== 'undefined') 
+                        {
+
+                            
+                            let lessonData = this.lessonsData[data.tutorUserID][this.nextDay][data.startTime];
+                            if (lessonData.maid !== null) {
+                                tag = "AC"+lessonData.maid;
+                            }                        
+                            
+                        } else {
+                            // Code to handle when the value is undefined
+                        }                        
                     }
 
                 } else {
-
                     if (typeof this.lessonsData[data.tutorUserID] !== 'undefined' &&
                         typeof this.lessonsData[data.tutorUserID][this.nextDay] !== 'undefined' &&
                         typeof this.lessonsData[data.tutorUserID][this.nextDay][data.startTime] !== 'undefined') 
