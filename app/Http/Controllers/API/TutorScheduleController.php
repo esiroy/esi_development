@@ -405,7 +405,9 @@ class TutorScheduleController extends Controller
             $scheduleItem->update($lessonData);
             DB::commit();
 
-            //** ADD MEMBER TRANSACTION */          
+            //** ADD MEMBER TRANSACTION */   
+            $sendMailGate = false;
+
             if ($memberID != null) {
 
                  /********* UPDATE MULTI ACCOUNT LOGS HERE  *********/
@@ -428,8 +430,11 @@ class TutorScheduleController extends Controller
                     $transactionObj = new AgentTransaction();
                     $transaction = $transactionObj->logMemberTransactions($memberTransactionData);
 
+                    $sendMailGate = false;
+
                 } else {
 
+                    //NEW TRANSACTION
 
                     $memberTransactionData = [
                         //'scheduleItem'      => $scheduleItem,
@@ -442,6 +447,8 @@ class TutorScheduleController extends Controller
     
                     $transactionObj = new AgentTransaction();
                     $transaction = $transactionObj->addMemberTransactions($memberTransactionData);
+
+                    $sendMailGate = true;
                                         
                 } 
             }
@@ -457,9 +464,8 @@ class TutorScheduleController extends Controller
              *****************************************************/
             if (App::environment(['prod', 'production'])) 
             {       
-                if ($memberID == $scheduleItem->member_id && $request['multiAccountID'] !== $scheduledItemData['maid']) {      
-                    /********* UPDATE MULTI ACCOUNT MAILS HERE  *********/
-                } else {
+                //if ($memberID == $scheduleItem->member_id && $request['multiAccountID'] !== $scheduledItemData['maid']) {      
+                if ($sendMailGate == true) {                    
                     $lessonMailer = new LessonMailer();
                     $lessonMailer->send($memberInfo, $tutorInfo, $selectedSchedule);
                 }
