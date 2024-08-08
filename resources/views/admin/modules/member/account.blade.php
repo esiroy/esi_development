@@ -308,7 +308,12 @@
                                         {{ "-" }} {{ $transaction->amount }}
 
                                     @elseif ($transaction->transaction_type ==  "MANUAL_ADD" || $transaction->transaction_type == "CANCEL_LESSON" || $transaction->transaction_type == "DISTRIBUTE" || $transaction->transaction_type == "FREE_CREDITS")
-                                        {{ "+" }} {{ $transaction->amount }}
+                                    
+                                        @if ($transaction->amount >= 1) 
+                                            {{ "+" }} {{ $transaction->amount }}
+                                        @else 
+                                            {{ $transaction->amount }}
+                                        @endif
 
                                     @elseif ($transaction->transaction_type == "CANCEL_LESSON_B") 
                                         <span class="text-danger"> &nbsp; 0 </span>
@@ -319,7 +324,7 @@
                                     @elseif ($transaction->transaction_type == "OVERRIDE")
                                         <p class="text-muted"> {{ $transaction->amount }}   </p>
                                     @else 
-                                        {{ " " }}
+                                        {{ $transaction->amount }}
                                     @endif
                                 </td>
 

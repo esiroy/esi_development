@@ -12,6 +12,25 @@ class AgentTransaction extends Model
 
     protected $guarded = array('created_at', 'updated_at');
 
+    public function logMemberTransactions($memberTransactionData) {
+
+        $shift = Shift::where('value', $memberTransactionData['shiftDuration'])->first();
+
+        $transaction = [
+            'schedule_item_id'  => $memberTransactionData['scheduleItemID'],
+            'member_id'         => $memberTransactionData['memberID'],
+            'lesson_shift_id'   => $shift->id,
+            'created_by_id'     => Auth::user()->id,
+            'reservation_type'  => $memberTransactionData['reservation_type'],                
+            'transaction_type'  => $memberTransactionData['transaction_type'],
+            'amount'            => $memberTransactionData['amount'],
+            'remarks'           => $memberTransactionData['remarks'],
+            'valid'             => true,
+        ];
+        AgentTransaction::create($transaction);
+    }
+
+
     public function addMemberTransactions($memberTransactionData)
     {
         $shift = Shift::where('value', $memberTransactionData['shiftDuration'])->first();
@@ -257,7 +276,9 @@ class AgentTransaction extends Model
                 ->orWhere('transaction_type', 'EXPIRED')
                 ->orWhere('transaction_type', 'OVERRIDE')
                 ->orWhere('transaction_type', 'DELETE')
-                ->orWhere('transaction_type', 'DELETED');
+                ->orWhere('transaction_type', 'DELETED')
+                //added for member update only 
+                ->orWhere('transaction_type', 'LESSON_UPDATE');
         })->get();
         return $transactions;
     }
