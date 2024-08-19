@@ -89,7 +89,7 @@ class RecentLessonController extends Controller
             $latestReportCard = ReportCard::select('report_card.*', 'schedule_item.lesson_time', 'schedule_item.member_multi_account_id', 
                 'homeworks.filename', 'homeworks.original', 'homeworks.instruction' )
             ->join('schedule_item', 'report_card.schedule_item_id', '=', 'schedule_item.id')
-            ->join('homeworks', 'report_card.schedule_item_id', '=', 'homeworks.schedule_item_id')
+            ->leftJoin('homeworks', 'report_card.schedule_item_id', '=', 'homeworks.schedule_item_id')
             ->where('report_card.member_id', $memberID)
             ->where('report_card.valid', true)
             ->where(function ($query) use ($accountID) {
@@ -104,7 +104,7 @@ class RecentLessonController extends Controller
             $latestReportCard = ReportCard::select('report_card.*', 'schedule_item.lesson_time', 'schedule_item.member_multi_account_id', 
                 'homeworks.filename', 'homeworks.original', 'homeworks.instruction' )
             ->join('schedule_item', 'report_card.schedule_item_id', '=', 'schedule_item.id')
-            ->join('homeworks', 'report_card.schedule_item_id', '=', 'homeworks.schedule_item_id')
+            ->leftJoin('homeworks', 'report_card.schedule_item_id', '=', 'homeworks.schedule_item_id')
             ->where('report_card.member_id', $memberID)
             ->where('schedule_item.member_multi_account_id', $accountID)
             ->where('report_card.valid', true)
