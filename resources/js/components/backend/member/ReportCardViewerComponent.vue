@@ -39,6 +39,9 @@
             <div id="recentlessonContainer" v-if="latestReportCard">
 
                 <div class="col-12 pt-2 pb-2">
+
+                   
+
                     <p class="small">
                         <span class="font-weight-bold small">Course :</span>
                         {{ latestReportCard.lesson_course }}
@@ -52,6 +55,10 @@
                         {{ latestReportCard.lesson_subject }}
                     </p>
 
+                    <p class="small">
+                        <span class="font-weight-bold small">lesson Time :</span>
+                        {{ format_date(latestReportCard.lesson_time) }}
+                    </p>
 
                     <div id="homework-container" class="mt-2">
                         <table class="table esi-table table-bordered table-striped">
@@ -345,6 +352,14 @@ export default {
                 }                
             });            
 
+        },
+        format_date(value){
+         if (value) {
+            let fdate = this.dateFormatter(value)
+            return fdate;  
+          } else {
+            return null;
+          }
         },
         updateDefaultAccount(num) {
             for (let i = 0; i < this.accounts.length; i++) {
