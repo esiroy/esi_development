@@ -100,7 +100,8 @@ class RecentLessonController extends Controller
             ->first();         
 
         } else {
-
+            
+            //with multi account (1-4)
             $latestReportCard = ReportCard::select('report_card.*', 'schedule_item.lesson_time', 'schedule_item.member_multi_account_id', 
                 'homeworks.filename', 'homeworks.original', 'homeworks.instruction' )
             ->join('schedule_item', 'report_card.schedule_item_id', '=', 'schedule_item.id')

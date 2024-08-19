@@ -376,8 +376,11 @@ export default {
         {
 
             let fdate = Moment(date, "YYYY-MM-DD HH:mm:ss").format("YYYY年 MM月 D日 HH:mm");
+            
+            if (Moment(date).hour() === 0) {
+                fdate = Moment(date, "YYYY-MM-DD HH:mm:ss").format("YYYY年 MM月 D日 24:mm");
+            }
 
-            //let fdate = Moment(date).format('YYYY年 MM月 D日');                      
             return fdate;            
         },  
     
