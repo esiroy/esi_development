@@ -27,8 +27,9 @@
                     <div v-else>                    
                         <select name="accounts" id="accounts" class="form-control form-control-sm" @change="onChangeAccountViewer($event)">
                             <option :value="accounts.member_multi_account_id" v-for="(accounts,i) in this.accountLists" 
-                                :key="'account-'+i" class="small" :selected="(accounts.is_default) ? true: ''">
-                                {{ accounts.name }} <span v-if="(accounts.is_default)">(default)</span>
+                                :key="'account-'+i" class="small" 
+                                :selected="(accounts.is_default) ? true: ''">
+                                {{ accounts.name }} <span v-if="(accounts.is_default == true)">(default)</span>
                             </option>
                         </select>
                     </div>
