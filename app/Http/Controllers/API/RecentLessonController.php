@@ -5,6 +5,7 @@ namespace App\Http\Controllers\API;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\ReportCard;
+use Storage;
 
 class RecentLessonController extends Controller
 {
@@ -85,8 +86,10 @@ class RecentLessonController extends Controller
         if ($accountID == null || $accountID == 1) { //merge result from account 1 and old account which is (null)
 
             //No multi account selected
-            $latestReportCard = ReportCard::select('report_card.*', 'schedule_item.lesson_time', 'schedule_item.member_multi_account_id')
+            $latestReportCard = ReportCard::select('report_card.*', 'schedule_item.lesson_time', 'schedule_item.member_multi_account_id', 
+                'homeworks.filename', 'homeworks.original', 'homeworks.instruction' )
             ->join('schedule_item', 'report_card.schedule_item_id', '=', 'schedule_item.id')
+            ->join('homeworks', 'report_card.schedule_item_id', '=', 'homeworks.schedule_item_id')
             ->where('report_card.member_id', $memberID)
             ->where('report_card.valid', true)
             ->where(function ($query) use ($accountID) {
@@ -98,8 +101,10 @@ class RecentLessonController extends Controller
 
         } else {
 
-            $latestReportCard = ReportCard::select('report_card.*', 'schedule_item.lesson_time', 'schedule_item.member_multi_account_id')
+            $latestReportCard = ReportCard::select('report_card.*', 'schedule_item.lesson_time', 'schedule_item.member_multi_account_id', 
+                'homeworks.filename', 'homeworks.original', 'homeworks.instruction' )
             ->join('schedule_item', 'report_card.schedule_item_id', '=', 'schedule_item.id')
+            ->join('homeworks', 'report_card.schedule_item_id', '=', 'homeworks.schedule_item_id')
             ->where('report_card.member_id', $memberID)
             ->where('schedule_item.member_multi_account_id', $accountID)
             ->where('report_card.valid', true)
@@ -109,11 +114,29 @@ class RecentLessonController extends Controller
 
         //$latestReportCard = $reportcards->getLatestbyMultiID($request->memberID, $request->accountID);
 
+
+        if(isset($latestReportCard->original)) {
+            $homework           = url(Storage::url($latestReportCard->original));
+            $homeworkFilename   = $latestReportCard->filename;           
+        } else {
+            $homework = null;
+            $homeworkFilename   = null;           
+        }
+
+        if (isset($latestReportCard->instruction)) {
+            $instruction        = $latestReportCard->instruction;
+        } else {
+            $instruction        = null;
+        }
+
         return Response()->json([
             "success"           => true,
             "message"           => "found",   
             "multiAccountID"     => $request->accountID,
-            "latestReportCard"  => $latestReportCard
+            "latestReportCard"  => $latestReportCard,
+            "homework"          => $homework,
+            "homeworkFilename"  => $homeworkFilename,
+            "instruction"       => $instruction
         ]);        
     }    
 

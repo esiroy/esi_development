@@ -295,7 +295,7 @@
                                     <tr>
                                         <td class="red">&nbsp;</td>
                                         <td>&nbsp;</td>
-                                        <td>:</td>                                        
+                                        <td>&nbsp;</td>                                        
                                         <td>
 
                                             @php
@@ -331,6 +331,8 @@
                                             @endif                                       
                                         </td>
                                     </tr>
+
+
                                     @php /*
                                     <tr valign="top">
                                         <td class="red">&nbsp;</td>
@@ -381,6 +383,7 @@
                                     */
                                     @endphp
 
+                                    @php /*
                                     <tr valign="top">
                                         <td class="red">&nbsp;</td>
                                         <td>Homework</td>
@@ -419,7 +422,8 @@
 
                                         </td>
                                     </tr>
-
+                                    */ 
+                                    @endphp
 
 
                                     <tr>

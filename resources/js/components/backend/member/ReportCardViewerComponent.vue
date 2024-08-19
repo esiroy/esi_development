@@ -50,6 +50,36 @@
                         <span class="font-weight-bold small">Subject :</span>
                         {{ latestReportCard.lesson_subject }}
                     </p>
+
+
+                    <div id="homework-container" class="mt-2">
+                        <table class="table esi-table table-bordered table-striped">
+                            <thead >
+								<tr>
+									<td>Home Work </td> 
+								</tr>
+							</thead>                                                        
+                            <tr>
+                                <td class="px-2 text-left">  
+
+                                    <div v-if="this.homework !== null">
+                                        <div class="small" >
+                                            File: <a :href="this.homework" 
+                                            :download="this.homework" >{{ this.homeworkFilename }}</a>
+                                        </div>
+                                        <div class="small">
+                                            Instruction : {{ this.instruction }}
+                                        </div>
+                                    </div>
+                                
+                                    <div v-else class="text-center">
+                                        <span class="small text-secondary">No homework found!</span>
+                                    </div>
+                                </td>
+                            </tr>
+                        </table> 
+                    </div>
+
                 </div>
 
                 <div class="col-12 d-flex justify-content-center pb-2" @click="">
@@ -118,6 +148,8 @@
                                 </tr>   
                             </tbody>
                         </table>
+
+
 
                         <!--
                         current page: {{reportCards.current_page}},
@@ -209,8 +241,12 @@ export default {
              accountLists: null,
              
              //reportcards Listings
-             reportCards: []
+             reportCards: [],
 
+             //homework
+            homework: null,
+            homeworkFilename: null,
+            instruction: null,
 		};
 	},
     mounted: function () 
@@ -275,6 +311,12 @@ export default {
                 if (response.data.success == true) 
                 {
                     this.latestReportCard = response.data.latestReportCard;
+
+                    //homework
+                    this.homework = response.data.homework;
+                    this.homeworkFilename = response.data.homeworkFilename;
+                    this.instruction = response.data.instruction;
+
                     this.$forceUpdate();    
                 }                
             });

@@ -212,7 +212,7 @@
 
                                                                     <div id="file-attachments" class="mb-2 mx-0">
                                                                         <input id="file" type="file" name="file" class="form-control-file form-control-sm pl-0"  />
-                                                                        <span class="small text-secondary" >* accepts .png, jpg, jpeg, pdf file extension only<span>
+                                                                        <span class="small text-secondary" >* accepts .doc, .png, jpg, jpeg, pdf file extension only<span>
                                                                         <span class="error"></div>
                                                                     </div>
 
