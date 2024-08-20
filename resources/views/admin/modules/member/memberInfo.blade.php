@@ -453,7 +453,7 @@
                                                     <td class="small">
                                                         {{ ESIDateTimeFormat($homework->lesson_time )}}
                                                         <div class="badge badge-primary small">
-                                                            {{ $homework->member_multi_account_id ?? '' }}
+                                                            {{ $homework->member_multi_account_id }}
                                                         </div>
                                                     </td>
                                                     <td class="small">
