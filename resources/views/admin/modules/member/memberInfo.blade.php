@@ -452,16 +452,18 @@
                                                 <tr>
                                                     <td class="small">
                                                         {{ ESIDateTimeFormat($homework->lesson_time )}}
+                                                        @if (isset($homework->member_multi_account_id))
                                                         <div class="badge badge-primary small">
-                                                            {{ $homework->member_multi_account_id }}
+                                                            ID {{ $homework->member_multi_account_id }}
                                                         </div>
+                                                        @endif
                                                     </td>
                                                     <td class="small">
                                                         <a href="{{ url( Storage::url($homework->original) ) }}" 
                                                         download="{{ url( Storage::url($homework->original) ) }}" >{{ $homework->filename }}</a>                                                        
                                                     </td class="small">
                                                     <td class="small">
-                                                        {{ $homework->instruction }}
+                                                        {!! $homework->instruction !!}
                                                     </td>
                                                 </tr>
                                                 @endforeach
