@@ -269,7 +269,7 @@ class MemberController extends Controller
             $homeworks = $homework->select('homeworks.*','schedule_item.lesson_time', 'schedule_item.member_multi_account_id')
                     ->where('homeworks.member_id', $memberID)
                     ->leftJoin('schedule_item', 'homeworks.schedule_item_id', '=', 'schedule_item.id')
-                    ->orderBy('homeworks.created_at', 'DESC')->limit(5)->get();
+                    ->orderBy('schedule_item.lesson_time', 'DESC')->limit(5)->get();
 
             //get purpose (new)       
             $purposeModel = new Purpose();
