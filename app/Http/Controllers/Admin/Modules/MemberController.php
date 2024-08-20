@@ -178,6 +178,8 @@ class MemberController extends Controller
         $agent = new Agent();   
         $agentInfo = $agent->getAgentInfo($memberInfo->agent_id);
 
+        $homework = new Homework();
+
         if (isset($memberInfo)) 
         {
 
@@ -254,19 +256,20 @@ class MemberController extends Controller
             $goals = new LessonGoals();
             $lessonGoals = $goals->getLessonGoals($memberID);
 
-  
-           
-
-
+            /*
             if (isset($latestReportCard->schedule_item_id))
             {
                 $homework = Homework::where('schedule_item_id', $latestReportCard->schedule_item_id)->first();
             } else {
                 $homework = null;
             }
+            */
 
-
-
+            //get 5 recent homework
+            $homeworks = $homework->select('homeworks.*','schedule_item.lesson_time', 'schedule_item.member_multi_account_id')
+                    ->where('homeworks.member_id', $memberID)
+                    ->leftJoin('schedule_item', 'homeworks.schedule_item_id', '=', 'schedule_item.id')
+                    ->orderBy('homeworks.created_at', 'DESC')->limit(5)->get();
 
             //get purpose (new)       
             $purposeModel = new Purpose();
@@ -277,7 +280,7 @@ class MemberController extends Controller
 
             return view('admin.modules.member.memberInfo', compact('memberInfo', 'tutorInfo', 'agentInfo', 'lessonGoals', 
                                                 'latestReportCard', 'latestWritingReport', 'purpose', 'memberLatestExamScore', 
-                                                'currentMemberlevel', 'homework', 'mergedMemberInfo', 'mergedAccount', 'mergedType', 'mergedAccounts'));
+                                                'currentMemberlevel', 'homeworks', 'mergedMemberInfo', 'mergedAccount', 'mergedType', 'mergedAccounts'));
         } else {
 
             abort(404, "Member Not Found");

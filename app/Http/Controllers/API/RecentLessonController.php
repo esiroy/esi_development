@@ -5,6 +5,7 @@ namespace App\Http\Controllers\API;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\ReportCard;
+use App\Models\Homework;
 use Storage;
 
 class RecentLessonController extends Controller
@@ -22,7 +23,7 @@ class RecentLessonController extends Controller
     }
 
     //all lesson by MID with pagination
-    public function getRecentAllLessonByMultiID(Request $request, ReportCard $reportcards) 
+    public function getRecentAllLessonByMultiID(Request $request, ReportCard $reportcards, Homework $homework) 
     {
 
         $memberID = $request['memberID'];
@@ -55,8 +56,7 @@ class RecentLessonController extends Controller
 
 
         //$reportCards['accountID'] =  $accountID;
-          
-
+        //$homeworks = $homework->where('member_id', $memberID)->limit(5)->get();
 
         $allReportcards = ReportCard::select('report_card.*', 'schedule_item.lesson_time', 'schedule_item.member_multi_account_id')
             ->join('schedule_item', 'report_card.schedule_item_id', '=', 'schedule_item.id')
@@ -72,6 +72,7 @@ class RecentLessonController extends Controller
             "member_multi_account_id"     => $accountID,
             "reportCards"   => $reportCards,
             "allReportcards" => $allReportcards
+            //"homeworks" => $homeworks,
         ]);   
 
     }
@@ -114,6 +115,8 @@ class RecentLessonController extends Controller
         }
 
         //$latestReportCard = $reportcards->getLatestbyMultiID($request->memberID, $request->accountID);
+
+        //ALL HOME WORKS
 
 
         if(isset($latestReportCard->original)) {

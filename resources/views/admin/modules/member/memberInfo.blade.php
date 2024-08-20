@@ -426,6 +426,51 @@
                                     @endphp
 
 
+
+                                    <tr valign="top">
+                                        <td class="red">&nbsp;</td>
+                                        <td>Recent Homeworks</td>
+                                        <td>&nbsp;</td>
+                                        <td>
+                                          
+
+                                           <table class="table table-sm border">
+                                              
+                                                <tr class="">
+                                                    <th class="bg-darkblue small text-white font-weight-bold" style="width:150px">
+                                                        Lesson Time
+                                                    </th>                                                    
+                                                    <th class="bg-darkblue small text-white font-weight-bold"  style="width:250px">
+                                                        File
+                                                    </th>
+                                                    <th class="bg-darkblue small text-white font-weight-bold">
+                                                        Instruction
+                                                    </th>                                                    
+                                                </tr>       
+                                                
+                                                @foreach($homeworks as $homework)
+                                                <tr>
+                                                    <td class="small">
+                                                        {{ ESIDateTimeFormat($homework->lesson_time )}}
+                                                        <div class="badge badge-primary small">
+                                                            {{ $homework->member_multi_account_id ?? '' }}
+                                                        </div>
+                                                    </td>
+                                                    <td class="small">
+                                                        <a href="{{ url( Storage::url($homework->original) ) }}" 
+                                                        download="{{ url( Storage::url($homework->original) ) }}" >{{ $homework->filename }}</a>                                                        
+                                                    </td class="small">
+                                                    <td class="small">
+                                                        {{ $homework->instruction }}
+                                                    </td>
+                                                </tr>
+                                                @endforeach
+                                            </table>                                        
+
+
+                                        </td>
+                                    </tr>
+
                                     <tr>
                                         <th colspan="13"> Recent Notes  </th>
                                     </tr>
