@@ -366,6 +366,7 @@ class TutorScheduleController extends Controller
                     $month_to_reserve = date("m", strtotime($request['scheduled_at']));
                     $year_to_reserve = date("Y", strtotime($request['scheduled_at']));
                     $totalReserved = $scheduleItem->getTotalLessonReserved($memberID, $month_to_reserve, $year_to_reserve);
+                    /*
                     if ($totalReserved >= $limit) {
                         return Response()->json([
                             "success" => false,
@@ -378,7 +379,7 @@ class TutorScheduleController extends Controller
                             "message" => "Member Monthly Reservation limit Reached",
                             "message_en" => "Member Monthly Reservation limit Reached"
                         ]);
-                    }
+                    }*/
                 } else {
 
                     //USER HAS NOT ADDED ANY ATTRIBUTE OR MONTHLY LIMIT YET!
@@ -386,8 +387,8 @@ class TutorScheduleController extends Controller
                         "success" => false,
                         //"message" => "月間設定受講回数を超えているか、ポイントが足りないためレッスンの予約ができません",
                         //"message_en" => "I cannot book a lesson because I have exceeded the monthly set number of lessons or I do not have enough points",
-                        "message" => "Member Monthly Reservation limit Reached",
-                        "message_en" => "Member Monthly Reservation limit Reached",
+                        "message"       => "Member Monthly Reservation limit Reached, please Add Monthly Lesson Credits",
+                        "message_en"    => "Member Monthly Reservation limit Reached, please Add Monthly Lesson Credits",
                     ]);
                 } //END MEMBER ATTRIBUTE CHECKER
 
