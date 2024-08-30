@@ -987,6 +987,32 @@ class FormMakerController extends Controller
         }
     }
 
+
+    public function approveEntry(Request $request) {
+        $entryID = $request->get('entryID');
+        $approved = $request->get('approvalValue');
+
+        $entry = WritingEntries::find($entryID);
+
+        if ($entry) {
+
+            if (!$approved) {
+                $approved = 0;
+            } else {
+                $approved = true;
+            }
+
+            $updatedEntryID = $entry->update([
+                'approved' => $approved
+            ]);   
+            
+            return Response()->json([
+                "success"  => true,   
+                "approved" => $approved,            
+            ]);   
+        }
+    }
+
     public function getSubmittedWritingPoints(Request $request, Member $member, AgentTransaction $agentTransaction, WritingEntries $writingEntries) 
     {
 

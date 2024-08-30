@@ -65,6 +65,7 @@
                                         @endforeach   
 
                                         <td>Countdown</td>
+                                        <td>Total Words</td>
                                         <td>
                                             @if (Auth::user()->user_type == 'ADMINISTRATOR') 
                                                 Appoint Teacher
@@ -120,6 +121,17 @@
                                                     countdown("{{$formField->id . '_countdown_'. $key }}", " {{ date('M d, Y H:i:s', strtotime($entry->created_at. ' + 47 hours')) }} ");
                                                 });
                                                 </script> 
+                                            @endif
+                                        </td>
+                                        <td>                                            
+                                            @if ($entry->total_words >= 501 && $entry->approved == true) 
+                                                {{$entry->total_words }}
+                                                <span style="color:green"><i class="fas fa-check-circle"></i></div>
+                                            @elseif($entry->total_words >= 501 && $entry->approved == false)
+                                                {{$entry->total_words }}
+                                                <span style="color:red"><i class="fas fa-times"></i></div>
+                                            @else 
+                                                {{$entry->total_words }} 
                                             @endif
                                         </td>
                                         <td>

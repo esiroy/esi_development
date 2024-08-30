@@ -404,7 +404,7 @@ if (! function_exists('checkbox_ticker')) {
     } 
 }
 
-
+//Old word counter
 if (! function_exists('countWords')) 
 {
     function countWords($text) 
@@ -413,6 +413,18 @@ if (! function_exists('countWords'))
         return count($counter);        
     }  
 }
+
+//This is correct 
+if (! function_exists('getWordsCount')) 
+{
+    function getWordsCount($text) 
+    {
+        $words = str_word_count($text, 1);
+       
+        return count($words);          
+    }  
+}
+      
 
 if (! function_exists('strip_tags_content')) 
 {

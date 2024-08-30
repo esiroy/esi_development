@@ -148,11 +148,14 @@
                                     <div class="text-left pl-2 py-2"> 
 
                                         @if ($field->type == 'paragraphtext')
-                                         
-                                         @php 
+                                            @php
                                                 $text = html_entity_decode($value['description']);
-                                                $text = strip($text)  ;
+                                                $text = strip($text);
+                                                //Strip all the tagged the count words
+                                                //$stripTagText = strip_tags_content($text);                                          
+                                                //$wordCount = getWordsCount($stripTagText);
                                             @endphp
+                                            
                                             {!! $text !!}
 
                                         @elseif ($field->type == 'htmlContent')
@@ -382,10 +385,18 @@
                                         </div>                                
                                         <div class="col-10">      
 
-                                            <input type="submit" style="display:none">
+                                            @if ($entry->total_words >= 501)
+                                                <button type="button" class="btn btn-light">
+                                                    <span class="text-danger small">Please wait for adminstrator approval</span>
+                                                </button>
+                                                <div class="txt-info ml-2 mt-1 small">*501 words above needs to have administrator permission before you can submit reply</div>
+                                            @else 
+                                                <input type="submit" style="display:none">
+                                                <button id="teacherSubmitBtn" type="button" value="Submit Reply" class="btn btn-primary btn-sm" >Submit</button>
+                                                <input type="file" id="file" name="file" class="btn btn-sm float-right" required><br><br>                                                
+                                            @endif
 
-                                            <button id="teacherSubmitBtn" type="button" value="Submit Reply" class="btn btn-primary btn-sm" >Submit</button>
-                                            <input type="file" id="file" name="file" class="btn btn-sm float-right" required><br><br>
+
                                         </div>
 
                                     </div>
@@ -450,8 +461,7 @@
                                               
                                             @endif
                                         </td>
-                                        <td>
-                                        
+                                        <td class="pl-4 text-left">
                                             @if (Auth::user()->user_type == 'ADMINISTRATOR' || Auth::user()->user_type == 'MANAGER') 
                                                 <select id="assignTutor_{{ $entry->id }}" class="assignTutor">
                                                     <option value="" class="{{ $entry->id }}"> Select </option>
@@ -468,6 +478,24 @@
                                         </td>                                       
                                     </tr>
                                    
+                                    @if (Auth::user()->user_type == 'ADMINISTRATOR' || Auth::user()->user_type == 'MANAGER') 
+                                        @if( $entry->total_words >= 501)
+                                            <tr>
+                                                <td> 
+                                                    Word Count Approval 
+                                                    <div class="small">(Words 501 and above)</div>
+                                                </td>
+                                                <td class="pl-4 text-left">
+                                                    <select name="entry_approval" id="entry_approval">
+                                                    <option value="0" class="{{ $entry->id }}" @if ($entry->approved == false ) {{ " selected = 'selected"}}  @endif>Disapproved</option>
+                                                    <option value="1" class="{{ $entry->id }}" @if ($entry->approved == true ) {{ " selected = 'selected"}}  @endif>Approved</option>
+                                                    </select>                                             
+                                                </td>
+                                            </tr>
+                                        @endif
+                                    @endif
+
+                               
                                     
                                     <tr>
                                         <td> Date Submitted </td>
@@ -802,7 +830,40 @@
             });            
         }
 
+        function appoveEntry(entryID, approvalValue) 
+        {
 
+            let api_token = "{{ Auth::user()->api_token }}";
+
+            $.ajax({
+                type: 'POST',
+                url: '/api/writing/approveEntry?api_token=' + api_token,
+                data: {
+                    entryID: entryID,                    
+                    approvalValue: approvalValue
+                },
+                headers: {
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                },
+                beforeSend: function() {
+                    $('#loadingModal').modal('show');
+                    $('#loadingModal').show();  
+                },
+                success: function(data) {                    
+                    if (data.success == true) {
+                    
+
+                    } else {
+                    
+                        
+                    }
+                },
+                complete: function(data) {              
+                    $('#loadingModal').modal('hide');
+                    $('#loadingModal').hide();                     
+                }          
+            });            
+        }
         /* Assign Tutor */
         window.addEventListener('load', function() {
 
@@ -812,6 +873,13 @@
                 assignTutor(entryID, tutorID);                
            });
            
+
+
+           $('#entry_approval').on('change', function() {
+                let entryID = $(this).find('option:selected').attr('class');
+                let approvalValue = $(this).find('option:selected').val();
+                appoveEntry(entryID, approvalValue);                
+           });           
         });
 
     </script>
