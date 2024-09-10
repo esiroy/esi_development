@@ -4,7 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-use Auth;
+use Auth, DB;
 
 class Notes extends Model
 {
@@ -28,23 +28,19 @@ class Notes extends Model
                     ->orderBy('member_notes.created_at', 'DESC')
                     ->paginate(Auth::user()->items_per_page);
         */
-
         return Notes::select(
             'member_notes.id as note_id', 
             'member_notes.tutor_id', 
             'member_notes.member_id', 
             'member_notes.note as note', 
             'member_notes.updated_at',
-            'user_image.original as tutor_photo',  
-            'users.firstname as tutor_name'
+            DB::raw('(SELECT original FROM user_image WHERE user_image.user_id = member_notes.tutor_id LIMIT 1) as tutor_photo'), 
+            DB::raw('(SELECT firstname FROM users WHERE users.id = member_notes.tutor_id LIMIT 1) as tutor_name')
         )
-        ->leftJoin('user_image', 'user_image.user_id', '=', 'member_notes.tutor_id')
-        ->leftJoin('users', 'users.id', '=', 'member_notes.tutor_id')
         ->where('member_notes.member_id', $memberID)
         ->where('member_notes.valid', true)
         ->orderBy('member_notes.created_at', 'DESC')
-        ->distinct('member_notes.id')  // Ensure distinct notes are fetched
-        ->paginate(Auth::user()->items_per_page);        
+        ->paginate(Auth::user()->items_per_page);      
     }
 
     function saveMemberNote($memberID, $tutorID, $note) {
