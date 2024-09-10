@@ -16,7 +16,6 @@ class Notes extends Model
 
     function getMemberNotes($memberID) 
     {        
-        /*
         return Notes::select('member_notes.id as note_id', 'member_notes.tutor_id', 'member_notes.member_id', 'member_notes.note as note', 'member_notes.updated_at',
                         'user_image.original as tutor_photo',  
                         'users.firstname as tutor_name'
@@ -27,24 +26,6 @@ class Notes extends Model
                     ->where('member_notes.valid', true)
                     ->orderBy('member_notes.created_at', 'DESC')
                     ->paginate(Auth::user()->items_per_page);
-        */
-
-        return Notes::select(
-            'member_notes.id as note_id', 
-            'member_notes.tutor_id', 
-            'member_notes.member_id', 
-            'member_notes.note as note', 
-            'member_notes.updated_at',
-            'user_image.original as tutor_photo',  
-            'users.firstname as tutor_name'
-        )
-        ->leftJoin('user_image', 'user_image.user_id', '=', 'member_notes.tutor_id')
-        ->leftJoin('users', 'users.id', '=', 'member_notes.tutor_id')
-        ->where('member_notes.member_id', $memberID)
-        ->where('member_notes.valid', true)
-        ->orderBy('member_notes.created_at', 'DESC')
-        ->distinct('member_notes.id')  // Ensure distinct notes are fetched
-        ->paginate(Auth::user()->items_per_page);                    
     }
 
     function saveMemberNote($memberID, $tutorID, $note) {

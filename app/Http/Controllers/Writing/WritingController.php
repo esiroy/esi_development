@@ -130,7 +130,6 @@ class WritingController extends Controller
         $userAttachedFile = false;
         $totalWords = 0;
         $pointToDeduct = 0;
-       
 
         $storagePath = 'public/uploads/writing/';
         $dataArray = json_decode($request['data'], true);

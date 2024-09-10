@@ -100,12 +100,11 @@ class WritingController extends Controller
     */
     public function entry($form_id, $entry_id, Member $member, Tutor $tutor, WritingEntryGrade $writingEntryGrade)  
     {
-       
+
         //get the posted grade
         $postedEntries =  $writingEntryGrade->where('writing_entry_id', $entry_id)->orderby('created_at', 'DESC')->get();        
 
         //abort_if(Gate::denies('writing_entry'), Response::HTTP_FORBIDDEN, '403 Forbidden');
-        
         //if (Auth::user()->user_type == 'ADMINISTRATOR' || Auth::user()->user_type == 'MANAGER') {
             //get form fields for name of header
             //$formFields  = FormFields::where('form_id', $form_id)->orderBy('sequence_number', 'ASC')->get();

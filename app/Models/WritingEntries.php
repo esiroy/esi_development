@@ -45,8 +45,8 @@ class WritingEntries extends Model
     /*
         @words = determine how much points for deduction, 
         @return false if not within rangge
-        @update: this is for 2021-2024
-    function getWordPointDeduct_v1($words) 
+    */
+    function getWordPointDeduct($words) 
     {          
         if  ($words >= 1 && $words <= 180)  {
             return 1;                        
@@ -58,27 +58,6 @@ class WritingEntries extends Model
             return false;
         }
     }
-    */
-
-    /*
-    @description: this is for 2021-2024    
-    @words:  determine how much points for deduction, 
-    @return false if not within range    
-    */
-    function getWordPointDeduct($words) 
-    {          
-        if  ($words >= 1 && $words <= 180)  {
-            return 1;                        
-        } else if ($words >= 181 && $words <= 350) {
-            return 2;
-        } else if ($words >= 351 && $words <= 500) {
-            return 3;
-        } else if ($words >= 501) {
-            return 6;
-        } else {
-            return false;
-        }
-    }    
 
 
     function calculateAddtionalPoint($writingCredit, $totalWords) {    
