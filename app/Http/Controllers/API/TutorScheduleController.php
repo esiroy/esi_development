@@ -331,6 +331,9 @@ class TutorScheduleController extends Controller
 
                 //2. CHECK IF MEMBER HAS ENOUGH POINTS TO BOOK A SCHEDULE
                 $agentCredts = new AgentTransaction();
+
+                /*** UPDATE WILL NOT CHECK OUT OF CREDITS */
+                /*                
                 if ($agentCredts->getCredits($memberID) <= 0) {
                     return Response()->json([
                         "success" => false,                        
@@ -341,6 +344,7 @@ class TutorScheduleController extends Controller
                         "message_en" => "out of credits"
                     ]);
                 } //END CREDIT CHECKER                
+                 */
 
                 //3. CHECK IF LESSON TIME IS INVALID
                 if (!$memberInfo->isReservedLessonValid($memberID, $lessonTime)) {            
