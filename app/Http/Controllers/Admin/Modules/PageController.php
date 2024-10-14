@@ -35,7 +35,7 @@ class PageController extends Controller
     {
         $pages = Page::orderBy('published_at')
                     //->where('is_published', true)
-                        ->paginate(30);
+                    ->paginate(30);
         
         
         return view('admin.modules.pages.index', compact('pages'));    }
