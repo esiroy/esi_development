@@ -38,8 +38,7 @@ class PageController extends Controller
                         ->paginate(30);
         
         
-        return view('admin.modules.pages.index', compact('pages'));
-    }
+        return view('admin.modules.pages.index', compact('pages'));    }
 
     /**
      * Show the form for creating a new resource.
