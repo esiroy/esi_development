@@ -322,11 +322,12 @@
         <div class="bg-lightblue">
           <div class="container px-0">
             <nav class="nav nav-pills flex-column flex-sm-row">
-                <a class="flex-sm text-sm-center nav-link text-white font-weight-bold rounded-0 border-right border-left border-primary" href="{{ url('/home') }}">マイページ </a>
+                <a class="flex-sm text-sm-center nav-link text-white font-weight-bold rounded-0 border-right border-left border-primary" href="{{ url('/home') }}">マイページ </a>                
 
-                @if (App\Models\GeneralSetting::where('name','is_netenglish')->first()->value == true)
 
-                <a class="flex-sm text-sm-center nav-link text-white font-weight-bold rounded-0 border-right border-primary" href="{{ url('pages') }}">PAGES</a>
+                @if ( env('APP_NETENGLISH') == true )
+
+                    <a class="flex-sm text-sm-center nav-link text-white font-weight-bold rounded-0 border-right border-primary" href="{{ url('pages') }}">PAGES</a>
                     <a class="flex-sm text-sm-center nav-link text-white font-weight-bold rounded-0 border-right border-primary" href="{{ url('customersupport') }}">カスタマー　サポート</a>
                     <a class="flex-sm text-sm-center nav-link text-white font-weight-bold rounded-0 border-right border-primary" href="{{ url('lessonmaterials') }}">オリジナル教材</a>
 
