@@ -417,7 +417,7 @@ Route::group(['prefix' => 'admin', 'namespace' => 'Admin', 'as' => 'admin.'], fu
         //Route::resource('/minitest/categories', 'Modules\MiniTestCategoriesController');
 
         //Page Creator
-        Route::resource('/pages', 'Modules\pageController');
+        Route::resource('/pages', 'Modules\PageController');
       
 
 
