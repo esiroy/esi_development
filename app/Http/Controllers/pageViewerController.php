@@ -39,16 +39,9 @@ class pageViewerController extends Controller
      */
     public function show($slug)
     {
-        if(env('APP_NETENGLISH') == true) {
-
-            $pages = Page::orderBy('published_at')->where('is_netenglish', true)->where('is_published', true)->orderBy('created_at','DESC')->withoutTrashed()->paginate(1, '*', 'page');
-            $lists = Page::orderBy('published_at')->where('is_netenglish', true)->where('is_published', true)->orderBy('created_at','DESC')->withoutTrashed()->paginate(120, '*', 'list');       
-
-        } elseif(env('APP_NETENGLISH') == false) {
-
-            $pages = Page::orderBy('published_at')->where('is_netenglish', false)->where('is_published', false)->orderBy('created_at','DESC')->withoutTrashed()->paginate(1, '*', 'page');
-            $lists = Page::orderBy('published_at')->where('is_netenglish', false)->where('is_published', true)->orderBy('created_at','DESC')->withoutTrashed()->paginate(120, '*', 'list');          
-        } 
+        $page = Page::where('slug', $slug)->first();
+        
+        $lists = Page::orderBy('published_at')->where('is_published', true)->paginate(120, '*', 'list');       
         
 
         return view('modules.pages.view', compact( 'page', 'lists'));
