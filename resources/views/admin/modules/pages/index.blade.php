@@ -1,16 +1,18 @@
 @extends('layouts.admin')
 
 @section('content')
-<div class="container bg-light px-0">
 
-    @include('admin.menus.manage')
+<div class="container bg-light px-0">
     
+    @include('admin.menus.manage')
+
+
     <div class="esi-box">
 
         <nav aria-label="breadcrumb">
             <ol class="breadcrumb bg-light ">
                 <li class="breadcrumb-item"><a href="#">Home</a></li>
-                <li class="breadcrumb-item active" aria-current="page">Announcements</li>
+                <li class="breadcrumb-item active" aria-current="page">Pages</li>
             </ol>
         </nav>
 
@@ -30,7 +32,7 @@
             <!--[start card] -->
             <div class="card esi-card">
                 <div class="card-header esi-card-header">
-                    Announcements
+                    Pages
                 </div>
                 <div class="card-body">
 
@@ -39,7 +41,7 @@
                             <div class="float-right">
                                 <ul class="pagination pagination-sm">
                                     <small class="mr-4 pt-2">Page :</small>
-                                    {{ $announcements->appends(request()->query())->links() }}
+                                    {{ $pages->appends(request()->query())->links() }}
                                 </ul>
                             </div>
                         </div>
@@ -51,30 +53,43 @@
                                 <table class="table table-bordered table-sm table-striped">
                                     <thead>
                                         <tr>
-                                            <th class="small text-center bg-light text-dark font-weight-bold">From </th>
-                                            <th class="small text-center bg-light text-dark font-weight-bold">To </th>
-                                            <th class="small text-center bg-light text-dark font-weight-bold">Announcement</th>
-                                            <th class="small text-center bg-light text-dark font-weight-bold">Hidden</th>
-                                            <th class="small text-center bg-light text-dark font-weight-bold">Action</th>
+                                            <th class="small pl-2 text-left small bg-light text-dark font-weight-bold">Title</th>                                            
+                                            <th class="small pl-2 text-left small bg-light text-dark font-weight-bold">Content</th>
+                                            <th class="small pl-2 text-left small bg-light text-dark font-weight-bold" style="width:175px">Publishing | Origin </th>  
+                                            <th class="small pl-2 text-left small bg-light text-dark font-weight-bold" style="width:125px">Action</th>
                                         </tr>
                                     </thead>
                                     <tbody>
 
-                                        @foreach($announcements as $announcement)
+                                        @foreach($pages as $page)
                                         <tr>
-                                            <th class="small text-center">{{ $announcement->date_from }}</th>
-                                            <th class="small text-center">{{ $announcement->date_to }}</th>
-                                            <th class="small text-center">
-                                                {!! html_entity_decode($announcement->body) !!}
-
+                                            <th class="small text-left pl-2 ">{{ $page->title }}</th>
+                                            <th class="small text-left pl-2"> 
+                                                @php 
+                                                    $stripptedContent = $page->content;
+                                                    $cleanedText = strip_tags($stripptedContent); // Strip the HTML tags
+                                                @endphp
+                                                {!! html_entity_decode(Str::limit($cleanedText, 150) ) !!}
                                             </th>
-                                            <th class="small text-center">{{ $announcement->is_hidden ? 'true' : 'false' }}</th>
-                                            <th class="small text-center">
-                                                <a href="{{ route('admin.announcement.edit', $announcement->id)}}">Edit</a> |
-                                               
-                                                <a href="{{ route('admin.announcement.destroy', ['announcement' => $announcement]) }}" onclick="confirmSubmitAction('delete-form-{{ $announcement->id }}'); return false; ">Delete
-                                                </a>
-                                                <form id="delete-form-{{ $announcement->id }}" action="{{ route('admin.announcement.destroy', ['announcement' => $announcement]) }}" method="POST" style="display: none;">
+                                            <th class="small ">
+                                                @if ($page->is_published == true)
+                                                    <span class="badge badge-primary small">Published</span>
+                                                @else 
+                                                    <span class="badge badge-secondary small">Unpubished</span>
+                                                @endif
+
+                                                @if ($page->is_netenglish == true && $page->is_mytutor)            
+                                                    <span class="badge badge-info small">Both</span>  
+                                                @elseif ($page->is_netenglish == true)                                                
+                                                    <span class="badge badge-info small">NET English</span>
+                                                @elseif ($page->is_mytutor == true)                                                
+                                                    <span class="badge badge-info small">MyTutor</span>                                                    
+                                                @endif
+                                            </th>  
+                                            <th class="small text-left pl-2">
+                                                <a href="{{ route('admin.pages.edit', $page->id)}}">Edit</a> |                                               
+                                                <a href="{{ route('admin.pages.destroy', ['page' => $page]) }}" onclick="confirmSubmitAction('delete-form-{{ $page->id }}'); return false; ">Delete</a>
+                                                <form id="delete-form-{{ $page->id }}" action="{{ route('admin.pages.destroy', ['page' => $page]) }}" method="POST" style="display: none;">
                                                     @method("DELETE")
                                                     @csrf
                                                 </form>
@@ -94,7 +109,7 @@
                             <div class="float-right">
                                 <ul class="pagination pagination-sm">
                                     <small class="mr-4 pt-2">Page :</small>
-                                    {{ $announcements->appends(request()->query())->links() }}
+                                    {{ $pages->appends(request()->query())->links() }}
                                 </ul>
                             </div>
                         </div>
@@ -111,55 +126,47 @@
             <!--[start card] -->
             <div class="card esi-card">
                 <div class="card-header esi-card-header">
-                    Announcements
+                    Create Page
                 </div>
                 <div class="card-body">
 
                 
 
-                    <form action="{{ route("admin.announcement.store") }}" method="POST" enctype="multipart/form-data">
+                    <form action="{{ route("admin.pages.store") }}" method="POST" enctype="multipart/form-data">
                         @csrf
                         <table cellspacing="9" cellpadding="0" class="table table-borderless">
                             <tbody>
+
                                 <tr valign="top">
-                                    <td>Announcement</td>
+                                    <td>Title </td>
                                     <td>:</td>
                                     <td>
-                                        <textarea required style="width: 450px; height: 300px; display: none;" id="body" name="body"></textarea>
+                                        <input type="text" class="form-control form-control-sm col-8"  id="title" name="title" required maxlength="190"></input>
+                                    </td>
+                                </tr>                            
+
+                                <tr valign="top">
+                                    <td>Content </td>
+                                    <td>:</td>
+                                    <td>
+                                        <textarea required style="width: 450px; height: 300px; display: none;" id="content" name="content"></textarea>
                                     </td>
                                 </tr>
 
+                             
                                 <tr valign="top">
-                                    <td>From</td>
-                                    <td>:</td>
-                                    <td>
-                                        <input required type="date" id="dateFrom*" name="dateFrom" data-date-format="YYYY年 M月 DD日" value="" class="inputDate form-control form-control-sm col-2" style="min-width:150px">
-                                    </td>
-                                </tr>
-
-                                <tr valign="top">
-                                    <td>To</td>
-                                    <td>:</td>
-                                    <td>
-                                        <input required type="date" id="dateTo*" name="dateTo" data-date-format="YYYY年 M月 DD日" value="" class="inputDate form-control form-control-sm col-2" style="min-width:150px">
-                                    </td>
-                                </tr>
-
-                                <tr valign="top">
-                                    <td></td>
-                                    <td></td>
-                                    <td colspan="2"><input type="checkbox" id="isHidden" name="isHidden"> Hide this announcement </td>
-                                </tr>
-
-                                <tr valign="top">
-                                    <td></td>
-                                    <td></td>
+                                    <td colspan="2">Publish To :</td>
                                     <td colspan="4">
-                                        <input type="checkbox" name="usertypes[]" value="ADMINISTRATOR"> Administrator
-                                        <input type="checkbox" name="usertypes[]" value="MANAGER"> MANAGER
-                                        <input type="checkbox" name="usertypes[]" value="MEMBER"> Member
-                                        <input type="checkbox" name="usertypes[]" value="AGENT"> Agent
-                                        <input type="checkbox" name="usertypes[]" value="TUTOR"> Tutor
+                                        <input type="checkbox" name="is_netenglish" value="NETENGLISH"> NETENGLISH
+                                        <span class="mr-2"></span>
+                                        <input type="checkbox" name="is_mytutor" value="MYTUTOR"> MY TUTOR
+                                    </td>
+                                </tr>
+
+                                <tr valign="top">
+                                    <td colspan="2">PUBLISHED?</td>
+                                    <td colspan="4">
+                                        <input type="checkbox" name="is_published" value="PUBLISHED"> 
                                     </td>
                                 </tr>
 
@@ -180,8 +187,12 @@
 
 
     </div>
+    
+    
 </div>
 @endsection
+
+
 
 
 @section('styles')
@@ -230,7 +241,7 @@
         });
 
         //editor
-        CKEDITOR.replace('body');
+        CKEDITOR.replace('content');
     });
 
 

@@ -27,6 +27,10 @@
                     <!--[start] change user details-->
                     @include('admin.modules.settings.includes.changeUserDetails')
                     <!--[end] change user details-->
+
+                    <!--[start] change user details-->
+                    @include('admin.modules.settings.includes.generalSettings')
+                    <!--[end] change user details-->                    
                 </div>
             </div>
             <!--[end] card-->

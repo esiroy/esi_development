@@ -166,8 +166,9 @@ Route::get('importCourseCategoryImage/{id}/{per_item}', 'TableCourseCategoryImag
 Route::resource('updateMemberExpirty', 'TableUserExpiryUpdaterController');
 
 /*************** 
- *  ANNOUNCEMENTS
+ *  ANNOUNCEMENTS && PAGES
  ***************/
+Route::resource('/pages', 'pageViewerController');
 
 /*************** 
  *  COMPANY
@@ -193,6 +194,7 @@ Route::resource('viewtutor', 'TutorProfileController');
 //Settings
 Route::resource('/settings', 'Members\MemberSettingController');
 Route::put('settings', 'Members\MemberSettingController@updatePassword')->name('settings.updatePassword');
+
 
 //Image upload
 Route::resource('image-upload', 'Admin\imageUploadController');
@@ -282,6 +284,9 @@ Route::group(['prefix' => 'admin', 'namespace' => 'Admin', 'as' => 'admin.'], fu
     Route::resource('settings', 'SettingsController');
     Route::put('settings', 'SettingsController@updatePassword')->name('settings.updatePassword');
     //Route::get('settings', 'SettingsController@index')->name('settings');
+
+    Route::put('updateGeneralSettings', 'SettingsController@updateGeneralSettings')->name('settings.updateGeneralSettings');
+    
 
     Route::group(['middleware' => 'admin.auth'], function()
     {
@@ -394,6 +399,7 @@ Route::group(['prefix' => 'admin', 'namespace' => 'Admin', 'as' => 'admin.'], fu
 
         Route::delete('/course/destroyLessonMaterial', 'Modules\CourseController@destroyLessonMaterial')->name('course.destroyLessonMaterial');
         Route::resource('/course', 'Modules\CourseController');
+
         //upload course
         Route::post('/course/uploadCourseImage', 'Modules\CourseController@uploadCourseImage')->name('course.uploadCourseImage');
         Route::post('/course/uploadlessonmaterial', 'Modules\CourseController@uploadlessonmaterial')->name('course.uploadlessonmaterial');
@@ -408,9 +414,11 @@ Route::group(['prefix' => 'admin', 'namespace' => 'Admin', 'as' => 'admin.'], fu
 
 
         //Route::resource('/minitest', 'Modules\MiniTestController');
-      //  Route::resource('/minitest/categories', 'Modules\MiniTestCategoriesController');
-      
+        //Route::resource('/minitest/categories', 'Modules\MiniTestCategoriesController');
 
+        //Page Creator
+        Route::resource('/pages', 'Modules\pageController');
+      
 
 
         /* Administrator Module Lists */

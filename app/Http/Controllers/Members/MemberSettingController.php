@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 use App\Models\User;
 use App\Models\UserImage;
+use App\Models\GeneralSetting;
 
 use Auth;
 use Hash;
@@ -32,6 +33,7 @@ class MemberSettingController extends Controller
         
         return view('modules.member.settings.index', compact('member', 'userImage'));
     }
+
 
 
     public function updatePassword(request $request)

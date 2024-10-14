@@ -39,12 +39,8 @@
     <div id="app">
         @if(request()->query('debug') == 'true')
             {{ getenv('APP_MESSENGER_URL') }}
-            {{ getenv('APP_NAME') }}
-
-           
-        @endif
-
-     
+            {{ getenv('APP_NAME') }}           
+        @endif    
         
         <div class="bg-white shadow-sm">
             <div class="container">
@@ -328,19 +324,30 @@
             <nav class="nav nav-pills flex-column flex-sm-row">
                 <a class="flex-sm text-sm-center nav-link text-white font-weight-bold rounded-0 border-right border-left border-primary" href="{{ url('/home') }}">マイページ </a>
 
-                @if ($hideMemberTabs == false)
-                <a class="flex-sm text-sm-center nav-link text-white font-weight-bold rounded-0 border-right border-primary" href="JavaScript:PopupCenter('http://www.mytutor-jpn.com/faq.html','FAQ',900,820);">よくある質問</a>
-                @endif
-                
-                <a class="flex-sm text-sm-center nav-link text-white font-weight-bold rounded-0 border-right border-primary" href="JavaScript:PopupCenter('https://www.mytutor-jpn.com/contract.html','ご利用方法',900,820);">ご利用方法</a>
-                <a class="flex-sm text-sm-center nav-link text-white font-weight-bold rounded-0 border-right border-primary" href="{{ url('customersupport') }}">カスタマー　サポート</a>
-                <a class="flex-sm text-sm-center nav-link text-white font-weight-bold rounded-0 border-right border-primary" href="{{ url('lessonmaterials') }}">オリジナル教材</a>
+                @if (App\Models\GeneralSetting::where('name','is_netenglish')->first()->value == true)
 
-                @if ($hideMemberTabs == false)
-                <a class="flex-sm text-sm-center nav-link text-white font-weight-bold rounded-0 border-right border-primary" href="JavaScript:PopupCenter('https://www.mytutor-jpn.com/info/2023/0701200321.html','Lesson Course Summary',900,820);">レッスンコース</a>
-                <a class="flex-sm text-sm-center nav-link text-white font-weight-bold rounded-0 border-right border-primary" href="JavaScript:PopupCenter('http://www.mytutor-jpn.com/service.html','料金案内',900,820);">料金案内</a>
-                <a class="flex-sm text-sm-center nav-link text-white font-weight-bold rounded-0 border-right border-primary" href="JavaScript:PopupCenter('https://www.mytutor-jpn.com/teacher.html','講師',900,820);">講師</a>
+                <a class="flex-sm text-sm-center nav-link text-white font-weight-bold rounded-0 border-right border-primary" href="{{ url('pages') }}">PAGES</a>
+                    <a class="flex-sm text-sm-center nav-link text-white font-weight-bold rounded-0 border-right border-primary" href="{{ url('customersupport') }}">カスタマー　サポート</a>
+                    <a class="flex-sm text-sm-center nav-link text-white font-weight-bold rounded-0 border-right border-primary" href="{{ url('lessonmaterials') }}">オリジナル教材</a>
+
+                @else 
+
+                    @if ($hideMemberTabs == false)
+                    <a class="flex-sm text-sm-center nav-link text-white font-weight-bold rounded-0 border-right border-primary" href="JavaScript:PopupCenter('http://www.mytutor-jpn.com/faq.html','FAQ',900,820);">よくある質問</a>
+                    @endif
+                    
+                    <a class="flex-sm text-sm-center nav-link text-white font-weight-bold rounded-0 border-right border-primary" href="JavaScript:PopupCenter('https://www.mytutor-jpn.com/contract.html','ご利用方法',900,820);">ご利用方法</a>
+                    <a class="flex-sm text-sm-center nav-link text-white font-weight-bold rounded-0 border-right border-primary" href="{{ url('customersupport') }}">カスタマー　サポート</a>
+                    <a class="flex-sm text-sm-center nav-link text-white font-weight-bold rounded-0 border-right border-primary" href="{{ url('lessonmaterials') }}">オリジナル教材</a>
+
+                    @if ($hideMemberTabs == false)
+                    <a class="flex-sm text-sm-center nav-link text-white font-weight-bold rounded-0 border-right border-primary" href="JavaScript:PopupCenter('https://www.mytutor-jpn.com/info/2023/0701200321.html','Lesson Course Summary',900,820);">レッスンコース</a>
+                    <a class="flex-sm text-sm-center nav-link text-white font-weight-bold rounded-0 border-right border-primary" href="JavaScript:PopupCenter('http://www.mytutor-jpn.com/service.html','料金案内',900,820);">料金案内</a>
+                    <a class="flex-sm text-sm-center nav-link text-white font-weight-bold rounded-0 border-right border-primary" href="JavaScript:PopupCenter('https://www.mytutor-jpn.com/teacher.html','講師',900,820);">講師</a>
+                    @endif
+
                 @endif
+
             </nav>
           </div>
         </div>

@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use Illuminate\Validation\Rule;
 use App\Models\User;
+use App\Models\GeneralSetting;
 use Auth;
 use Hash;
 use Illuminate\Http\Request;
@@ -15,7 +16,40 @@ class SettingsController extends Controller
     public function index()
     {
         $user = Auth::user();
-        return view('admin.modules.settings.index', compact('user'));
+    
+        //general settings
+        $is_netenglish = GeneralSetting::where('name', 'is_netenglish')->pluck('value')->first();
+
+
+        return view('admin.modules.settings.index', compact('user', 'is_netenglish'));
+    }
+
+    public function updateGeneralSettings(request $request) 
+    {
+        // Check if the checkbox was checked
+        if ($request->has('is_netenglish')) 
+        {
+          
+            // Update or insert the setting in the settings table
+            \DB::table('settings')->updateOrInsert(
+                ['name' => 'is_netenglish'],  // Where clause                
+                ['value' => true]
+            );
+            
+        } else {
+
+            
+            // Optionally, handle the case where the checkbox is not checked
+            \DB::table('settings')->updateOrInsert(
+                ['name' => 'is_netenglish'],                
+                ['value' => 0] // Set value to 0 if unchecked (or delete row if needed)
+            );
+        }
+
+       
+
+        return redirect()->route('admin.settings.index')->withInput();
+        
     }
 
     public function updatePassword(request $request)
