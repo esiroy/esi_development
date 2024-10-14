@@ -17,4 +17,5 @@ class PageController extends Controller
     public function stageLevel() {
         return view('pages/static/stagelevel');
     }
+    
 }
