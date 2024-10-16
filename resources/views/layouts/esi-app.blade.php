@@ -325,14 +325,10 @@
                 <a class="flex-sm text-sm-center nav-link text-white font-weight-bold rounded-0 border-right border-left border-primary" href="{{ url('/home') }}">マイページ </a>                
 
 
-                @if ( env('APP_NETENGLISH') == true )
-
-                    <a class="flex-sm text-sm-center nav-link text-white font-weight-bold rounded-0 border-right border-primary" href="{{ url('pages') }}">PAGES</a>
+                @if ( env('APP_NETENGLISH') == true )                    
                     <a class="flex-sm text-sm-center nav-link text-white font-weight-bold rounded-0 border-right border-primary" href="{{ url('customersupport') }}">カスタマー　サポート</a>
                     <a class="flex-sm text-sm-center nav-link text-white font-weight-bold rounded-0 border-right border-primary" href="{{ url('lessonmaterials') }}">オリジナル教材</a>
-
                 @else 
-
                     @if ($hideMemberTabs == false)
                     <a class="flex-sm text-sm-center nav-link text-white font-weight-bold rounded-0 border-right border-primary" href="JavaScript:PopupCenter('http://www.mytutor-jpn.com/faq.html','FAQ',900,820);">よくある質問</a>
                     @endif
@@ -1196,6 +1192,55 @@
         @endif
 
     </script>
+
+
+    <script type="text/javascript">
+
+        window.addEventListener('load', function () 
+        {  
+            // When a link with the class esiModal is clicked
+            $('body').on('click', 'a.esiModal', function(event) {
+                event.preventDefault(); // Prevent the default link behavior
+
+                var url = $(this).attr('href'); // Get the href attribute of the clicked link
+
+                // Load content from the URL into the modal
+                //$('#modalContent').load(url);
+
+
+                // Load content from the URL into the modal body
+                $('#modalContent').load(url, function(responseText, textStatus, jqXHR) {
+                    if (textStatus == "success") {
+                        // After content is loaded, extract title by finding a specific element
+                        var newTitle = $('#modalContent').find('#title').text(); // Assuming the external page has an element with id="title"
+                        
+                        // Set the modal title dynamically
+                        $('#modalTitle').text(newTitle);
+
+                        $('#modalContent').find('#title').hide(); // Hide the title in the body
+
+
+                        // Show the modal
+                        $('#esiModal').modal('show');
+
+
+                    } else {
+                        // Handle errors (optional)
+                        $('#modalTitle').text('Error loading content');
+                        $('#modalContent').html('<p>Failed to load content.</p>');
+
+                        // Show the modal
+                        $('#esiModal').modal('show');
+                    }
+                });                
+
+
+            });
+        });
+
+    </script>
+
+    @include('modules.pages.modal')
 
     @include('modules.member.popup.loading') 
     @include('modules.member.popup.msgboxSuccess')

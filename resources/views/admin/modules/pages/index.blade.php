@@ -87,6 +87,7 @@
                                                 @endif
                                             </th>  
                                             <th class="small text-left pl-2">
+                                                <a href="{{ route('pages.show', $page->slug)}}" class="esiModal">View</a> |         
                                                 <a href="{{ route('admin.pages.edit', $page->id)}}">Edit</a> |                                               
                                                 <a href="{{ route('admin.pages.destroy', ['page' => $page]) }}" onclick="confirmSubmitAction('delete-form-{{ $page->id }}'); return false; ">Delete</a>
                                                 <form id="delete-form-{{ $page->id }}" action="{{ route('admin.pages.destroy', ['page' => $page]) }}" method="POST" style="display: none;">

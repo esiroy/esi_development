@@ -222,6 +222,42 @@
                 newWindow.focus();  
             }  
         }
+
+        window.addEventListener('load', function () {  
+            // When a link with the class esiModal is clicked
+            $('body').on('click', 'a.esiModal', function(event) {
+
+                event.preventDefault(); // Prevent the default link behavior
+
+                var url = $(this).attr('href'); // Get the href attribute of the clicked link
+
+                // Load content from the URL into the modal
+                //$('#modalContent').load(url);
+
+
+                // Load content from the URL into the modal body
+                $('#modalContent').load(url, function(responseText, textStatus, jqXHR) {
+                    if (textStatus == "success") {
+                        // After content is loaded, extract title by finding a specific element
+                        var newTitle = $('#modalContent').find('#title').text(); // Assuming the external page has an element with id="title"
+                        
+                        // Set the modal title dynamically
+                        $('#modalTitle').text(newTitle);
+
+                        $('#modalContent').find('#title').hide(); // Hide the title in the body
+                        
+                    } else {
+                        // Handle errors (optional)
+                        $('#modalTitle').text('Error loading content');
+                        $('#modalContent').html('<p>Failed to load content.</p>');
+                    }
+                });                
+
+                // Show the modal
+                $('#esiModal').modal('show');
+            });
+        });
+
     </script>    
 
     @if (Auth::user()->user_type == 'ADMINISTRATOR')
@@ -884,8 +920,12 @@
         </style>
     @endif
 
+
+    @include('modules.pages.modal')
+    
     @yield('styles')
     @yield('scripts')
+
 </body>
 
 </html>
