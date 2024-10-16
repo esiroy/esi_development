@@ -1196,44 +1196,67 @@
 
     <script type="text/javascript">
 
+
         window.addEventListener('load', function () 
         {  
             // When a link with the class esiModal is clicked
-            $('body').on('click', 'a.esiModal', function(event) {
+            $('body').on('click', 'a.esiModal', function(event) 
+            {
+
                 event.preventDefault(); // Prevent the default link behavior
 
-                var url = $(this).attr('href'); // Get the href attribute of the clicked link
+                if (!$(event.target).closest('.modal-content').length) 
+                {
+                    var url = $(this).attr('href'); // Get the href attribute of the clicked link
 
-                // Load content from the URL into the modal
-                //$('#modalContent').load(url);
+                    // Load content from the URL into the modal body
+                    $('#esiModal #modalContent').load(url, function(responseText, textStatus, jqXHR) {
+                        if (textStatus == "success") {
+                            // After content is loaded, extract title by finding a specific element
+                            var newTitle = $('#esiModal #modalContent').find('#title').text(); // Assuming the external page has an element with id="title"
+                            
+                            // Set the modal title dynamically
+                            $('#esiModal #modalTitle').text(newTitle);
+                            $('#esiModal #modalContent').find('#title').hide(); // Hide the title in the body
 
+                            // Show the modal
+                            $('#esiModal').modal('show');
 
-                // Load content from the URL into the modal body
-                $('#modalContent').load(url, function(responseText, textStatus, jqXHR) {
-                    if (textStatus == "success") {
-                        // After content is loaded, extract title by finding a specific element
-                        var newTitle = $('#modalContent').find('#title').text(); // Assuming the external page has an element with id="title"
-                        
-                        // Set the modal title dynamically
-                        $('#modalTitle').text(newTitle);
+                        } else {
+                            // Handle errors (optional)
+                            $('#esiModal #modalTitle').text('Error loading content');
+                            $('#esiModal #modalContent').html('<p>Failed to load content.</p>');
+                            // Show the modal
+                            $('#esiModal').modal('show');
+                        }
+                    });    
 
-                        $('#modalContent').find('#title').hide(); // Hide the title in the body
+                } else {
 
+                   var url = $(this).attr('href'); // Get the href attribute of the clicked link
 
-                        // Show the modal
-                        $('#esiModal').modal('show');
+                    // Load content from the URL into the modal body
+                    $('#esiModalChild #modalContent').load(url, function(responseText, textStatus, jqXHR) {
+                        if (textStatus == "success") {
+                            // After content is loaded, extract title by finding a specific element
+                            var newTitle = $('#esiModalChild #modalContent').find('#title').text(); // Assuming the external page has an element with id="title"
+                            
+                            // Set the modal title dynamically
+                            $('#esiModalChild #modalTitle').text(newTitle);
+                            $('#esiModalChild #modalContent').find('#title').hide(); // Hide the title in the body
 
+                            // Show the modal
+                            $('#esiModalChild').modal('show');
 
-                    } else {
-                        // Handle errors (optional)
-                        $('#modalTitle').text('Error loading content');
-                        $('#modalContent').html('<p>Failed to load content.</p>');
-
-                        // Show the modal
-                        $('#esiModal').modal('show');
-                    }
-                });                
-
+                        } else {
+                            // Handle errors (optional)
+                            $('#esiModalChild #modalTitle').text('Error loading content');
+                            $('#esiModalChild #modalContent').html('<p>Failed to load content.</p>');
+                            // Show the modal
+                            $('#esiModalChild').modal('show');
+                        }
+                    });    
+                }
 
             });
         });
