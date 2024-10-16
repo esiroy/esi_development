@@ -53,10 +53,10 @@
                                 <table class="table table-bordered table-sm table-striped">
                                     <thead>
                                         <tr>
-                                            <th class="small pl-2 text-left small bg-light text-dark font-weight-bold">Title</th>                                            
+                                            <th class="small pl-2 text-left small bg-light text-dark font-weight-bold" style="width:200px">Title</th>                                            
                                             <th class="small pl-2 text-left small bg-light text-dark font-weight-bold">Content</th>
                                             <th class="small pl-2 text-left small bg-light text-dark font-weight-bold" style="width:175px">Publishing | Origin </th>  
-                                            <th class="small pl-2 text-left small bg-light text-dark font-weight-bold" style="width:125px">Action</th>
+                                            <th class="small pl-2 text-left small bg-light text-dark font-weight-bold" style="width:200px">Action</th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -87,7 +87,10 @@
                                                 @endif
                                             </th>  
                                             <th class="small text-left pl-2">
-                                                <a href="{{ route('pages.show', $page->slug)}}" class="esiModal">View</a> |         
+                                              
+                                                <a class="copyButton" href="{{ url('pages/'. $page->slug) }}">Copy Link</a> |                                                  
+                                                <a href="{{ route('pages.show', $page->slug)}}" class="esiModal">View</a> |
+
                                                 <a href="{{ route('admin.pages.edit', $page->id)}}">Edit</a> |                                               
                                                 <a href="{{ route('admin.pages.destroy', ['page' => $page]) }}" onclick="confirmSubmitAction('delete-form-{{ $page->id }}'); return false; ">Delete</a>
                                                 <form id="delete-form-{{ $page->id }}" action="{{ route('admin.pages.destroy', ['page' => $page]) }}" method="POST" style="display: none;">
@@ -243,6 +246,25 @@
 
         //editor
         CKEDITOR.replace('content');
+
+        
+        $('.copyButton').click(function(event) {          
+
+       
+            var link = $(this).attr('href');
+
+            // Use the Clipboard API to copy the link
+            navigator.clipboard.writeText(link).then(() => {               
+                showToast("Info", "Linked Copied Successfully");
+            }).catch(err => {
+                console.error('Could not copy text: ', err);
+            });            
+
+            event.preventDefault(); // Prevent the default anchor behavior
+        });
+
+
+
     });
 
 

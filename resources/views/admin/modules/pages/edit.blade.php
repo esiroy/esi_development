@@ -37,7 +37,15 @@
                                     <td>
                                         <input type="text" class="form-control form-control-sm col-8"  id="title" name="title" required maxlength="190" value="{{ old('title', isset($page->title ) ? $page->title : '') }}"></input>
                                     </td>
-                                </tr>                            
+                                </tr>    
+                                
+                                <tr valign="top">
+                                    <td>URL Slug </td>
+                                    <td>:</td>
+                                    <td>
+                                        <input type="text" class="form-control form-control-sm col-8"  id="slug" name="slug" required maxlength="190" value="{{ old('title', isset($page->slug ) ? $page->slug : '') }}" readonly></input>
+                                    </td>
+                                </tr>                                     
 
                                 <tr valign="top">
                                     <td>Content </td>

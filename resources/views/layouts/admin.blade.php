@@ -223,6 +223,36 @@
             }  
         }
 
+          // Function to create and show toast
+        function showToast(title, message) {
+            // Create a toast element
+            const toastHTML = `
+                <div class="toast" role="alert" aria-live="assertive" aria-atomic="true" aria-atomic="true" style="position: fixed; bottom: 20px; right: 20px; z-index: 1050;">
+                    <div class="toast-header bg-primary">
+                        <strong class="me-auto text-white">${title}</strong>
+                    </div>
+                    <div class="toast-body">
+                        ${message}
+                    </div>
+                </div>
+            `;
+
+            
+            // Append the toast to the body
+            $('body').append(toastHTML);
+
+            // Initialize and show the toast
+            const toastElement = $('.toast').last(); // Get the last toast
+            toastElement.toast({ autohide: true, delay: 3000 }); // Set options
+            toastElement.toast('show'); // Show the toast
+
+            // Remove the toast after hiding
+            toastElement.on('hidden.bs.toast', function () {
+                $(this).remove();
+            });
+        }
+        
+
         window.addEventListener('load', function () {  
             // When a link with the class esiModal is clicked
             $('body').on('click', 'a.esiModal', function(event) {
