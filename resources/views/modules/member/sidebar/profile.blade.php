@@ -214,10 +214,13 @@
             @if (strtolower($memberInfo->communication_app) == "skype")
                 <div class="col-md-12">
                     <div class="text-secondary pt-1">
-                        
-                        <a href="JavaScript:PopupCenter('https://www.mytutor-jpn.com/info/2022/0212121907.html','スカイプ（ZOOM) ID変更方法',900,820);">
-                            Skype ID:
-                        </a>
+                        @if($is_netenglish == true)
+                            <a href="{{ url('/pages/zoom-id') }}" class="esiModal"> Skype ID:</a>
+                        @else 
+                            <a href="JavaScript:PopupCenter('https://www.mytutor-jpn.com/info/2022/0212121907.html','スカイプ（ZOOM) ID変更方法',900,820);">
+                                Skype ID:
+                            </a>
+                        @endif
                         
                     </div>
                 </div>
@@ -229,9 +232,14 @@
             @elseif (strtolower($memberInfo->communication_app) == "zoom")
                 <div class="col-md-12">
                     <div class="text-secondary pt-1">
+                        @if($is_netenglish == true)
+                            <a href="{{ url('/pages/zoom-id') }}" class="esiModal">  Zoom ID:</a>
+                        @else 
                         <a href="JavaScript:PopupCenter('https://www.mytutor-jpn.com/info/2022/0212121907.html','スカイプ（ZOOM) ID変更方法',900,820);">
                             Zoom ID:
                         </a>
+                        @endif
+
                     </div>
                 </div>
                 <div class="col-md-12">
