@@ -16,10 +16,11 @@
                         <div class="cs-speech-bubble">
                             <a href="" @click.prevent="openChatBox()">Chat Support</a>
                         </div>
-                        <div class="small pt-1 pb-1">
-                            <a
-                                href="JavaScript:PopupCenter('https://www.mytutor-jpn.com/info/2021/0816220249.html','Chat Support ご利用方法',900,820);">Chat
-                                Support ご利用方法</a>
+                        <div class="small pt-1 pb-1" v-if="is_netenglish == true">
+                            <a href="/pages/chat-support" class="esiModal" >Chat Support ご利用方法</a>                            
+                        </div>
+                        <div class="small pt-1 pb-1" v-if="is_netenglish == false">
+                            <a href="JavaScript:PopupCenter('https://www.mytutor-jpn.com/info/2021/0816220249.html','Chat Support ご利用方法',900,820);">Chat Support ご利用方法</a>
                         </div>
                     </td>
                 </tr>
@@ -256,7 +257,8 @@ export default {
         csrf_token: String,
         chatserver_url: String,
         customer_support_image: String,
-        show_sidebar: Boolean
+        show_sidebar: Boolean,
+        is_netenglish: Boolean
     },
     sockets: {
         connect: (data) => {

@@ -55,6 +55,7 @@
             chatserver_url="{{ $chatserver_url }}"
             api_token="{{ Auth::user()->api_token }}"
             csrf_token="{{ csrf_token() }}"    
+            is_netenglish="{{ $is_netenglish }}"
             :show_sidebar="true"        
         >
         </member-floating-chat-component>  
