@@ -102,7 +102,7 @@
                                     @endif
 
                                     @if($is_netenglish == true) 
-                                        <a href="{{ url('/pages/chat-support') }}" class="esiModal text-white">セブマネージャー　Chat Support</a> までご連絡ください。
+                                        <a href="{{ url('/pages/chat-support') }}" class="esiModal">セブマネージャー　Chat Support</a> までご連絡ください。
                                     @else 
                                         <a href="JavaScript:PopupCenter('https://www.mytutor-jpn.com/info/2021/0816220249.html','スカイプ又はZOOM',900,720);">セブマネージャー　Chat Support</a> までご連絡ください。
                                     @endif
