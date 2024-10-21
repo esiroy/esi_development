@@ -26,7 +26,11 @@
                         <div class="card-header esi-card-header">
                             Mini Test
                             <span class="text-secondary small float-right">
-                                <a href="JavaScript:PopupCenter('https://www.mytutor-jpn.com/info/2022/0607200521.html','Mini Test',900,820)">Mini Test  について</a> 
+                                @if($is_netenglish == true)                                        
+                                    <a href="{{ url('/pages/mini-test') }}" class="esiModal">Mini Test  について</a>
+                                @else 
+                                    <a href="JavaScript:PopupCenter('https://www.mytutor-jpn.com/info/2022/0607200521.html','Mini Test',900,820)">Mini Test  について</a> 
+                                @endif
                             </span>
                         </div>
 
