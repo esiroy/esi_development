@@ -45,9 +45,17 @@
         <div class="bg-white shadow-sm">
             <div class="container">
                 <nav class="navbar navbar-light navbar-expand-md">
-                    <a class="navbar-brand" href="{{ url('/') }}">
-                    <img src="{{ url("images/title_full.png") }}" alt="{{ config('app.name', 'My Tutor') }}" alt="{{ config('app.name', 'My Tutor') }} administratrion panel">
-                    </a>
+
+                  
+                    @if($is_netenglish == true)
+                        <a class="navbar-brand" href="{{ url('/') }}">
+                            <img src="{{ url('images/netenglish-logo-sm.png') }}" alt="{{ config('app.name', 'My Tutor') }}" alt="{{ config('app.name', 'My Tutor') }} " style="height:66px; width:171px">
+                        </a>
+                    @else
+                        <a class="navbar-brand" href="{{ url('/') }}">
+                            <img src="{{ url('images/title_full.png') }}" alt="{{ config('app.name', 'My Tutor') }}" alt="{{ config('app.name', 'My Tutor') }} ">
+                        </a>
+                    @endif
 
                     <button class="navbar-toggler" type="button" data-toggle="collapse"
                         data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false"
