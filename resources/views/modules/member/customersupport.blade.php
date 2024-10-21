@@ -94,10 +94,15 @@
                                 <!--<p>講師からコールがなかったり、レッスン中のトラブルなど、緊急な対応については、セブ・講師管理センター(セブマネジャー)がスカイプ<span style="color:red;">又は ZOOM</span> チャットで対応いたします。</p>-->
 
                                 <p>講師からコールがなかったり、レッスン中のトラブルなど、緊急な対応については、 
-                                    <a href="JavaScript:PopupCenter('https://www.mytutor-jpn.com/info/2021/0717162035.html','スカイプ又はZOOM',900,720);">「講師への連絡」</a> からチャットをご利用ください。「講師への連絡」が繋がらない場合や、講師では問題解消できない場合は、
+
+                                    @if($is_netenglish == true)                                         
+                                        <a href="{{ url('/pages/-3') }}" class="esiModal">「講師への連絡」</a> からチャットをご利用ください。「講師への連絡」が繋がらない場合や、講師では問題解消できない場合は、
+                                    @else 
+                                        <a href="JavaScript:PopupCenter('https://www.mytutor-jpn.com/info/2021/0717162035.html','スカイプ又はZOOM',900,720);">「講師への連絡」</a> からチャットをご利用ください。「講師への連絡」が繋がらない場合や、講師では問題解消できない場合は、
+                                    @endif
 
                                     @if($is_netenglish == true) 
-                                        <a href="{{ url('/pages/chat-support') }}" class="esiModal text-white">
+                                        <a href="{{ url('/pages/chat-support') }}" class="esiModal text-white">セブマネージャー　Chat Support</a> までご連絡ください。
                                     @else 
                                         <a href="JavaScript:PopupCenter('https://www.mytutor-jpn.com/info/2021/0816220249.html','スカイプ又はZOOM',900,720);">セブマネージャー　Chat Support</a> までご連絡ください。
                                     @endif
