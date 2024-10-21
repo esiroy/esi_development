@@ -19,20 +19,20 @@
 ?>
 
 @if (isset($accountID)) 
-<member-mutliaccount-component
-    :memberinfo="{{  json_encode($memberInfo )  }}" 
-    api_token="{{ Auth::user()->api_token }}" 
-    csrf_token="{{ csrf_token() }}"
-    :selected_account_id="{{ $accountID }}"
-    >
-</member-mutliaccount-component>
+    <member-mutliaccount-component
+        :memberinfo="{{  json_encode($memberInfo )  }}" 
+        api_token="{{ Auth::user()->api_token }}" 
+        csrf_token="{{ csrf_token() }}"
+        :selected_account_id="{{ $accountID }}"
+        is_netenglish="{{ $is_netenglish }}"
+        >
+    </member-mutliaccount-component>
 @else 
-
-
-<member-mutliaccount-component
-:memberinfo="{{  json_encode($memberInfo )  }}" 
-api_token="{{ Auth::user()->api_token }}" 
-csrf_token="{{ csrf_token() }}"
->
-</member-mutliaccount-component>
+    <member-mutliaccount-component
+        :memberinfo="{{  json_encode($memberInfo )  }}" 
+        api_token="{{ Auth::user()->api_token }}" 
+        csrf_token="{{ csrf_token() }}"
+        is_netenglish="{{ $is_netenglish }}"
+        >
+    </member-mutliaccount-component>
 @endif

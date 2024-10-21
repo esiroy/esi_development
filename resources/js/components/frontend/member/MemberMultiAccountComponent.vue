@@ -1,6 +1,7 @@
 <template>    
 
 
+
     <div id="memberMultiAccountContainer">
       
         
@@ -10,7 +11,12 @@
                
                 
                
-                <span class="pl-2 float-right">
+                <span class="pl-2 float-right" v-if="is_netenglish == true">
+                    <a href="pages/multiaccount" class="esiModal text-white">
+                        <i aria-hidden="true" class="fa fa-question"></i>
+                    </a>
+                </span>
+                <span class="pl-2 float-right" v-if="is_netenglish == false">                    
                     <a href="JavaScript:PopupCenter('https://www.mytutor-jpn.com/info/2024/0509183247.html','Member Multiple Account Help',900,820);" class="text-white">
                         <i aria-hidden="true" class="fa fa-question"></i>
                     </a>
@@ -162,6 +168,7 @@ export default {
         csrf_token: String,		
         api_token: String,
         selected_account_id: Number,
+        is_netenglish: Boolean
     },	
 	data() {
 		return {
@@ -183,7 +190,7 @@ export default {
              //Listings
             accountLists: null,
 
-            totalScheduledItem: 0
+            totalScheduledItem: 0,
 		};
 	},
     mounted: function () 
@@ -204,7 +211,7 @@ export default {
             
             this.totalScheduledItem = 0;
 
-            clearTimeout(this.hideTimeOut);
+            clearTimeout(this.hideTimeOut);           
             
         },
         listAccounts() {
