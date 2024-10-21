@@ -95,7 +95,12 @@
 
                                 <p>講師からコールがなかったり、レッスン中のトラブルなど、緊急な対応については、 
                                     <a href="JavaScript:PopupCenter('https://www.mytutor-jpn.com/info/2021/0717162035.html','スカイプ又はZOOM',900,720);">「講師への連絡」</a> からチャットをご利用ください。「講師への連絡」が繋がらない場合や、講師では問題解消できない場合は、
-                                    <a href="JavaScript:PopupCenter('https://www.mytutor-jpn.com/info/2021/0816220249.html','スカイプ又はZOOM',900,720);">セブマネージャー　Chat Support</a> までご連絡ください。
+
+                                    @if($is_netenglish == true) 
+                                        <a href="{{ url('/pages/chat-support') }}" class="esiModal text-white">
+                                    @else 
+                                        <a href="JavaScript:PopupCenter('https://www.mytutor-jpn.com/info/2021/0816220249.html','スカイプ又はZOOM',900,720);">セブマネージャー　Chat Support</a> までご連絡ください。
+                                    @endif
                                 </p>
 
                                  

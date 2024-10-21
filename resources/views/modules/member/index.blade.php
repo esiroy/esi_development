@@ -84,7 +84,11 @@
                                 <thead>
                                     <tr>
                                         <th colspan="2" class="heading">
-                                            <a href="https://www.mytutor-jpn.com/info/2020/0526183735.html" target="_blank">担任講師による固定レッスン</a>
+                                            @if($is_netenglish == true)
+                                                <a href="{{ url('/pages/fix-reservation') }}" class="esiModal">担任講師による固定レッスン</a>
+                                            @else 
+                                                <a href="https://www.mytutor-jpn.com/info/2020/0526183735.html" target="_blank">担任講師による固定レッスン</a>
+                                            @endif
                                         </th>
                                     </tr>
                                     <tr>
@@ -155,20 +159,39 @@
                     <div class="card mt-4" style="">
                         <div class="card-header esi-card-header text-center">
                             予約表
-                            <a href="JavaScript:PopupCenter('https://www.mytutor-jpn.com/info/2021/0319230008.html','予約は最大15コマまでとなりま',900,820);">
-                                <small style="font-size:11px;">予約は最大15コマまでとなります</small>
-                            </a>
+                            @if($is_netenglish == true)                    
+                                <a href="{{ url('/pages/-1') }}" class="esiModal">予約は最大15コマまでとなります</a>
+                            @else 
+                                <a href="JavaScript:PopupCenter('https://www.mytutor-jpn.com/info/2021/0319230008.html','予約は最大15コマまでとなりま',900,820);">
+                                    <small style="font-size:11px;">予約は最大15コマまでとなります</small>
+                                </a>
+                            @endif
+
+
                         </div>
 
                         <div class="card-body px-3">
                             初めての講師の場合、講師からSkype(ZOOM)コンタクトリクエストがあります。 レッスン時間の15分前にSkype(ZOOM)を立ち上げ承認してコールをお待ちください。
 
                             <br/>
-                            講師からコールがない場合は、<a href="JavaScript:PopupCenter('https://www.mytutor-jpn.com/info/2024/0313221750.html','講師への連絡　チャット」とは',900,820);">「講師への連絡」</a>からご連絡ください。
+                            講師からコールがない場合は、
+                            
+                            @if($is_netenglish == true)   
+                                <a href="{{ url('/pages/zoom') }}" class="esiModal">「講師への連絡」</a>                              
+                            @else 
+                                <a href="JavaScript:PopupCenter('https://www.mytutor-jpn.com/info/2024/0313221750.html','講師への連絡　チャット」とは',900,820);">「講師への連絡」</a>
+                            @endif
+
+                            からご連絡ください。
 
                             <br>
-                            <a href="JavaScript:PopupCenter('https://www.mytutor-jpn.com/info/2022/1004131925.html','講師都合のキャンセルー代行について',900,820);">
+
+                            @if($is_netenglish == true)   
+                                <a href="{{ url('/pages/-5') }}" class="esiModal">講師都合のキャンセル及び代行についてのご案内</a>
+                            @else 
+                                <a href="JavaScript:PopupCenter('https://www.mytutor-jpn.com/info/2022/1004131925.html','講師都合のキャンセル及び代行についてのご案内',900,820);">
                                 講師都合のキャンセル及び代行についてのご案内</a>
+                            @endif
 
                             <table id="memberReservations" cellspacing="0" cellpadding="9" class="tblRegister mt-3" width="100%">
                                 <tbody>
@@ -176,11 +199,19 @@
                                         <th style="text-align: center;">Date</th>
                                         <th style="text-align: center;" colspan="2">Tutor</th>
                                         <th style="text-align: center;">
-                                            <a href="JavaScript:PopupCenter('https://www.mytutor-jpn.com/info/2024/0313221750.html','講師への連絡　チャット」とは',900,820);">講師への連絡</a>
+                                            @if($is_netenglish == true)   
+                                                <a href="{{ url('/pages/zoom') }}" class="esiModal">>講師への連絡</a>
+                                            @else                                     
+                                                <a href="JavaScript:PopupCenter('https://www.mytutor-jpn.com/info/2024/0313221750.html','講師への連絡　チャット」とは',900,820);">講師への連絡</a>
+                                            @endif
+                                            
                                         </th>
                                         <th style="text-align: center;">
-                                            
-                                            <a href="JavaScript:PopupCenter('https://www.mytutor-jpn.com/info/2021/0728183333.html','Action',900,820);">Action</a>
+                                            @if($is_netenglish == true)   
+                                                <a href="{{ url('/pages/action') }}" class="esiModal">>講師への連絡</a>
+                                            @else                                                                                
+                                                <a href="JavaScript:PopupCenter('https://www.mytutor-jpn.com/info/2021/0728183333.html','Action',900,820);">Action</a>
+                                            @endif
                                             
                                         </th>
                                     </tr>

@@ -3,7 +3,12 @@
        <strong>Lesson Request</strong>
 
         <span id="attention-notes" class="float-right">
-            <a href="JavaScript:PopupCenter('https://www.mytutor-jpn.com/info/2022/1229161444.html','Merged Account Help',900,820);" class="text-white">
+            @if($is_netenglish == true)   
+                <a href="{{ url('/pages/request-for-lesson') }}" class="esiModal text-white">
+            @else         
+                <a href="JavaScript:PopupCenter('https://www.mytutor-jpn.com/info/2022/1229161444.html','Merged Account Help',900,820);" class="text-white">
+            @endif 
+
             <i aria-hidden="true" class="fa fa-question"></i></a>
         </span>
 
