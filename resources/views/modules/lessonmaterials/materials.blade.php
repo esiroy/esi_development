@@ -30,7 +30,12 @@
                             レッスン教材 
                             <span class="text-right" style="width: 75%;display: block; float: right;font-size: 12px; color: #000; margin:4px 0px 0px">                                
                             <!--（オリジナル教材以外はカスタマーサポートまでご連絡ください）-->
-                            使用教材（オリジナル教材、市販教材）は、<a href="JavaScript:PopupCenter('https://www.mytutor-jpn.com/info/2023/0701200321.html','Lesson Materials',900,820);">各レッスンコース概要</a> からご確認ください。（こちらは一部のオリジナル教材のみ紹介しています
+                            @if($is_netenglish == true)
+                                使用教材（オリジナル教材、市販教材）は、<a href="{{ url('/pages/lesson-course-summary') }}" class="esiModal">各レッスンコース概要</a> からご確認ください。（こちらは一部のオリジナル教材のみ紹介しています
+                            @else 
+                                使用教材（オリジナル教材、市販教材）は、<a href="JavaScript:PopupCenter('https://www.mytutor-jpn.com/info/2023/0701200321.html','Lesson Materials',900,820);">各レッスンコース概要</a> からご確認ください。（こちらは一部のオリジナル教材のみ紹介しています
+                            @endif
+
                             </span>
                         </div>
 
