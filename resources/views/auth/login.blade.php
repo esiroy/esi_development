@@ -13,9 +13,15 @@
 
                             <div class="offset-2 offset-lg-4 offset-md-2 offset-sm-4 offset-xs-2">
 
+                                @if($is_netenglish == true)
+                                <div id="logo" class="mr-5 mb-3" style="width:385px">
+                                    <img src="{{ url("images/netenglish-logo-sm.png") }}" alt="my-tutor administratrion panel" class="img-fluid">
+                                </div>
+                                @else 
                                 <div id="logo" class="mr-5">
                                     <img src="{{ url("images/mytutor_logo.png") }}" alt="my-tutor administratrion panel" class="img-fluid">
                                 </div>
+                                @endif
 
                                 <div class="login-box">
 
@@ -88,14 +94,20 @@
 
                         </div>
                     </div>
+
                     <!--<div id="register" class="col-4 col-lg-5 col-md-6 col-sm-5 col-xs-6" >-->
 
-                    <div id="register" class="col-5">
-                        <!--[start] regsiter button -->
-                        <div class="btn-register">
-                            <a href="{{ url('signup') }}"><img src="{{ url("images/btnRegister.png") }}" alt="my-tutor administratrion panel" class="img-fluid"></a>
+                    @if ($is_netenglish == true)
+                        <!-- Registration page is disabled -->
+                    @else 
+                        <div id="register" class="col-5">
+                            <!--[start] regsiter button -->
+                            <div class="btn-register">
+                                <a href="{{ url('signup') }}"><img src="{{ url("images/btnRegister.png") }}" alt="my-tutor administratrion panel" class="img-fluid"></a>
+                            </div>
                         </div>
-                    </div>
+                    @endif
+
                 </div>
             </div>
         </div>

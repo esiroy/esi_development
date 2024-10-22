@@ -475,6 +475,7 @@ Route::get('login.do', 'Auth\LoginController@showLoginForm')->name('login_member
 
 
 
+
 /*
 Route::get('/{any}', function ($any) {  
   echo "ANY : " . $any;

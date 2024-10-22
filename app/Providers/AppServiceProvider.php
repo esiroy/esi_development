@@ -31,5 +31,6 @@ class AppServiceProvider extends ServiceProvider
         Schema::defaultStringLength(191);
 
         View::share('is_netenglish', @env('APP_NETENGLISH'));
+        //View::share('is_netenglish', filter_var(env('APP_NETENGLISH'), FILTER_VALIDATE_BOOLEAN));
     }
 }
