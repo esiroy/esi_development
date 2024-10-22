@@ -77,7 +77,7 @@
                     </div>
 
 
-
+                    @if($is_netenglish == false)
                     <div class="reservationTable mt-4">
                             <!--[start reservation table -->
                             <table width="100%" cellspacing="0" cellpadding="5" border="0" align="center">
@@ -130,7 +130,8 @@
                                     </tr>
                                     @endforeach
                             </table>
-                        </div>
+                    </div>
+                    @endif
 
 
                     @php                     
