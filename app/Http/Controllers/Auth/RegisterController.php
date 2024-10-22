@@ -45,7 +45,6 @@ class RegisterController extends Controller
     public function __construct()
     {
         $is_netenglish = config('app.netenglish');
-
         if ($is_netenglish == true) {
             echo "not allowed to register";
             exit();

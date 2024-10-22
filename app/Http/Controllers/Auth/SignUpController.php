@@ -27,7 +27,12 @@ class SignUpController extends Controller
 {
     public function __construct()
     {
-        exit();
+        $is_netenglish = config('app.netenglish');        
+        if ($is_netenglish == true) {
+            echo "not allowed to register";
+            exit();
+        }
+
         $this->middleware('guest');
     }
 
