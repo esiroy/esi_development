@@ -12,7 +12,7 @@
                 
                
                 <span class="pl-2 float-right" v-if="is_netenglish == true">
-                    <a href="pages/multiaccount" class="esiModal text-white">
+                    <a href="pages/multi-account" class="esiModal text-white">
                         <i aria-hidden="true" class="fa fa-question"></i>
                     </a>
                 </span>

@@ -26,11 +26,16 @@
 
             <div id="memberLevelWrapper">
                 <div class="row">
-                    <div class="col-12">
-                        <a href="JavaScript:PopupCenter('https://www.mytutor-jpn.com/info/2022/0209160659.html','英語レベル（CEFR)自己評価　参照表',900,820);">
+                    <div class="col-12" v-if="is_netenglish == false">
+                        <a href="pages/cefr-1" class="esiModal">
                             英語レベル（CEFR)自己評価 参照表
                         </a>
                     </div>
+                    <div class="col-12" v-if="is_netenglish == true">
+                        <a href="JavaScript:PopupCenter('https://www.mytutor-jpn.com/info/2022/0209160659.html','英語レベル（CEFR)自己評価　参照表',900,820);">
+                            英語レベル（CEFR)自己評価 参照表
+                        </a>
+                    </div>                    
                 </div>
 
 
@@ -155,6 +160,7 @@ mounted: function ()
         memberinfo: Object,
         csrf_token: String,		
         api_token: String,
+        is_netenglish: Boolean
     },
             
     methods: {  
